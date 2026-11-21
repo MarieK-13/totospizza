@@ -1,0 +1,21 @@
+package com.totospizza.model.enums;
+
+/**
+ * Estado del pago a un motorizado.
+ */
+public enum EstadoPagoPersonal {
+
+    PENDIENTE("Pendiente"),
+    PAGADO("Pagado");
+
+    private final String etiqueta;
+
+    EstadoPagoPersonal(String etiqueta) {
+        this.etiqueta = etiqueta;
+    }
+
+    /** Texto que se muestra al usuario. */
+    public String getEtiqueta() {
+        return etiqueta;
+    }
+}
