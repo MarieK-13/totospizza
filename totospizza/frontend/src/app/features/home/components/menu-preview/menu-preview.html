@@ -1,0 +1,78 @@
+<section class="recommended-section" aria-label="Recomendado para ti">
+  <div class="recommended-section__container">
+    <!-- Cabecera superior -->
+    <header class="recommended-header">
+      <div class="recommended-header__info">
+        <span class="eyebrow">
+          <span class="eyebrow__dot"></span>
+          LOS FAVORITOS DE LA CASA
+        </span>
+        <h2 class="recommended-header__title">Recomendado para ti</h2>
+        <p class="recommended-header__subtitle">
+          Recetas que ya conquistaron Ica. Elige tu tamaño, personaliza los ingredientes y disfruta recién salido del horno.
+        </p>
+      </div>
+
+      <a routerLink="/menu" class="btn-outline-pill">
+        <span>Ver todas las pizzas</span>
+        <lucide-icon [img]="ArrowRightIcon" [size]="16" [strokeWidth]="1.8"></lucide-icon>
+      </a>
+    </header>
+
+    <!-- Grid / Carrusel de 4 Tarjetas por página -->
+    <div class="pizzas-grid">
+      @for (p of productosVisibles(); track p.nombre) {
+        <article class="pizza-card">
+          <div class="pizza-card__media">
+            <img [src]="p.imagen" [alt]="p.nombre" class="pizza-card__img" />
+            <span class="pizza-card__badge">{{ p.etiqueta }}</span>
+          </div>
+
+          <div class="pizza-card__body">
+            <h3 class="pizza-card__title">{{ p.nombre }}</h3>
+
+            <div class="pizza-card__rating" [attr.aria-label]="'Calificación ' + p.rating + ' de 5'">
+              <div class="stars">
+                @for (s of estrellas; track s) {
+                  <lucide-icon [img]="StarIcon" [size]="13" [strokeWidth]="0" class="star-icon"></lucide-icon>
+                }
+              </div>
+              <span class="rating-value">{{ p.rating }}</span>
+            </div>
+
+            <p class="pizza-card__desc">{{ p.detalle }}</p>
+
+            <div class="pizza-card__footer">
+              <div class="price-box">
+                <span class="price-box__label">DESDE</span>
+                <strong class="price-box__amount">S/ {{ p.precio }}</strong>
+              </div>
+
+              <button
+                type="button"
+                class="btn-add-circle"
+                [attr.aria-label]="'Agregar ' + p.nombre + ' al pedido'"
+              >
+                <lucide-icon [img]="PlusIcon" [size]="18" [strokeWidth]="2.2"></lucide-icon>
+              </button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+
+    <!-- Paginación inferior tipo píldora -->
+    <div class="carousel-dots" role="tablist" aria-label="Páginas de recomendaciones">
+      @for (idx of paginasIndices(); track idx) {
+        <button
+          type="button"
+          class="carousel-dots__dot"
+          [class.is-active]="idx === paginaActual()"
+          (click)="irAPagina(idx)"
+          [attr.aria-label]="'Ver página ' + (idx + 1)"
+          [attr.aria-selected]="idx === paginaActual()"
+        ></button>
+      }
+    </div>
+  </div>
+</section>

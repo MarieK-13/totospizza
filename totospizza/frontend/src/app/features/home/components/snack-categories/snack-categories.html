@@ -1,0 +1,82 @@
+<section class="explore-menu-section" aria-label="Explora nuestro menú">
+  <div class="explore-menu-section__container">
+    <!-- Cabecera centrada -->
+    <header class="explore-header">
+      <span class="eyebrow">
+        <span class="eyebrow__dot"></span>
+        PIZZA PARA TODOS
+      </span>
+
+      <h2 class="explore-header__title">Explora nuestro menú</h2>
+
+      <p class="explore-header__subtitle">
+        Del clasicismo italiano a sabores que solo podían nacer en Ica. Todas disponibles en masa clásica o integral.
+      </p>
+
+      <!-- Pestañas de Categoría Interactivas -->
+      <div class="category-tabs" role="tablist" aria-label="Categorías del menú">
+        @for (cat of categorias; track cat) {
+          <button
+            type="button"
+            role="tab"
+            class="category-tab"
+            [class.is-active]="categoriaActiva() === cat"
+            [attr.aria-selected]="categoriaActiva() === cat"
+            (click)="seleccionarCategoria(cat)"
+          >
+            {{ cat }}
+          </button>
+        }
+      </div>
+    </header>
+
+    <!-- Grid de 2 Columnas con Tarjetas Horizontales -->
+    <div class="menu-cards-grid" role="tabpanel">
+      @for (item of itemsFiltrados(); track item.id) {
+        <article class="menu-item-card">
+          <div class="menu-item-card__media">
+            <img [src]="item.imagen" [alt]="item.nombre" class="menu-item-card__img" />
+          </div>
+
+          <div class="menu-item-card__body">
+            @if (item.etiqueta) {
+              <span class="menu-item-card__tag">{{ item.etiqueta }}</span>
+            }
+
+            <h3 class="menu-item-card__title">{{ item.nombre }}</h3>
+
+            <p class="menu-item-card__desc">{{ item.detalle }}</p>
+
+            <div class="menu-item-card__footer">
+              <strong class="menu-item-card__price">S/ {{ item.precio.toFixed(2) }}</strong>
+
+              <button
+                type="button"
+                class="btn-agregar-inline"
+                [class.is-added]="agregadoId() === item.id"
+                (click)="agregarProducto(item)"
+                [attr.aria-label]="'Agregar ' + item.nombre"
+              >
+                @if (agregadoId() === item.id) {
+                  <span>Agregado</span>
+                  <lucide-icon [img]="CheckCircleIcon" [size]="16" [strokeWidth]="2"></lucide-icon>
+                } @else {
+                  <span>Agregar</span>
+                  <lucide-icon [img]="PlusCircleIcon" [size]="16" [strokeWidth]="1.8"></lucide-icon>
+                }
+              </button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+
+    <!-- Botón centrado inferior -->
+    <div class="explore-footer">
+      <a routerLink="/menu" class="btn-full-menu">
+        <span>Ver menú completo</span>
+        <lucide-icon [img]="ArrowRightIcon" [size]="16" [strokeWidth]="2"></lucide-icon>
+      </a>
+    </div>
+  </div>
+</section>

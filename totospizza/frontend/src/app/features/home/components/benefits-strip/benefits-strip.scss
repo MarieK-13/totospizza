@@ -1,0 +1,64 @@
+@use '../../../../../styles/tokens/variables' as *;
+
+.benefits-strip {
+ margin-top: 40px;
+  background-color: $color-blanco;
+  border-top: 1px solid $color-arena;
+  border-bottom: 1px solid $color-arena;
+  padding: 26px 0;
+
+  &__container {
+    max-width: $container-max;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  &__icon {
+    color: $color-rojo-tomate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    h3 {
+      font-family: $font-cuerpo;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.25;
+      color: $color-cafe-tostado;
+      margin: 0 0 2px;
+    }
+
+    p {
+      font-family: $font-cuerpo;
+      font-size: 13px;
+      line-height: 1.35;
+      color: $color-marron-suave;
+      margin: 0;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .benefits-strip__container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .benefits-strip__container {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,93 @@
+<section class="order-now-section" aria-label="Pide ahora">
+  <div class="order-now-section__container">
+    <!-- Encabezado superior -->
+    <header class="order-now-header">
+      <div>
+        <span class="eyebrow">
+          <span class="eyebrow__dot"></span>
+          ARMA TU PEDIDO
+        </span>
+        <h2 class="order-now-header__title">Pide ahora</h2>
+      </div>
+
+      <a routerLink="/menu" class="btn-outline-pill">
+        <span>Ver menú completo</span>
+        <lucide-icon [img]="ArrowRightIcon" [size]="16" [strokeWidth]="1.8"></lucide-icon>
+      </a>
+    </header>
+
+    <!-- Grid de 3 Combos Interactivos -->
+    <div class="combos-grid">
+      @for (combo of combosVisibles(); track combo.id) {
+        <article class="combo-card">
+          <div class="combo-card__media">
+            <img [src]="combo.imagen" [alt]="combo.titulo" class="combo-card__img" />
+          </div>
+
+          <div class="combo-card__body">
+            <h3 class="combo-card__title">{{ combo.titulo }}</h3>
+            <p class="combo-card__subtitle">{{ combo.subtitulo }}</p>
+
+            <!-- Lista interactiva de opciones -->
+            <ul class="options-list" role="radiogroup" [attr.aria-label]="combo.titulo">
+              @for (op of combo.opciones; track op.nombre; let i = $index) {
+                <li>
+                  <button
+                    type="button"
+                    class="option-row"
+                    [class.is-selected]="estaSeleccionada(combo.id, i)"
+                    (click)="seleccionarOpcion(combo.id, i)"
+                    role="radio"
+                    [attr.aria-checked]="estaSeleccionada(combo.id, i)"
+                  >
+                    <span class="option-row__radio" aria-hidden="true"></span>
+                    <span class="option-row__label">{{ op.nombre }}</span>
+                    @if (op.extraPrecio) {
+                      <span class="option-row__extra">+S/ {{ op.extraPrecio.toFixed(2) }}</span>
+                    }
+                  </button>
+                </li>
+              }
+            </ul>
+
+            <!-- Pie de tarjeta con precio dinámico y botón + -->
+            <div class="combo-card__footer">
+              <div class="price-box">
+                <span class="price-box__label">DESDE</span>
+                <strong class="price-box__amount">S/ {{ calcularPrecio(combo) }}</strong>
+              </div>
+
+              <button
+                type="button"
+                class="btn-add-circle"
+                [class.is-added]="recienAgregado()[combo.id]"
+                (click)="agregarCombo(combo)"
+                [attr.aria-label]="'Agregar ' + combo.titulo + ' al pedido'"
+              >
+                @if (recienAgregado()[combo.id]) {
+                  <lucide-icon [img]="CheckIcon" [size]="18" [strokeWidth]="2.4"></lucide-icon>
+                } @else {
+                  <lucide-icon [img]="PlusIcon" [size]="18" [strokeWidth]="2.2"></lucide-icon>
+                }
+              </button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+
+    <!-- Paginación inferior tipo píldora -->
+    <div class="carousel-dots" role="tablist" aria-label="Páginas de combos">
+      @for (idx of paginasIndices(); track idx) {
+        <button
+          type="button"
+          class="carousel-dots__dot"
+          [class.is-active]="idx === paginaActual()"
+          (click)="irAPagina(idx)"
+          [attr.aria-label]="'Ver página ' + (idx + 1)"
+          [attr.aria-selected]="idx === paginaActual()"
+        ></button>
+      }
+    </div>
+  </div>
+</section>

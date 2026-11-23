@@ -1,0 +1,266 @@
+@use '../../../../../styles/tokens/variables' as *;
+
+.explore-menu-section {
+  background-color: $color-crema-masa;
+  padding: 56px 0 64px;
+
+  &__container {
+    max-width: $container-max;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+}
+
+// Encabezado centrado
+.explore-header {
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto 38px;
+
+  &__title {
+    font-family: $font-titulos;
+    font-size: clamp(32px, 4vw, 46px);
+    font-weight: 400;
+    line-height: 1.12;
+    color: $color-cafe-tostado;
+    margin: 8px 0 12px;
+  }
+
+  &__subtitle {
+    font-family: $font-cuerpo;
+    font-size: 14px;
+    line-height: 1.55;
+    color: $color-marron-suave;
+    margin: 0 0 26px;
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: $font-cuerpo;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: $color-verde-albahaca;
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: $color-rojo-tomate;
+  }
+}
+
+// Pestañas de categorías
+.category-tabs {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.category-tab {
+  padding: 9px 20px;
+  border-radius: 999px;
+  border: 1px solid $color-cafe-tostado;
+  background-color: $color-blanco;
+  color: $color-cafe-tostado;
+  font-family: $font-cuerpo;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+
+  &:hover:not(.is-active) {
+    background-color: $color-beige-horno;
+    transform: translateY(-1px);
+  }
+
+  &.is-active {
+    background-color: $color-rojo-tomate;
+    border-color: $color-rojo-tomate;
+    color: $color-blanco;
+    box-shadow: 0 4px 12px rgba($color-rojo-tomate, 0.24);
+  }
+}
+
+// Grid de 2 columnas
+.menu-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  animation: fadeMenuTab 0.28s ease;
+}
+
+.menu-item-card {
+  background-color: $color-blanco;
+  border: 1px solid rgba($color-arena, 0.85);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 4px 16px rgba($color-cafe-tostado, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba($color-cafe-tostado, 0.07);
+    border-color: $color-arena;
+  }
+
+  &__media {
+    width: 132px;
+    height: 132px;
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: $color-beige-horno;
+    flex-shrink: 0;
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+
+    .menu-item-card:hover & {
+      transform: scale(1.05);
+    }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  &__tag {
+    font-family: $font-cuerpo;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: $color-rojo-tomate;
+    margin-bottom: 4px;
+  }
+
+  &__title {
+    font-family: $font-titulos;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: $color-cafe-tostado;
+    margin: 0 0 6px;
+  }
+
+  &__desc {
+    font-family: $font-cuerpo;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: $color-marron-suave;
+    margin: 0 0 14px;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__price {
+    font-family: $font-cuerpo;
+    font-size: 16.5px;
+    font-weight: 800;
+    color: $color-cafe-tostado;
+  }
+}
+
+.btn-agregar-inline {
+  background: transparent;
+  border: 0;
+  padding: 4px 6px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: $font-cuerpo;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: $color-rojo-tomate;
+  cursor: pointer;
+  transition: opacity 0.18s ease, transform 0.15s ease, color 0.18s ease;
+
+  &:hover {
+    opacity: 0.8;
+    transform: translateX(1px);
+  }
+
+  &.is-added {
+    color: $color-verde-albahaca;
+  }
+}
+
+// Botón inferior centrado
+.explore-footer {
+  margin-top: 34px;
+  text-align: center;
+}
+
+.btn-full-menu {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  border-radius: 999px;
+  background-color: $color-rojo-tomate;
+  color: $color-blanco;
+  font-family: $font-cuerpo;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba($color-rojo-tomate, 0.24);
+  transition: background-color 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    background-color: #b72525;
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes fadeMenuTab {
+  from {
+    opacity: 0.55;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsivo
+@media (max-width: 920px) {
+  .menu-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-item-card {
+    flex-direction: column;
+    align-items: flex-start;
+
+    &__media {
+      width: 100%;
+      height: 170px;
+    }
+  }
+}
