@@ -1,9 +1,6 @@
 package com.totospizza.model.entity.catalogo;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.Getter;
@@ -13,7 +10,7 @@ import lombok.Setter;
 import com.totospizza.model.entity.AuditableEntity;
 
 /**
- * Marca que se asigna a un producto. Algunas sirven de filtro del menú (Clásicas, Especiales, Vegetarianas) y otras son insignias (Popular, Nuevo, Hot).
+ * Marca que se asigna a un producto. Algunas sirven de filtro del menú y otras son insignias (Popular, Nuevo, Hot).
  */
 @Entity
 @Table(

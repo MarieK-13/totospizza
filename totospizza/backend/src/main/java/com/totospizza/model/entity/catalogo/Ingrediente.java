@@ -2,13 +2,7 @@ package com.totospizza.model.entity.catalogo;
 
 import java.math.BigDecimal;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.Getter;
@@ -19,7 +13,7 @@ import com.totospizza.model.entity.AuditableEntity;
 import com.totospizza.model.enums.TipoIngrediente;
 
 /**
- * Insumo que se puede elegir al personalizar o agregar como adicional: quesos, salsas, carnes y otros ingredientes.
+ * Insumo que se puede elegir al personalizar o agregar como adicional 
  */
 @Entity
 @Table(
@@ -44,11 +38,9 @@ public class Ingrediente extends AuditableEntity {
     @Column(name = "tipo", nullable = false)
     private TipoIngrediente tipo;
 
-    /** Precio que paga el cliente al agregarlo. */
     @Column(name = "precio_extra", nullable = false, precision = 10, scale = 2)
     private BigDecimal precioExtra;
 
-    /** Solo ingredientes menores. Los mayores se costean con receta (pendiente, Fase 2). */
     @Column(name = "costo_operativo_fijo", precision = 10, scale = 2)
     private BigDecimal costoOperativoFijo;
 

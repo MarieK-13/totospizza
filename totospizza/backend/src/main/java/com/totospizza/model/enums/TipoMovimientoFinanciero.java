@@ -14,7 +14,6 @@ public enum TipoMovimientoFinanciero {
         this.etiqueta = etiqueta;
     }
 
-    /** Texto que se muestra al usuario. */
     public String getEtiqueta() {
         return etiqueta;
     }

@@ -4,13 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -53,7 +48,6 @@ public class Sucursal extends AuditableEntity {
     @Column(name = "activa", nullable = false)
     private boolean activa = true;
 
-    /** Radio de reparto en kilómetros. */
     @Column(name = "radio_cobertura_km", nullable = false, precision = 4, scale = 1)
     private BigDecimal radioCoberturaKm = new BigDecimal("3.5");
 

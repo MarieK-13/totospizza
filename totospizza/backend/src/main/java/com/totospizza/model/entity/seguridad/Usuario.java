@@ -3,17 +3,9 @@ package com.totospizza.model.entity.seguridad;
 import java.time.Instant;
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.*;
+
+import jakarta.validation.constraints.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -68,7 +60,6 @@ public class Usuario extends AuditableEntity {
     @Column(name = "correo", nullable = false)
     private String correo;
 
-    /** Hash BCrypt. La contraseña nunca se guarda en claro. */
     @Column(name = "contrasena_hash", nullable = false)
     private String contrasenaHash;
 

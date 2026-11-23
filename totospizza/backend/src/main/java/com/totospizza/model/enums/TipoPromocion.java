@@ -16,7 +16,6 @@ public enum TipoPromocion {
         this.etiqueta = etiqueta;
     }
 
-    /** Texto que se muestra al usuario. */
     public String getEtiqueta() {
         return etiqueta;
     }

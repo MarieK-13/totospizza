@@ -5,14 +5,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Index;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.Getter;
@@ -24,8 +17,9 @@ import com.totospizza.model.enums.ColorPromocion;
 import com.totospizza.model.enums.TipoPromocion;
 
 /**
- * Oferta que se muestra en el banner del Home: combos, 2x1, descuentos y ofertas flash.
+ * Oferta que se muestra en el banner del Home
  */
+
 @Entity
 @Table(
     name = "promociones",
@@ -49,7 +43,6 @@ public class Promocion extends AuditableEntity {
     @Column(name = "tipo", nullable = false)
     private TipoPromocion tipo;
 
-    /** Texto corto del banner, por ejemplo PROMO FAMILIAR. */
     @Column(name = "etiqueta")
     private String etiqueta;
 

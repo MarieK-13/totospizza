@@ -3,15 +3,7 @@ package com.totospizza.model.entity.finanzas;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.Getter;
@@ -25,8 +17,9 @@ import com.totospizza.model.entity.seguridad.Usuario;
 import com.totospizza.model.entity.sucursal.Sucursal;
 import com.totospizza.model.enums.TipoMovimientoFinanciero;
 
+
 /**
- * Ingreso o egreso de dinero de una sucursal. Alimenta el panel de finanzas.
+ * Ingreso o egreso de dinero de una sucursal. Para el panel de finanzas.
  */
 @Entity
 @Table(

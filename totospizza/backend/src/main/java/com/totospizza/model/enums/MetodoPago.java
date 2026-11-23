@@ -8,8 +8,7 @@ public enum MetodoPago {
     TARJETA("Tarjeta de crédito / débito"),
     YAPE("Yape"),
     PLIN("Plin"),
-    CMR("CMR"),
-    EFECTIVO("Efectivo");
+    CMR("CMR");
 
     private final String etiqueta;
 
@@ -17,7 +16,6 @@ public enum MetodoPago {
         this.etiqueta = etiqueta;
     }
 
-    /** Texto que se muestra al usuario. */
     public String getEtiqueta() {
         return etiqueta;
     }

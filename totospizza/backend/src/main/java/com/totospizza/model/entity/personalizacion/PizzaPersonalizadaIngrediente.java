@@ -2,16 +2,7 @@ package com.totospizza.model.entity.personalizacion;
 
 import java.math.BigDecimal;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,7 +38,7 @@ public class PizzaPersonalizadaIngrediente extends AuditableEntity {
     @JoinColumn(name = "ingrediente_id", nullable = false)
     private Ingrediente ingrediente;
 
-    /** Paso del asistente en el que se eligió: queso, salsa o ingredientes. */
+    /** Paso en el que se eligió: queso, salsa o ingredientes. */
     @Enumerated(EnumType.STRING)
     @Column(name = "paso", nullable = false)
     private PasoPersonalizacion paso;

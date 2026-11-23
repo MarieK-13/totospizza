@@ -21,12 +21,10 @@ public enum PasoPersonalizacion {
         this.maxSelecciones = maxSelecciones;
     }
 
-    /** Posición del paso, de 1 a 5. */
     public int getNumero() {
         return numero;
     }
 
-    /** Texto que se muestra al usuario. */
     public String getEtiqueta() {
         return etiqueta;
     }

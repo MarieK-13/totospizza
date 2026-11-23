@@ -5,21 +5,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
+
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +20,7 @@ import com.totospizza.model.enums.EstadoPedido;
 import com.totospizza.model.enums.TipoEntrega;
 
 /**
- * Compra confirmada por un cliente. Es el eje del sistema: pasa por cocina, despacho y reparto.
+ * Compra confirmada por un cliente. El eje del sistema: pasa por cocina, despacho y reparto.
  */
 @Entity
 @Table(
