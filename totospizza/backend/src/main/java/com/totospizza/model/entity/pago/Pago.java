@@ -47,6 +47,11 @@ public class Pago extends AuditableEntity {
     private BigDecimal monto;
 
     /** Identificador de la operación en la pasarela de pago. */
+    /** Clave de idempotencia de este intento de cobro. La pasarela la recibe y permite consultarlo después. */
+    @Column(name = "referencia_intento", nullable = false, unique = true, length = 60)
+    private String referenciaIntento;
+
+    /** Identificador que asigna la pasarela al cobro aprobado. Es el que se usa para reembolsar. */
     @Column(name = "referencia_externa")
     private String referenciaExterna;
 

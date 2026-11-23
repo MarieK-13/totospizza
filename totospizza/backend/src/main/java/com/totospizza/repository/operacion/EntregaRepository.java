@@ -17,6 +17,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.totospizza.model.entity.operacion.Entrega;
 import com.totospizza.model.enums.EstadoEntrega;
+import java.time.Instant;
 
 /**
  * Repartos de los pedidos con delivery.
@@ -53,4 +54,8 @@ public interface EntregaRepository extends JpaRepository<Entrega, Long> {
             select e from Entrega e where e.estado = :estado order by e.creadoEn asc
             """)
     List<Entrega> reservarSinAsignar(@Param("estado") EstadoEntrega estado, Pageable pageable);
+
+    /** Entregas completadas por un motorizado en un rango de fechas. Base del bono por entrega. */
+    long countByMotorizadoIdAndEstadoAndEntregadaEnBetween(Long motorizadoId, EstadoEntrega estado,
+                                                           Instant desde, Instant hasta);
 }

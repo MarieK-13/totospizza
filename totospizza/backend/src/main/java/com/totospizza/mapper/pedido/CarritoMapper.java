@@ -26,5 +26,7 @@ public interface CarritoMapper {
     @Mapping(target = "items", source = "carrito.items")
     @Mapping(target = "totalItems", expression = "java(MapeoUtils.totalItems(carrito))")
     @Mapping(target = "montos", source = "montos")
+    @Mapping(target = "montosReferenciales", constant = "true")
+    @Mapping(target = "avisoMontos", constant = "Montos referenciales: el total definitivo se calcula al confirmar el pedido, con el precio, el delivery y la cobertura vigentes.")
     CarritoResponse toResponse(Carrito carrito, ResumenMontosResponse montos);
 }

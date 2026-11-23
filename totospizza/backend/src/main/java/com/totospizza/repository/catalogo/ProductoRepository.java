@@ -56,6 +56,12 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByIdInAndDisponibleTrue(Collection<Long> ids);
 
     /** Indica si ya existe un producto con ese slug. */
+    /**
+     * Nombres de los productos que hoy están en el menú. Base del ranking de menos vendidos, que debe incluir los de cero ventas.
+     */
+    @Query("select p.nombre from Producto p where p.disponible = true order by p.nombre asc")
+    List<String> findNombresDisponibles();
+
     boolean existsBySlug(String slug);
 
     /** Guarda el promedio de estrellas y el total de reseñas de un producto. */

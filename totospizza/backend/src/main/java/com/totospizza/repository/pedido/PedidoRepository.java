@@ -17,6 +17,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.totospizza.model.entity.pedido.Pedido;
+import com.totospizza.model.enums.EstadoPago;
 import com.totospizza.model.enums.EstadoPedido;
 import com.totospizza.model.enums.TipoEntrega;
 import com.totospizza.repository.pedido.projection.PedidosPorEstado;
@@ -125,6 +126,16 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
      * Pedidos para recojo que ya pasaron su límite de 90 minutos. Para marcarlos como no recogidos.
      */
     List<Pedido> findByEstadoAndTipoEntregaAndVencimientoRecojoBefore(EstadoPedido estado, TipoEntrega tipoEntrega, Instant ahora);
+
+    /**
+     * Pedidos aún sin pagar creados antes de un límite y sin un cobro pendiente de resolver. Para cancelarlos y liberar stock.
+     */
+    @Query("""
+            select p from Pedido p
+            where p.estado = :estado and p.creadoEn < :limite
+              and not exists (select 1 from Pago g where g.pedido = p and g.estado = :estadoCobro)
+            """)
+    List<Pedido> findPendientesDePagoSinCobroEnCurso(@Param("estado") EstadoPedido estado, @Param("estadoCobro") EstadoPago estadoCobro, @Param("limite") Instant limite);
 
     /**
      * Pedidos en ciertos estados confirmados antes de un momento dado. Para detectar demoras y aplicar la Garantía TOTO.

@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run TotospizzaEstructuraApplication",
+            "request": "launch",
+            "mainClass": "com.totospizza.TotospizzaEstructuraApplication",
+            "env": {
+                "DB_HOST": "localhost",
+                "DB_PORT": "5432",
+                "DB_NAME": "totospizza",
+                "DB_USERNAME": "totospizza_app",
+                "DB_PASSWORD": "",
+                "DB_MIGRATION_USERNAME": "totospizza_admin",
+                "DB_MIGRATION_PASSWORD": "",
+                "APP_JWT_SECRET": "mi_clave_jwt_super_segura_de_mas_de_32_caracteres_12345",
+                "JWT_SECRET": "mi_clave_jwt_super_segura_de_mas_de_32_caracteres_12345"
+            }
+        }
+    ]
+}

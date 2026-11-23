@@ -43,4 +43,12 @@ public interface InventarioIngredienteRepository extends JpaRepository<Inventari
             update InventarioIngrediente i set i.stockActual = i.stockActual - :cantidad, i.actualizadoEn = :ahora where i.id = :id and i.stockActual >= :cantidad
             """)
     int descontarStock(@Param("id") Long id, @Param("cantidad") BigDecimal cantidad, @Param("ahora") Instant ahora);
+
+    /** Suma stock de forma atómica (entradas y devoluciones por pedidos cancelados). */
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("""
+            update InventarioIngrediente i set i.stockActual = i.stockActual + :cantidad, i.actualizadoEn = :ahora
+            where i.id = :id
+            """)
+    int reponerStock(@Param("id") Long id, @Param("cantidad") BigDecimal cantidad, @Param("ahora") Instant ahora);
 }

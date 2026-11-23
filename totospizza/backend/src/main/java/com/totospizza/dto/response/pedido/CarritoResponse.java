@@ -9,6 +9,8 @@ public record CarritoResponse(
         Long id,
         List<ItemCarritoResponse> items,
         Integer totalItems,
-        ResumenMontosResponse montos
+        ResumenMontosResponse montos,
+        boolean montosReferenciales,
+        String avisoMontos
 ) {
 }

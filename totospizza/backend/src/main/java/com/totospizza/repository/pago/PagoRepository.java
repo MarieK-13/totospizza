@@ -26,6 +26,13 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
     /** Busca un pago por el identificador de la pasarela. */
     Optional<Pago> findByReferenciaExterna(String referenciaExterna);
 
+    Optional<Pago> findByReferenciaIntento(String referenciaIntento);
+
+    /**
+     * Pagos en un estado creados antes de un momento dado. Para conciliar los cobros que quedaron sin respuesta.
+     */
+    List<Pago> findByEstadoAndCreadoEnBefore(EstadoPago estado, Instant limite);
+
     /** Cantidad y monto cobrado por método de pago en un periodo. */
     @Query("""
             select p.metodo as metodo, count(p) as cantidad, sum(p.monto) as total from Pago p

@@ -14,10 +14,10 @@ import com.totospizza.model.entity.operacion.InventarioIngrediente;
 import com.totospizza.model.entity.pedido.Carrito;
 import com.totospizza.model.entity.pedido.DetallePedido;
 import com.totospizza.model.entity.pedido.ItemCarrito;
-import com.totospizza.model.entity.pedido.ItemCarritoAdicional;
 import com.totospizza.model.entity.pedido.Pedido;
 import com.totospizza.model.entity.seguridad.Empleado;
 import com.totospizza.model.entity.seguridad.Usuario;
+import com.totospizza.rules.calculator.CalculadoraCarrito;
 
 public final class MapeoUtils {
 
@@ -84,16 +84,9 @@ public final class MapeoUtils {
         return item.getPromocion() == null ? null : item.getPromocion().getImagenUrl();
     }
 
-    /** (precio unitario + adicionales por unidad) x cantidad. */
+    /** Delegado: la regla de precio vive en {@link CalculadoraCarrito}. */
     public static BigDecimal subtotalItem(ItemCarrito item) {
-        BigDecimal adicionales = item.getAdicionales().stream()
-                .map(MapeoUtils::subtotalAdicional)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return item.getPrecioUnitario().add(adicionales).multiply(BigDecimal.valueOf(item.getCantidad()));
-    }
-
-    private static BigDecimal subtotalAdicional(ItemCarritoAdicional adicional) {
-        return adicional.getPrecioUnitario().multiply(BigDecimal.valueOf(adicional.getCantidad()));
+        return CalculadoraCarrito.subtotalItem(item);
     }
 
     public static Integer totalItems(Carrito carrito) {

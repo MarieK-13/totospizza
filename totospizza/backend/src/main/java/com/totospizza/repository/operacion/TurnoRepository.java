@@ -24,4 +24,8 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
 
     /** Turno de un empleado en un estado, por ejemplo el que está en curso. */
     Optional<Turno> findFirstByEmpleadoIdAndEstado(Long empleadoId, EstadoTurno estado);
+
+    /** Turnos de un empleado en un estado y rango de fechas (ambos extremos incluidos). Base del pago por turno. */
+    long countByEmpleadoIdAndEstadoAndFechaBetween(Long empleadoId, EstadoTurno estado,
+                                                   LocalDate desde, LocalDate hasta);
 }

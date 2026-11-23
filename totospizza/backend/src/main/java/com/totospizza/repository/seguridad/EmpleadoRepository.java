@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.totospizza.model.entity.seguridad.Empleado;
+import com.totospizza.model.entity.seguridad.Usuario;
 import com.totospizza.model.enums.EstadoEmpleado;
 import com.totospizza.model.enums.Rol;
 import com.totospizza.repository.seguridad.projection.EmpleadosPorEstado;
@@ -62,5 +63,14 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, Long> {
     List<EmpleadosPorEstado> contarPorEstado(@Param("sucursalId") Long sucursalId);
 
     /** Total de empleados registrados en una sucursal. */
+    /**
+     * Usuarios activos de un rol que trabajan en una sucursal. Para avisar a la cocina o al mostrador de esa sede.
+     */
+    @Query("""
+            select e.usuario from Empleado e
+            where e.sucursal.id = :sucursalId and e.usuario.rol = :rol and e.usuario.activo = true
+            """)
+    List<Usuario> findUsuariosActivosPorRolYSucursal(@Param("rol") Rol rol, @Param("sucursalId") Long sucursalId);
+
     long countBySucursalId(Long sucursalId);
 }
