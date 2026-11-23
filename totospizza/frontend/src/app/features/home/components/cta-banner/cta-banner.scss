@@ -1,0 +1,171 @@
+@use '../../../../../styles/tokens/variables' as *;
+
+.cta-section {
+  background-color: $color-crema-masa;
+  padding: 16px 0 64px;
+
+  &__container {
+    max-width: $container-max;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+}
+
+.cta-card {
+  display: grid;
+  grid-template-columns: 46% 54%;
+  border-radius: 24px;
+  overflow: hidden;
+  background-color: $color-rojo-tomate;
+  color: $color-blanco;
+  box-shadow: 0 14px 34px rgba($color-cafe-tostado, 0.12);
+  min-height: 360px;
+
+  &__content {
+    position: relative;
+    padding: 46px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+
+    // Detalle curvo sutil del fondo rojo como en el prototipo
+    &::before {
+      content: '';
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba($color-blanco, 0.06) 0%, transparent 70%);
+      bottom: -110px;
+      left: -80px;
+      pointer-events: none;
+    }
+  }
+
+  &__eyebrow {
+    font-family: $font-cuerpo;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba($color-blanco, 0.85);
+    margin-bottom: 12px;
+  }
+
+  &__title {
+    font-family: $font-titulos;
+    font-size: clamp(28px, 3.2vw, 40px);
+    font-weight: 400;
+    line-height: 1.12;
+    color: $color-blanco;
+    margin: 0 0 16px;
+  }
+
+  &__desc {
+    font-family: $font-cuerpo;
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba($color-blanco, 0.9);
+    margin: 0 0 26px;
+    max-width: 390px;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+  }
+
+  &__perks {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+
+    li {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: $font-cuerpo;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: rgba($color-blanco, 0.92);
+    }
+  }
+
+  &__media {
+    position: relative;
+    min-height: 360px;
+    overflow: hidden;
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+
+    .cta-card:hover & {
+      transform: scale(1.03);
+    }
+  }
+}
+
+.btn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-family: $font-cuerpo;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.18s ease, background-color 0.18s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &--white {
+    background-color: $color-blanco;
+    color: $color-rojo-tomate;
+
+    &:hover {
+      background-color: $color-crema-masa;
+    }
+  }
+
+  &--outline {
+    background-color: rgba($color-blanco, 0.14);
+    border: 1px solid rgba($color-blanco, 0.6);
+    color: $color-blanco;
+
+    &:hover {
+      background-color: rgba($color-blanco, 0.24);
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .cta-card {
+    grid-template-columns: 1fr;
+
+    &__content {
+      padding: 36px 28px;
+      order: 2;
+    }
+
+    &__media {
+      min-height: 240px;
+      order: 1;
+    }
+  }
+}

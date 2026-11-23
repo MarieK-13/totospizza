@@ -1,1 +1,141 @@
-<p>locales works!</p>
+<section class="locales-section">
+  <div class="locales-section__container">
+    <!-- Encabezado de Sección -->
+    <header class="locales-header">
+      <div class="locales-header__info">
+        <span class="eyebrow">
+          <span class="eyebrow__dot"></span>
+          TU MESA TE ESPERA
+        </span>
+        <h1 class="locales-header__title">Encuentra tu Toto’s Pizza</h1>
+        <p class="locales-header__subtitle">
+          Tres barrios, la misma bienvenida. Ven por una pizza al horno, una copa de vino y una sobremesa sin prisa.
+        </p>
+      </div>
+
+      <a routerLink="/zona-de-reparto" class="btn-outline-pill">
+        <span>Ver zona de reparto</span>
+        <lucide-icon [img]="BikeIcon" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+      </a>
+    </header>
+
+    <!-- Grid de 3 Tarjetas de Sedes -->
+    <div class="sedes-grid">
+      @for (sede of sedes; track sede.nombre) {
+        <article class="sede-card">
+          <div class="sede-card__image-wrapper">
+            <img [src]="sede.imagen" [alt]="sede.nombre" class="sede-card__image" />
+          </div>
+
+          <div class="sede-card__body">
+            <div class="sede-card__top">
+              <h2 class="sede-card__title">{{ sede.nombre }}</h2>
+              <span class="badge-open">{{ sede.estado }}</span>
+            </div>
+
+            <ul class="sede-card__details">
+              <li>
+                <lucide-icon [img]="MapPinIcon" [size]="15" [strokeWidth]="1.5" class="icon-red"></lucide-icon>
+                <span>{{ sede.direccion }}</span>
+              </li>
+              <li>
+                <lucide-icon [img]="ClockIcon" [size]="15" [strokeWidth]="1.5" class="icon-red"></lucide-icon>
+                <span>{{ sede.horario }}</span>
+              </li>
+            </ul>
+
+            <a [href]="sede.mapaUrl" target="_blank" rel="noopener noreferrer" class="sede-card__link">
+              <span>Cómo llegar</span>
+              <lucide-icon [img]="ArrowUpRightIcon" [size]="14" [strokeWidth]="1.8"></lucide-icon>
+            </a>
+          </div>
+        </article>
+      }
+    </div>
+
+    <!-- Banner de Cobertura Delivery -->
+    <div class="delivery-banner">
+      <span class="delivery-banner__tag">DELIVERY A TU BARRIO</span>
+
+      <p class="delivery-banner__zones">
+        {{ zonasDelivery.join(' · ') }}
+      </p>
+
+      <a routerLink="/zona-de-reparto" class="delivery-banner__cta">
+        Consulta cobertura →
+      </a>
+    </div>
+  </div>
+
+  <!-- Banda de Propuesta de Valor (4 pilares) -->
+  <div class="pillars-bar">
+    <div class="locales-section__container pillars-bar__grid">
+      <div class="pillar-item">
+        <span class="pillar-item__icon">
+          <lucide-icon [img]="FlameIcon" [size]="18" [strokeWidth]="1.5"></lucide-icon>
+        </span>
+        <div>
+          <h3 class="pillar-item__title">Horno de piedra</h3>
+          <p class="pillar-item__desc">450° de puro sabor</p>
+        </div>
+      </div>
+
+      <div class="pillar-item">
+        <span class="pillar-item__icon">
+          <lucide-icon [img]="WheatIcon" [size]="18" [strokeWidth]="1.5"></lucide-icon>
+        </span>
+        <div>
+          <h3 class="pillar-item__title">Masa de 48 horas</h3>
+          <p class="pillar-item__desc">Ligera y crujiente</p>
+        </div>
+      </div>
+
+      <div class="pillar-item">
+        <span class="pillar-item__icon">
+          <lucide-icon [img]="BikeIcon" [size]="18" [strokeWidth]="1.5"></lucide-icon>
+        </span>
+        <div>
+          <h3 class="pillar-item__title">Delivery rápido</h3>
+          <p class="pillar-item__desc">En 35 minutos</p>
+        </div>
+      </div>
+
+      <div class="pillar-item">
+        <span class="pillar-item__icon">
+          <lucide-icon [img]="SproutIcon" [size]="18" [strokeWidth]="1.5"></lucide-icon>
+        </span>
+        <div>
+          <h3 class="pillar-item__title">Ingredientes frescos</h3>
+          <p class="pillar-item__desc">Selección diaria</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección Social: Una porción de nuestro día -->
+  <div class="social-feed">
+    <div class="locales-section__container">
+      <div class="social-feed__header">
+        <div>
+          <h2 class="social-feed__title">Una porción de nuestro día</h2>
+          <p class="social-feed__subtitle">
+            Síguenos en <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">&#64;Totto's.Pizza.Ica</a>
+          </p>
+        </div>
+
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-feed__link">
+          <lucide-icon [img]="InstagramIcon" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+          <span>Ver Instagram</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="social-feed__gallery">
+      @for (foto of galeriaFotos; track foto.src) {
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="gallery-tile">
+          <img [src]="foto.src" [alt]="foto.alt" />
+        </a>
+      }
+    </div>
+  </div>
+</section>

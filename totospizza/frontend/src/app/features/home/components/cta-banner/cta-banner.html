@@ -1,0 +1,44 @@
+<section class="cta-section" aria-label="Haz tu pedido o reserva">
+  <div class="cta-section__container">
+    <div class="cta-card">
+      <!-- Columna Izquierda: Contenido Rojo Tomate -->
+      <div class="cta-card__content">
+        <span class="cta-card__eyebrow">¿YA SE TE ANTOJÓ?</span>
+
+        <h2 class="cta-card__title">Tu pizza favorita está a pocos clics</h2>
+
+        <p class="cta-card__desc">
+          Elige, personaliza y recibe recién horneado. Acumula Puntos Pomodoro con cada pedido.
+        </p>
+
+        <div class="cta-card__actions">
+          <a routerLink="/menu" class="btn-cta btn-cta--white">
+            <span>Pedir ahora</span>
+            <lucide-icon [img]="ArrowRightIcon" [size]="16" [strokeWidth]="2"></lucide-icon>
+          </a>
+          <a routerLink="/locales" class="btn-cta btn-cta--outline">
+            Reserva una mesa
+          </a>
+        </div>
+
+        <ul class="cta-card__perks">
+          @for (item of garantias; track item) {
+            <li>
+              <lucide-icon [img]="CheckCircleIcon" [size]="15" [strokeWidth]="2"></lucide-icon>
+              <span>{{ item }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <!-- Columna Derecha: Fotografía -->
+      <div class="cta-card__media">
+        <img
+          src="images/cta-pizza-box.jpg"
+          alt="Pizza artesanal recién horneada en su caja"
+          class="cta-card__img"
+        />
+      </div>
+    </div>
+  </div>
+</section>

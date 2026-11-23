@@ -1,0 +1,230 @@
+@use '../../../styles/tokens/variables' as *;
+
+$footer-bg: #3D322A; // Tono café cálido del prototipo de Figma
+$footer-text-muted: rgba($color-crema-masa, 0.72);
+$footer-border: rgba($color-crema-masa, 0.16);
+
+.site-footer {
+  background-color: $footer-bg;
+  color: $color-crema-masa;
+  padding: 3.75rem 0 1.75rem;
+  margin-top: auto;
+
+  &__container {
+    max-width: $container-max;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  &__top {
+    display: grid;
+    grid-template-columns: 1.25fr 2fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__description {
+    color: $footer-text-muted;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    max-width: 310px;
+    margin: 1.15rem 0 1.35rem;
+  }
+
+  &__columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding-top: 0.35rem;
+  }
+
+  &__divider {
+    border: none;
+    border-top: 1px solid $footer-border;
+    margin: 3.25rem 0 1.5rem;
+  }
+
+  &__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.76rem;
+    color: rgba($color-crema-masa, 0.58);
+  }
+}
+
+// Logo + Título Serif
+.brand-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: $color-blanco;
+
+  &__logo {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  &__title {
+    font-family: $font-titulos;
+    font-size: 1.45rem;
+    letter-spacing: 0.01em;
+    color: $color-blanco;
+  }
+}
+
+// Botones circulares de redes sociales
+.social-links {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.social-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba($color-crema-masa, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-crema-masa;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: rgba($color-crema-masa, 0.12);
+    border-color: $color-crema-masa;
+    transform: translateY(-2px);
+  }
+}
+
+// Insignia Libro de Reclamaciones
+.reclamaciones-badge {
+  display: inline-block;
+  background-color: $color-blanco;
+  border-radius: 2px;
+  padding: 0.25rem 0.45rem;
+  transition: opacity 0.2s ease;
+
+  img {
+    display: block;
+    height: 52px;
+    width: auto;
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+// Columnas de enlaces (Explora, Ayuda, Contacto)
+.footer-col {
+  &__heading {
+    font-family: $font-cuerpo;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: $color-blanco;
+    margin-bottom: 1.15rem;
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.78rem;
+  }
+
+  a {
+    color: $footer-text-muted;
+    font-size: 0.85rem;
+    font-weight: 400;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $color-amarillo-queso;
+    }
+  }
+}
+
+// Barra inferior
+.legal-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  a {
+    color: rgba($color-crema-masa, 0.58);
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $color-crema-masa;
+    }
+  }
+}
+
+.payment-methods {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+
+  &__label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+}
+
+.payment-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pay-badge {
+  background-color: rgba($color-crema-masa, 0.14);
+  color: $color-blanco;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+}
+
+// Responsivo (Tablets y Móviles)
+@media (max-width: 900px) {
+  .site-footer {
+    &__top {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    &__columns {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .site-footer {
+    &__columns {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    &__bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+}

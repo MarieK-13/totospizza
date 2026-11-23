@@ -1,0 +1,79 @@
+<section class="hero-wrapper" aria-roledescription="carrusel" aria-label="Promociones destacadas">
+  <div class="hero-card">
+    @for (s of slides; track s.titulo; let i = $index) {
+      @if (i === actual()) {
+        <article class="hero-slide" [class]="'hero-slide--' + s.tema">
+          <!-- Columna Izquierda: Contenido y Precios -->
+          <div class="hero-slide__content">
+            <span class="hero-slide__badge">{{ s.etiqueta }}</span>
+
+            <h1 class="hero-slide__title">{{ s.titulo }}</h1>
+
+            <p class="hero-slide__desc">{{ s.descripcion }}</p>
+
+            <div class="hero-slide__prices">
+              <span class="price-old">{{ s.precioAnterior }}</span>
+              <span class="price-current">{{ s.precioActual }}</span>
+            </div>
+
+            <div class="hero-slide__actions">
+              <a [routerLink]="s.ctaRuta" class="btn-hero btn-hero--primary">
+                <span>{{ s.ctaTexto }}</span>
+                <lucide-icon [img]="ArrowRightIcon" [size]="16" [strokeWidth]="2"></lucide-icon>
+              </a>
+              <a routerLink="/menu" class="btn-hero btn-hero--secondary">
+                Ver el menú
+              </a>
+            </div>
+
+            <small class="hero-slide__legal">{{ s.notaLegal }}</small>
+          </div>
+
+          <!-- Columna Derecha: Fotografía Full-Bleed -->
+          <div class="hero-slide__media">
+            <img [src]="s.imagen" [alt]="s.imagenAlt" class="hero-slide__image" />
+
+            @if (s.mostrarSello) {
+              <div class="craft-seal" aria-hidden="true">
+                <span class="craft-seal__main">Hecho</span>
+                <span class="craft-seal__sub">AL MOMENTO</span>
+              </div>
+            }
+          </div>
+        </article>
+      }
+    }
+
+    <!-- Botones circulares laterales -->
+    <button
+      type="button"
+      class="hero-arrow hero-arrow--prev"
+      (click)="anterior(); iniciarAutoplay()"
+      aria-label="Diapositiva anterior"
+    >
+      <lucide-icon [img]="ChevronLeftIcon" [size]="20" [strokeWidth]="2"></lucide-icon>
+    </button>
+
+    <button
+      type="button"
+      class="hero-arrow hero-arrow--next"
+      (click)="siguiente(); iniciarAutoplay()"
+      aria-label="Siguiente diapositiva"
+    >
+      <lucide-icon [img]="ChevronRightIcon" [size]="20" [strokeWidth]="2"></lucide-icon>
+    </button>
+
+    <!-- Puntos indicadores en la base -->
+    <div class="hero-dots">
+      @for (s of slides; track s.titulo; let i = $index) {
+        <button
+          type="button"
+          class="hero-dots__item"
+          [class.is-active]="i === actual()"
+          (click)="ir(i)"
+          [attr.aria-label]="'Ir a la promoción ' + (i + 1)"
+        ></button>
+      }
+    </div>
+  </div>
+</section>

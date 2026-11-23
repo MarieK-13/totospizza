@@ -1,0 +1,15 @@
+<section class="benefits-strip" aria-label="Nuestros pilares de calidad">
+  <div class="benefits-strip__container">
+    @for (b of beneficios; track b.titulo) {
+      <div class="benefit">
+        <span class="benefit__icon" aria-hidden="true">
+          <lucide-icon [img]="b.icono" [size]="22" [strokeWidth]="1.75"></lucide-icon>
+        </span>
+        <div class="benefit__content">
+          <h3>{{ b.titulo }}</h3>
+          <p>{{ b.texto }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</section>
