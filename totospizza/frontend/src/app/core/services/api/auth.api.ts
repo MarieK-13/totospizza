@@ -15,10 +15,8 @@ import type {
 import { ApiClient } from './api-client';
 
 const PUBLICA = new HttpContext().set(PUBLIC_REQUEST, true);
-/** Formularios que muestran el error en la propia pantalla: sin toast encima. */
 const PUBLICA_SIN_TOAST = new HttpContext().set(PUBLIC_REQUEST, true).set(SKIP_ERROR_TOAST, true);
 
-/** /api/v1/auth */
 @Injectable({ providedIn: 'root' })
 export class AuthApi {
   private readonly api = inject(ApiClient);

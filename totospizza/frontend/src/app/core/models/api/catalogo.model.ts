@@ -18,7 +18,6 @@ export interface EtiquetaResponse {
 export interface MenuFiltrosResponse {
   readonly categorias: readonly CategoriaResponse[];
   readonly etiquetas: readonly EtiquetaResponse[];
-  /** Tamaños con diámetro y personas, para el filtro "¿Para cuántos?". */
   readonly tamanos: readonly TamanoPizzaResponse[];
 }
 
@@ -63,7 +62,6 @@ export interface ProductoResumenResponse {
   readonly destacado: boolean;
   readonly calificacionPromedio: number | null;
   readonly totalResenas: number | null;
-  /** Texto con los ingredientes. Opcional: el backend aún no lo expone. */
   readonly ingredientes?: string | null;
   readonly etiquetas: readonly EtiquetaResponse[];
 }
@@ -81,7 +79,6 @@ export interface ProductoDetalleResponse {
   readonly destacado: boolean;
   readonly calificacionPromedio: number | null;
   readonly totalResenas: number | null;
-  /** Texto con los ingredientes. Opcional: el backend aún no lo expone. */
   readonly ingredientes?: string | null;
   readonly etiquetas: readonly EtiquetaResponse[];
   readonly precios: readonly PrecioTamanoResponse[];
@@ -122,10 +119,8 @@ export interface FiltroMenu {
   readonly categoria?: string;
   readonly etiqueta?: string;
   readonly q?: string;
-  /** Id del tamaño de pizza: deja solo lo que se vende en ese tamaño. */
   readonly tamanoPizza?: number;
   readonly pagina?: number;
-  /** Tamaño de página (cantidad de resultados), no de pizza. */
   readonly tamano?: number;
 }
 

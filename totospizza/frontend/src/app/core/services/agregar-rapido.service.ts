@@ -10,12 +10,6 @@ import { ToastService } from './toast.service';
 
 export type ResultadoAgregarRapido = 'agregado' | 'opciones' | 'rechazado';
 
-/**
- * Botón "+" de las tarjetas del menú.
- * - Producto sin opciones (bebidas, salsas): se agrega 1 unidad al carrito, con o sin sesión.
- * - Pizza (exige tamaño y masa): lleva al detalle para elegirlos.
- * El resumen del menú no dice si un producto pide opciones, por eso se consulta el detalle al pulsar.
- */
 @Injectable({ providedIn: 'root' })
 export class AgregarRapidoService {
   private readonly api = inject(CatalogoService);
@@ -47,7 +41,6 @@ export class AgregarRapidoService {
     );
   }
 
-  /** Combo o promoción del inicio: se agrega tal cual, con su precio promocional. */
   agregarPromocion(promo: PromocionResponse): Observable<ResultadoAgregarRapido> {
     if (!this.cart.puedeComprar()) {
       this.toast.info('Solo clientes', 'Las cuentas del personal no hacen pedidos.');
@@ -65,7 +58,6 @@ export class AgregarRapidoService {
   }
 }
 
-/** "1 × Pizza Pepperoni (Mediana), 2 × Inca Kola 500 ml" */
 export function detalleDePromocion(promo: Pick<PromocionResponse, 'items'>): string {
   return promo.items.map((i) => `${i.cantidad} × ${i.productoNombre}${i.tamanoNombre ? ` (${i.tamanoNombre})` : ''}`).join(', ');
 }

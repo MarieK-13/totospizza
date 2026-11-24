@@ -9,7 +9,6 @@ import { imagenDeProducto } from '../../../../core/utils/producto-imagen';
 
 interface Opcion {
   readonly promo: PromocionResponse;
-  /** Lo que cambia en cada opción: "Coca-Cola", "Tequeños"... */
   readonly nombre: string;
   readonly imagen: string | null;
 }
@@ -23,11 +22,6 @@ interface Duo {
   readonly opciones: readonly Opcion[];
 }
 
-/**
- * "Elige tu Duo": combos de la base (promociones tipo COMBO).
- * Las promociones con la misma etiqueta forman un duo; cada una es una opción para completarlo
- * y se agrega al carrito con su precio promocional.
- */
 @Component({
   selector: 'app-order-now',
   imports: [LucideAngularModule],
@@ -40,7 +34,6 @@ export class OrderNow {
   private readonly toast = inject(ToastService);
 
   readonly combos = input<readonly PromocionResponse[]>([]);
-  /** Menú completo, para mostrar la foto del producto principal de cada duo. */
   readonly productos = input<readonly ProductoResumenResponse[]>([]);
 
   protected readonly CheckIcon = Check;
@@ -108,14 +101,12 @@ export class OrderNow {
       });
   }
 
-  /** Foto del primer producto del combo (el principal), si está en el menú. */
   private imagenPrincipal(promo: PromocionResponse): string | null {
     const principal = this.productos().find((p) => p.id === promo.items[0]?.productoId);
     return principal ? imagenDeProducto(principal) : null;
   }
 }
 
-/** "Pack Pepperoni + Coca-Cola" con duo "Pack Pepperoni & Co" → "Coca-Cola". */
 function nombreDeOpcion(promo: PromocionResponse, duo: string): string {
   const partes = promo.titulo.split(' + ');
   return partes.length > 1 ? partes.slice(1).join(' + ') : promo.titulo.replace(duo, '').trim() || promo.titulo;

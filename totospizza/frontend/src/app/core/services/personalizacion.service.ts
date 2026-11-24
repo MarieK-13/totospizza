@@ -12,13 +12,8 @@ import type {
 import { PublicoApi } from './api/publico.api';
 import type { OpcionesPeticion } from './api/api-client';
 
-/**
- * El backend guarda la masa como un ingrediente "OTRO" para el stock web exclusivo;
- * no es algo que el cliente elija, así que no se ofrece como ingrediente.
- */
 const ES_MASA_DE_STOCK = /^masa(\s+de\s+pizza)?$/i;
 
-/** Datos de "Arma tu pizza": opciones del backend (o de prueba) y precio en vivo. */
 @Injectable({ providedIn: 'root' })
 export class PersonalizacionService {
   private readonly api = inject(PublicoApi);
@@ -34,10 +29,6 @@ export class PersonalizacionService {
   }
 }
 
-/**
- * Misma fórmula que CalculadoraPizza del backend: precio del tamaño + recargo de la masa + extras de cada ingrediente.
- * Se calcula en el navegador para que el precio cambie al instante; el backend lo vuelve a calcular al guardar.
- */
 export function cotizarPizza(
   tamano: TamanoPizzaResponse | null,
   masa: TipoMasaResponse | null,

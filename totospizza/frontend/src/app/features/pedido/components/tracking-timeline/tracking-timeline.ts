@@ -3,7 +3,6 @@ import { Check, LucideAngularModule } from 'lucide-angular';
 import type { EtapaSeguimientoResponse } from '../../../../core/models/api';
 import { formatearHora } from '../../../../core/utils/fechas';
 
-/** Las 4 etapas del pedido. Horizontal en pantallas anchas, vertical en móvil. */
 @Component({
   selector: 'app-tracking-timeline',
   imports: [LucideAngularModule],

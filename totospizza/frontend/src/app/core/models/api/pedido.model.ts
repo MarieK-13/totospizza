@@ -6,7 +6,6 @@ export interface AdicionalRequest {
   readonly cantidad: number;
 }
 
-/** Se envía exactamente uno de: productoId, pizzaPersonalizadaId o promocionId. */
 export interface AgregarProductoRequest {
   readonly productoId?: number | null;
   readonly pizzaPersonalizadaId?: number | null;
@@ -66,6 +65,7 @@ export interface PagoRequest {
   readonly metodo: MetodoPago;
   readonly tokenTarjeta?: string | null;
   readonly telefonoBilletera?: string | null;
+  readonly codigoAprobacion?: string | null;
 }
 
 export interface CheckoutRequest {

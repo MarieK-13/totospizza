@@ -30,7 +30,6 @@ $marca: 2rem;
     padding-bottom: 0;
   }
 
-  // Conector hacia la siguiente etapa
   &:not(:last-child)::after {
     position: absolute;
     top: $marca;
@@ -42,7 +41,7 @@ $marca: 2rem;
   }
 
   &.is-completa:not(.is-actual):not(:last-child)::after {
-    background-color: $color-marron-suave;
+    background-color: $color-verde-albahaca;
   }
 
   @include up(md) {
@@ -80,16 +79,21 @@ $marca: 2rem;
   }
 
   &.is-completa &__marca {
-    border-color: $color-marron-suave;
-    background-color: $color-marron-suave;
-    color: $color-crema-claro;
+    border-color: $color-verde-albahaca;
+    background-color: $color-verde-albahaca;
+    color: $color-blanco;
   }
 
   &.is-actual &__marca {
-    border-color: $color-marron-suave;
+    border-color: $color-verde-albahaca;
     background-color: $color-background-raised;
-    color: $color-marron-suave;
-    box-shadow: 0 0 0 0.3125rem $tint-cafe-10;
+    color: $color-verde-albahaca;
+    animation: pulso-etapa 1.8s $ease-out infinite;
+
+    @include reduced-motion {
+      animation: none;
+      box-shadow: 0 0 0 0.3125rem $tint-verde-10;
+    }
   }
 
   &__texto {
@@ -118,5 +122,24 @@ $marca: 2rem;
   &__hora {
     color: $color-text-secondary;
     font-size: 0.8125rem;
+  }
+
+  &.is-actual &__nombre {
+    color: $color-verde-albahaca;
+  }
+
+  &.is-completa:not(.is-actual) &__hora {
+    color: $color-verde-albahaca;
+  }
+}
+
+@keyframes pulso-etapa {
+  0% {
+    box-shadow: 0 0 0 0 rgba($color-verde-albahaca, 0.4);
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 0.625rem rgba($color-verde-albahaca, 0);
   }
 }

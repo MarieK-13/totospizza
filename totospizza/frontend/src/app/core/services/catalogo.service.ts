@@ -10,10 +10,6 @@ import type { OpcionesPeticion } from './api/api-client';
 
 const LATENCIA_SIMULADA_MS = 250;
 
-/**
- * Fuente única del catálogo público. Con `environment.menuDatosDePrueba` responde con datos locales;
- * si no, delega en el backend. Las pantallas no saben cuál de las dos se usa.
- */
 @Injectable({ providedIn: 'root' })
 export class CatalogoService {
   private readonly api = inject(PublicoApi);
@@ -44,7 +40,6 @@ export class CatalogoService {
     }).pipe(delay(LATENCIA_SIMULADA_MS));
   }
 
-  /** Inicio en una sola llamada: promociones vigentes, destacados, reseñas y datos del negocio. */
   home(opciones?: OpcionesPeticion): Observable<HomeResponse> {
     return this.demo ? of(INICIO_PRUEBA).pipe(delay(LATENCIA_SIMULADA_MS)) : this.api.home(opciones);
   }

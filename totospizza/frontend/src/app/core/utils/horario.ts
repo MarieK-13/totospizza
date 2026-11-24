@@ -22,7 +22,6 @@ export function etiquetaDia(dia: DiaSemana): string {
   return ETIQUETA_DIA[dia];
 }
 
-/** `12:00:00` → `12:00`. */
 export function horaCorta(hora: Hora | null): string {
   return hora ? hora.slice(0, 5) : '';
 }
@@ -50,10 +49,6 @@ const ABREVIATURA_DIA: Readonly<Record<DiaSemana, string>> = {
   SUNDAY: 'Dom',
 };
 
-/**
- * Resumen corto de la semana: "Lun–Dom · 12:00–23:00".
- * Agrupa días seguidos con el mismo horario y omite los días cerrados.
- */
 export function resumirHorarios(horarios: readonly HorarioSucursalResponse[]): string {
   const grupos: { desde: DiaSemana; hasta: DiaSemana; texto: string }[] = [];
   for (const dia of ORDEN_SEMANA) {
@@ -79,7 +74,6 @@ function aMinutos(hora: Hora): number {
   return h * 60 + m;
 }
 
-/** ¿Está abierto en este momento? Considera cierres pasada la medianoche (ej. 13:00–00:00). */
 export function estaAbierto(horarios: readonly HorarioSucursalResponse[], ahora: Date = new Date()): boolean {
   const minutos = ahora.getHours() * 60 + ahora.getMinutes();
   const hoy = horarioDelDia(horarios, diaActual(ahora));
@@ -88,7 +82,6 @@ export function estaAbierto(horarios: readonly HorarioSucursalResponse[], ahora:
     const cierre = aMinutos(hoy.horaCierre);
     if (cierre > apertura ? minutos >= apertura && minutos < cierre : minutos >= apertura) return true;
   }
-  // Madrugada: todavía corre el horario de ayer si cerraba pasada la medianoche
   const ayerFecha = new Date(ahora);
   ayerFecha.setDate(ahora.getDate() - 1);
   const ayer = horarioDelDia(horarios, diaActual(ayerFecha));

@@ -76,7 +76,6 @@ export class Login {
     this.error.set(mensajeDeError(error, 'No pudimos iniciar tu sesión. Intenta de nuevo.'));
   }
 
-  /** Vuelve a donde la persona quería ir; solo rutas internas (evita redirecciones a otros sitios). */
   private destino(): string {
     const solicitado = this.route.snapshot.queryParamMap.get('returnUrl');
     const esInterna = solicitado !== null && solicitado.startsWith('/') && !solicitado.startsWith('//');

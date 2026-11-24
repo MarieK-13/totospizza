@@ -31,7 +31,6 @@ export class RestablecerContrasena {
   protected readonly AlertIcon = TriangleAlert;
   protected readonly arte = ARTE_ACCESO.login;
 
-  /** Token del enlace del correo. Si falta, se pide pegarlo (útil mientras el correo es simulado). */
   private readonly tokenUrl = inject(ActivatedRoute).snapshot.queryParamMap.get('token')?.trim() ?? '';
   protected readonly pideToken = this.tokenUrl === '';
 

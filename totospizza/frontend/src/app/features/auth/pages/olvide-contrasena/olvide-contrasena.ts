@@ -28,7 +28,6 @@ export class OlvideContrasena {
 
   protected readonly enviando = signal(false);
   protected readonly error = signal<string | null>(null);
-  /** Correo al que se pidió el enlace; mientras es null se muestra el formulario. */
   protected readonly enviadoA = signal<string | null>(null);
 
   protected readonly form = this.fb.group({

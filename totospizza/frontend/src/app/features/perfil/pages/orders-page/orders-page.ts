@@ -10,7 +10,6 @@ import { OrderHistoryItem } from '../../components/order-history-item/order-hist
 
 const POR_PAGINA = 10;
 
-/** "Mis pedidos": los que están en curso arriba y el historial debajo, con "Ver más". */
 @Component({
   selector: 'app-orders-page',
   imports: [RouterLink, AccountShell, OrderHistoryItem],
@@ -54,7 +53,6 @@ export class OrdersPage {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (respuesta) => {
-          // Evita duplicados si llegó un pedido nuevo entre páginas
           this.pedidos.update((actuales) => {
             const ids = new Set(actuales.map((p) => p.id));
             return [...actuales, ...respuesta.contenido.filter((p) => !ids.has(p.id))];

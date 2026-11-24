@@ -1,7 +1,6 @@
 @use '../../../styles/tokens/variables' as *;
 @use '../../../styles/mixins' as *;
 
-// Píldora crema, la misma del botón del carrito. Se usa sobre el panel de arte.
 @mixin pastilla {
   display: inline-flex;
   align-items: center;

@@ -1,17 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { Bike, KeyRound, LucideAngularModule } from 'lucide-angular';
 
-/** PIN que el cliente le dicta al motorizado para confirmar la entrega, y quién lo lleva. */
 @Component({
   selector: 'app-delivery-code',
   imports: [LucideAngularModule],
   templateUrl: './delivery-code.html',
   styleUrl: './delivery-code.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class.is-invertido]': 'invertido()' },
 })
 export class DeliveryCode {
   readonly codigo = input<string | null>(null);
   readonly motorizado = input<string | null>(null);
+  /** Colores para ir sobre un fondo de color. */
+  readonly invertido = input(false);
 
   protected readonly digitos = computed(() => (this.codigo() ?? '').split(''));
   protected readonly iniciales = computed(() =>

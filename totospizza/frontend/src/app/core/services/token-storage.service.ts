@@ -3,10 +3,6 @@ import type { Sesion } from '../models/sesion.model';
 
 const CLAVE = 'toto.sesion';
 
-/**
- * Guarda la sesión. Por defecto en sessionStorage (se borra al cerrar la pestaña);
- * con "Recordarme" en localStorage. Todo acceso está protegido: puede fallar en modo privado.
- */
 @Injectable({ providedIn: 'root' })
 export class TokenStorage {
   leer(): Sesion | null {

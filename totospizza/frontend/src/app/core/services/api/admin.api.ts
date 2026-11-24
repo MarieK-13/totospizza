@@ -49,7 +49,6 @@ import type {
 } from '../../models/api';
 import { ApiClient } from './api-client';
 
-/** /api/v1/admin: requiere rol ADMINISTRADOR. */
 @Injectable({ providedIn: 'root' })
 export class AdminApi {
   private readonly api = inject(ApiClient);

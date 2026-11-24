@@ -8,26 +8,19 @@ import { ToastService } from './toast.service';
 
 const CLAVE_INVITADO = 'toto.carrito.invitado';
 
-/** Datos que el carrito del invitado necesita para mostrarse sin consultar al servidor. */
 export interface ReferenciaItem {
   readonly nombre: string;
-  /** Para volver al detalle desde el carrito. */
   readonly slug: string | null;
   readonly precioUnitario: number;
   readonly imagenUrl: string | null;
-  /** Opciones elegidas en texto: "Personal, Clásica, Queso extra". */
   readonly detalle: string;
 }
 
-/** Línea del carrito lista para mostrar, venga del backend o del navegador. */
 export interface LineaCarrito {
   readonly clave: string;
-  /** id del ítem en el backend; null si es del carrito del invitado. */
   readonly itemId: number | null;
-  /** posición en el carrito del invitado; null si es del backend. */
   readonly indice: number | null;
   readonly nombre: string;
-  /** El backend no devuelve el slug del ítem: el carrito lo resuelve por nombre con el menú. */
   readonly slug: string | null;
   readonly detalle: string;
   readonly imagenUrl: string | null;
@@ -39,24 +32,11 @@ export interface LineaCarrito {
 
 export const CANTIDAD_MAXIMA_ITEM = 20;
 
-/** Ítem guardado en el navegador mientras no hay sesión; se envía al backend al iniciar sesión. */
 export interface ItemInvitado extends ReferenciaItem {
   readonly solicitud: AgregarProductoRequest;
-  /**
-   * Pizza armada por el cliente. Guardarla (POST /cliente/pizzas-personalizadas) exige sesión,
-   * así que el invitado la lleva aquí y se crea al iniciar sesión.
-   */
   readonly pizza?: PizzaPersonalizadaRequest;
 }
 
-/**
- * Carrito único para toda la app.
- * - CLIENTE con sesión: el carrito vive en el backend (/cliente/carrito).
- * - Sin sesión: se guarda en el navegador y se sube al backend en cuanto el cliente inicia sesión.
- *   Así se puede armar el pedido sin cuenta; el login solo se pide para pagar.
- * - Personal (pizzero, admin...): no compra.
- * El header lee `cantidad` y `total` de aquí.
- */
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private readonly api = inject(ClienteApi);
@@ -74,7 +54,6 @@ export class CartService {
   readonly cantidad = computed(() =>
     this.esInvitado() ? this._invitado().reduce((suma, item) => suma + item.solicitud.cantidad, 0) : (this._carrito()?.totalItems ?? 0),
   );
-  /** Con sesión es el total del backend; sin sesión es referencial (el backend recalcula al pagar). */
   readonly total = computed(() =>
     this.esInvitado()
       ? redondear(this._invitado().reduce((suma, item) => suma + item.precioUnitario * item.solicitud.cantidad, 0))
@@ -99,7 +78,6 @@ export class CartService {
         }))
       : (this._carrito()?.items ?? []).map(lineaDelBackend),
   );
-  /** Suma de productos sin envío. */
   readonly subtotal = computed(() =>
     this.esInvitado() ? this.total() : (this._carrito()?.montos.subtotal ?? 0),
   );
@@ -107,7 +85,6 @@ export class CartService {
   constructor() {
     effect(() => {
       if (this.auth.esCliente()) {
-        // untracked: los interceptores leen la sesión y no deben volver a disparar este efecto
         untracked(() => this.sincronizarInvitado());
       } else {
         this._carrito.set(null);
@@ -119,7 +96,6 @@ export class CartService {
     return this.api.carrito().pipe(tap((c) => this._carrito.set(c)));
   }
 
-  /** Agrega al carrito del backend o, sin sesión, al del navegador. */
   agregar(cuerpo: AgregarProductoRequest, referencia: ReferenciaItem): Observable<void> {
     if (this.esInvitado()) {
       this.guardarInvitado([...this._invitado(), { ...referencia, solicitud: cuerpo }]);
@@ -135,7 +111,6 @@ export class CartService {
     );
   }
 
-  /** Pizza de "Arma tu pizza": con sesión se guarda y se agrega por su id; sin sesión queda en el navegador. */
   agregarPizzaPersonalizada(pizza: PizzaPersonalizadaRequest, cantidad: number, referencia: ReferenciaItem): Observable<void> {
     if (this.esInvitado()) {
       this.guardarInvitado([...this._invitado(), { ...referencia, solicitud: { cantidad }, pizza }]);
@@ -160,7 +135,6 @@ export class CartService {
     return this.api.quitarItem(itemId).pipe(tap((c) => this._carrito.set(c)));
   }
 
-  /** Cambia la cantidad de una línea (1–20), esté en el backend o en el navegador. */
   cambiarCantidad(linea: LineaCarrito, cantidad: number): Observable<void> {
     const nueva = Math.min(CANTIDAD_MAXIMA_ITEM, Math.max(1, cantidad));
     if (linea.indice !== null) {
@@ -194,7 +168,6 @@ export class CartService {
     return this.api.vaciarCarrito().pipe(tap((c) => this._carrito.set(c)));
   }
 
-  /** Sube al backend lo que el cliente agregó sin sesión y luego trae el carrito completo. */
   private sincronizarInvitado(): void {
     const pendientes = this._invitado();
     const subida$ =
@@ -237,7 +210,6 @@ export class CartService {
       if (items.length === 0) localStorage.removeItem(CLAVE_INVITADO);
       else localStorage.setItem(CLAVE_INVITADO, JSON.stringify(items));
     } catch {
-      // sin almacenamiento: el carrito vale solo para esta pestaña
     }
   }
 }

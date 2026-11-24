@@ -1,9 +1,5 @@
 import type { IngredienteResponse, OpcionesPersonalizacionResponse } from '../models/api';
 
-/**
- * Opciones de "Arma tu pizza" sin backend (se activan con `environment.menuDatosDePrueba`).
- * Precios y tamaños iguales a los datos demo del backend (V100__datos_demo.sql).
- */
 const ing = (id: number, nombre: string, tipo: IngredienteResponse['tipo'], precioExtra: number): IngredienteResponse => ({
   id,
   nombre,

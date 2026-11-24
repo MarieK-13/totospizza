@@ -28,7 +28,6 @@
   }
 }
 
-// ── Progreso ────────────────────────────────────────────────────────────────
 .progreso {
   margin-bottom: $space-6;
 
@@ -43,7 +42,6 @@
   &__paso {
     position: relative;
 
-    // Línea hacia el siguiente paso; se pinta de rojo cuando este ya está hecho
     &:not(:last-child)::after {
       content: '';
       position: absolute;
@@ -130,7 +128,6 @@
   }
 }
 
-// ── Tarjeta: vista previa + paso ────────────────────────────────────────────
 .tarjeta {
   display: grid;
   overflow: clip;
@@ -139,7 +136,6 @@
   background-color: $color-background-raised;
   box-shadow: $shadow-sm;
 
-  // En pantallas chicas la vista previa es una barra fija: no se puede recortar
   @include down(lg) {
     overflow: visible;
   }
@@ -180,7 +176,6 @@
     }
   }
 
-  // "+ Pepperoni" sube y se desvanece sobre la pizza
   &__agregado {
     position: absolute;
     top: 38%;
@@ -218,7 +213,6 @@
     font-size: 0.8125rem;
   }
 
-  // Brillo de horno detrás de la pizza al llegar al último paso
   &::before {
     content: '';
     position: absolute;
@@ -235,7 +229,6 @@
     animation: brasas 0.9s ease-in-out infinite alternate;
   }
 
-  // Celular y tablet: barra fija arriba con la pizza pequeña, para verla mientras eliges
   @include down(lg) {
     position: sticky;
     top: calc(#{$header-height} - #{$space-3});
@@ -377,8 +370,6 @@
   font-weight: $weight-bold;
 }
 
-// ── Tamaños: el círculo crece con el diámetro real ──────────────────────────
-// Siempre en una fila: así se comparan los círculos de un vistazo
 .tamanos {
   display: grid;
   grid-auto-columns: minmax(0, 1fr);
@@ -460,7 +451,6 @@
   }
 }
 
-// ── Masas: lista con descripción ────────────────────────────────────────────
 .masas {
   display: flex;
   flex-direction: column;
@@ -518,7 +508,6 @@
   }
 }
 
-// ── Opciones con casilla (queso, salsa, ingredientes) ───────────────────────
 .opciones {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
@@ -562,7 +551,6 @@
     accent-color: $color-brand-primary;
   }
 
-  // Mini dibujo del ingrediente; crece un poco al elegirlo
   &__icono {
     flex: none;
     width: 2rem;
@@ -595,7 +583,6 @@
   }
 }
 
-// ── Paso 5 ──────────────────────────────────────────────────────────────────
 .nombre {
   position: relative;
   display: block;
@@ -737,7 +724,6 @@
   }
 }
 
-// ── Anterior / Siguiente ────────────────────────────────────────────────────
 .navegacion {
   display: flex;
   align-items: center;
@@ -747,7 +733,6 @@
   padding-top: $space-6;
   border-top: $border-width solid $color-border-default;
 
-  // Separación cuando el contenido es corto
   .grupo + &,
   .opciones + &,
   .acciones + & {
@@ -826,7 +811,6 @@
   }
 }
 
-// ── Estados ─────────────────────────────────────────────────────────────────
 .estado {
   display: flex;
   flex-direction: column;

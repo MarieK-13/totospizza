@@ -12,6 +12,7 @@ public record SolicitudCobro(
         MetodoPago metodo,
         String tokenTarjeta,
         String telefonoBilletera,
+        String codigoAprobacion,
         BigDecimal monto
 ) {
 }

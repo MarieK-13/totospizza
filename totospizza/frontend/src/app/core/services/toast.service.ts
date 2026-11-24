@@ -7,11 +7,9 @@ export interface Toast {
   readonly kind: ToastKind;
   readonly title: string;
   readonly message?: string;
-  /** Milisegundos visibles. 0 = permanece hasta cerrarlo. */
   readonly duration: number;
 }
 
-/** Notificaciones reutilizables. Se muestran con <app-toast-container />. */
 @Injectable({ providedIn: 'root' })
 export class ToastService {
   private nextId = 0;
@@ -41,7 +39,6 @@ export class ToastService {
 
   private show(kind: ToastKind, title: string, message: string | undefined, duration: number): void {
     const toast: Toast = { id: ++this.nextId, kind, title, message, duration };
-    // Máximo 4 a la vez: se descarta la más antigua.
     this.state.update((list) => [...list, toast].slice(-4));
   }
 }

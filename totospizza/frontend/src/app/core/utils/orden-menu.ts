@@ -17,10 +17,6 @@ export function esOrdenMenu(valor: string | null): valor is OrdenMenu {
 const porNombre = (a: ProductoResumenResponse, b: ProductoResumenResponse): number =>
   a.nombre.localeCompare(b.nombre, 'es');
 
-/**
- * El backend siempre devuelve el menú por nombre y no deja elegir el orden,
- * así que se ordena aquí. Es válido porque se pide el menú completo en una sola página.
- */
 export function ordenarMenu(productos: readonly ProductoResumenResponse[], orden: OrdenMenu): readonly ProductoResumenResponse[] {
   const copia = [...productos];
   switch (orden) {

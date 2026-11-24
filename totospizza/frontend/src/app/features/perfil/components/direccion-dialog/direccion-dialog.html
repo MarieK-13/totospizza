@@ -14,7 +14,6 @@
       </div>
     }
 
-    <!-- Ubicación: el dato que define si llega el delivery -->
     <section class="gps" [class.is-error]="faltaUbicacion()" aria-live="polite">
       @switch (ubicacion().tipo) {
         @case ('lista') {

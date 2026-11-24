@@ -22,7 +22,6 @@
   display: grid;
   background-color: $color-background-canvas;
 
-  // Escritorio: tarjeta centrada y compacta en lugar de pantalla completa
   @include up(lg) {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     width: min(100%, 70rem);
@@ -32,7 +31,6 @@
     box-shadow: $shadow-xl;
   }
 
-  // La foto del registro ocupa menos que el formulario
   &--foto {
     @include up(lg) {
       grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
@@ -98,7 +96,6 @@
   }
 }
 
-// ── Panel de arte (solo escritorio) ──────────────────────────────────────────
 .arte {
   position: relative;
   display: none;
@@ -135,7 +132,6 @@
     background: linear-gradient(180deg, rgba($color-cafe-tostado, 0.05) 30%, rgba($color-cafe-tostado, 0.78) 100%);
   }
 
-  // Garabatos de línea blanca, como las ilustraciones del diseño
   &__garabato {
     position: absolute;
     z-index: -1;
@@ -157,7 +153,6 @@
     &--g8 { bottom: 2%;  right: 3%; width: 6.5rem; height: 6.5rem; transform: rotate(8deg); }
   }
 
-  // Plato circular con la foto de la pizza
   &__plato {
     position: absolute;
     top: 46%;

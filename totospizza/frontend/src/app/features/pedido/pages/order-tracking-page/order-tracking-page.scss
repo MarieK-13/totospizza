@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../../../../styles/tokens/variables' as *;
 @use '../../../../../styles/mixins' as *;
 @use '../../../../shared/components/account-shell/panel' as cuenta;
@@ -76,17 +77,48 @@
   @include cuenta.vacio;
 }
 
-// ── Estado ──────────────────────────────────────────────────────────────────
 .estado {
   display: grid;
   gap: $space-6;
   align-items: center;
 
-  &.is-curso {
-    border-color: rgba($color-marron-suave, 0.35);
-    background:
-      radial-gradient(circle at 100% 0, rgba($color-crema-claro, 0.9), transparent 60%),
-      $color-background-raised;
+  &--curso {
+    border-color: transparent;
+    background: linear-gradient(135deg, $color-rojo-tomate, $color-rojo-profundo);
+    color: $color-blanco;
+    box-shadow: 0 12px 32px -16px rgba($color-rojo-profundo, 0.6);
+
+    .chip {
+      background-color: rgba($color-blanco, 0.18);
+      color: $color-blanco;
+    }
+
+    .estado__ayuda {
+      color: rgba($color-blanco, 0.85);
+    }
+  }
+
+  &--entregado {
+    border-color: rgba($color-verde-albahaca, 0.35);
+    background-color: $tint-verde-10;
+
+    .chip {
+      background-color: $color-verde-albahaca;
+      color: $color-blanco;
+    }
+
+    .estado__titulo {
+      color: $color-verde-albahaca;
+    }
+  }
+
+  &--cancelado {
+    border-color: rgba($color-rojo-tomate, 0.3);
+    background-color: $tint-rojo-8;
+
+    .estado__titulo {
+      color: $color-rojo-intenso;
+    }
   }
 
   @include up(md) {
@@ -125,7 +157,14 @@
   }
 
   &__calificar {
-    @include cuenta.boton-marron;
+    border-color: $color-verde-albahaca;
+    background-color: $color-verde-albahaca;
+    color: $color-blanco;
+
+    &:hover:not(:disabled) {
+      border-color: color.adjust($color-verde-albahaca, $lightness: -6%);
+      background-color: color.adjust($color-verde-albahaca, $lightness: -6%);
+    }
   }
 
   &__gracias {
@@ -175,7 +214,6 @@
   }
 }
 
-// ── Productos ───────────────────────────────────────────────────────────────
 .productos {
   margin: 0;
   padding: 0;
@@ -228,7 +266,6 @@
   }
 }
 
-// ── Resumen lateral ─────────────────────────────────────────────────────────
 .montos {
   display: flex;
   flex-direction: column;
@@ -317,7 +354,6 @@
   }
 }
 
-// ── Confirmar cancelación ───────────────────────────────────────────────────
 .confirmar {
   width: min(100% - #{$space-6}, 26rem);
   margin: auto;

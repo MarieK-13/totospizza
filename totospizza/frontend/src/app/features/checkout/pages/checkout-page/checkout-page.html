@@ -1,0 +1,157 @@
+<div class="wrap pago">
+  <!-- Portada: el único bloque de color fuerte; dice cuánto falta para comer -->
+  <header class="portada">
+    <div class="portada__texto">
+      <a routerLink="/carrito" class="portada__volver">
+        <lucide-icon [img]="BackIcon" [size]="16" [strokeWidth]="1.9" aria-hidden="true"></lucide-icon>
+        Volver al carrito
+      </a>
+      <h1 class="portada__titulo">¡Ya casi es tuyo!</h1>
+      <p class="portada__bajada">Confirma la entrega y paga online: la cocina empieza tu pedido apenas se apruebe el pago.</p>
+      @if (minutos()) {
+        <p class="portada__eta">
+          <lucide-icon [img]="ClockIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+          Llega en unos {{ minutos() }} minutos
+        </p>
+      }
+    </div>
+
+    <ol class="ruta" aria-label="Avance de tu compra">
+      <li class="ruta__paso is-hecho">
+        <span class="ruta__marca" aria-hidden="true"><lucide-icon [img]="CheckIcon" [size]="14" [strokeWidth]="3"></lucide-icon></span>
+        Carrito
+      </li>
+      <li class="ruta__paso is-actual" aria-current="step">
+        <span class="ruta__marca" aria-hidden="true">2</span>
+        Entrega y pago
+      </li>
+      <li class="ruta__paso">
+        <span class="ruta__marca" aria-hidden="true">3</span>
+        ¡A disfrutar!
+      </li>
+    </ol>
+  </header>
+
+  @if (cargando()) {
+    <div class="pago__cuerpo" aria-busy="true" aria-label="Cargando tu carrito">
+      <div class="esqueleto esqueleto--alto"></div>
+      <div class="esqueleto"></div>
+    </div>
+  } @else if (cart.vacio()) {
+    <div class="vacio">
+      <h2>Tu carrito está vacío</h2>
+      <p>Agrega algo del menú para poder pagar.</p>
+      <a routerLink="/menu" class="btn btn--primary">Ver el menú</a>
+    </div>
+  } @else {
+    <div class="pago__cuerpo">
+      <div class="pago__pasos">
+        <!-- 1. Entrega -->
+        <section class="paso" aria-labelledby="paso-entrega">
+          <h2 id="paso-entrega" class="paso__titulo"><span class="paso__numero" aria-hidden="true">1</span>¿Cómo lo recibes?</h2>
+
+          @if (entrega(); as e) {
+            <div class="destino">
+              <span class="destino__icono" aria-hidden="true">
+                <lucide-icon [img]="e.tipo === 'RECOJO' ? StoreIcon : BikeIcon" [size]="20" [strokeWidth]="1.7"></lucide-icon>
+              </span>
+              <div class="destino__texto">
+                <p class="destino__tipo">{{ e.tipo === 'RECOJO' ? 'Recojo en tienda' : 'Delivery' }}</p>
+                @if (e.tipo === 'RECOJO') {
+                  <p class="destino__linea">{{ e.sucursalNombre }}</p>
+                } @else {
+                  <p class="destino__linea">{{ e.direccion.direccion }}, {{ e.direccion.distrito }}</p>
+                  @if (e.sucursalNombre || e.minutosEstimados) {
+                    <p class="destino__meta">
+                      <lucide-icon [img]="ClockIcon" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                      @if (e.minutosEstimados) {
+                        Llega en unos {{ e.minutosEstimados }} min
+                      }
+                      @if (e.sucursalNombre) {
+                        desde {{ e.sucursalNombre }}
+                      }
+                    </p>
+                  }
+                }
+              </div>
+              <button type="button" class="btn btn--ghost btn--sm" (click)="accionEntrega.set('elegir')">Cambiar</button>
+            </div>
+          } @else {
+            <button type="button" class="elegir" (click)="accionEntrega.set('elegir')">
+              <lucide-icon [img]="PinIcon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+              Elige delivery o recojo en tienda
+            </button>
+          }
+
+          @if (!esRecojo() && direcciones().length > 0) {
+            <div class="guardadas">
+              <p class="guardadas__titulo">Tus direcciones</p>
+              <div class="guardadas__lista" role="radiogroup" aria-label="Direcciones guardadas">
+                @for (d of direcciones(); track d.id) {
+                  <button type="button" role="radio" class="guardada" [class.is-activa]="esActual(d)" [attr.aria-checked]="esActual(d)"
+                    [disabled]="validando() !== null" (click)="usarDireccion(d)">
+                    <span class="guardada__etiqueta">{{ validando() === d.id ? 'Validando…' : d.etiqueta }}</span>
+                    <span class="guardada__linea">{{ d.direccion.direccion }}</span>
+                  </button>
+                }
+              </div>
+              @if (errorDireccion(); as mensaje) {
+                <p class="guardadas__error" role="alert">{{ mensaje }}</p>
+              }
+            </div>
+          }
+
+          @if (!esRecojo()) {
+            <label class="campo__etiqueta" for="instrucciones">Indicaciones para el motorizado <span>(opcional)</span></label>
+            <textarea id="instrucciones" class="campo__texto" rows="2" [attr.maxlength]="maxInstrucciones"
+              placeholder="Ej. tocar el timbre dos veces, portón verde" [value]="instrucciones()" (input)="escribirInstrucciones($event)"></textarea>
+          }
+        </section>
+
+        <!-- 2. Pago -->
+        <section class="paso" aria-labelledby="paso-pago">
+          <h2 id="paso-pago" class="paso__titulo"><span class="paso__numero" aria-hidden="true">2</span>Paga online</h2>
+          <app-payment-methods [disponibles]="metodosPago()" />
+        </section>
+      </div>
+
+      <aside class="pago__lado">
+        <app-order-summary [lineas]="cart.lineas()" [subtotal]="subtotal()" [descuento]="descuento()" [envio]="envio()" [esRecojo]="esRecojo()"
+          [total]="total()" [aviso]="aviso()">
+          @if (error(); as e) {
+            <div class="alerta" role="alert">
+              <lucide-icon [img]="AlertIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+              <div>
+                <p>{{ e.mensaje }}</p>
+                @if (e.deEntrega) {
+                  <button type="button" class="alerta__accion" (click)="accionEntrega.set('elegir')">Cambiar la entrega</button>
+                }
+              </div>
+            </div>
+          }
+          @if (faltaEnvioGratis() !== null) {
+            <div class="gratis" [class.is-logrado]="faltaEnvioGratis() === 0">
+              <lucide-icon [img]="TruckIcon" [size]="18" [strokeWidth]="1.9" aria-hidden="true"></lucide-icon>
+              @if (faltaEnvioGratis() === 0) {
+                <p><strong>¡Tu envío es gratis!</strong></p>
+              } @else {
+                <p>Te faltan <strong>{{ soles(faltaEnvioGratis()) }}</strong> para el envío gratis. <a routerLink="/menu">Agregar algo</a></p>
+              }
+            </div>
+          }
+          <button type="button" class="btn btn--primary btn--lg btn--block pagar" (click)="pagar()" [disabled]="pagando()">
+            <lucide-icon [img]="LockIcon" [size]="18" [strokeWidth]="1.9" aria-hidden="true"></lucide-icon>
+            {{ pagando() ? 'Procesando pago…' : entrega() ? 'Pagar ' + soles(total()) : 'Elige cómo recibirlo' }}
+          </button>
+          <ul class="confianza">
+            <li><lucide-icon [img]="ShieldIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>Pago seguro, tu tarjeta no se guarda</li>
+            <li><lucide-icon [img]="FlameIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>Recién salida del horno de piedra</li>
+            <li><lucide-icon [img]="BadgeIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>Garantía TOTO si llega tarde</li>
+          </ul>
+        </app-order-summary>
+      </aside>
+    </div>
+  }
+</div>
+
+<app-entrega-dialog [accion]="accionEntrega()" (confirmado)="accionEntrega.set(null); error.set(null)" (cerrado)="accionEntrega.set(null)" />

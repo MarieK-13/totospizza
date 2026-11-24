@@ -9,7 +9,6 @@ import { aplicarErroresDeCampo } from '../../../../core/utils/form-errors';
 import { PASSWORD_RULES, matchFields, passwordValidator } from '../../../../core/utils/form-validators';
 import { TextField } from '../../../../shared/components/text-field/text-field';
 
-/** Cambio de contraseña con la actual. Se pliega para no ocupar espacio cuando no se usa. */
 @Component({
   selector: 'app-password-form',
   imports: [ReactiveFormsModule, LucideAngularModule, TextField],
@@ -73,7 +72,6 @@ export class PasswordForm {
             this.error.set(sueltos.length > 0 ? sueltos.join(' ') : 'Revisa los campos marcados.');
             return;
           }
-          // Ej. 400/401: la contraseña actual no coincide
           this.error.set(mensajeDeError(error, 'No pudimos cambiar tu contraseña. Intenta de nuevo.'));
         },
       });

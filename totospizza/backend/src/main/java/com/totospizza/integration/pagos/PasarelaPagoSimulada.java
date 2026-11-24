@@ -66,9 +66,13 @@ public class PasarelaPagoSimulada implements PasarelaPago {
     }
 
     private static ResultadoConsulta evaluar(SolicitudCobro solicitud, String dato) {
-        boolean rechazado = solicitud.metodo() == MetodoPago.YAPE || solicitud.metodo() == MetodoPago.PLIN
-                ? dato.endsWith("0000")
-                : dato.contains("rechaz");
+        boolean billetera = solicitud.metodo() == MetodoPago.YAPE || solicitud.metodo() == MetodoPago.PLIN;
+        // Código de aprobación vencido o inventado: en la simulación, 000000
+        if (billetera && "000000".equals(solicitud.codigoAprobacion())) {
+            return new ResultadoConsulta(ResultadoConsulta.Estado.RECHAZADO, null, null, null,
+                    "El código de aprobación no es válido o ya venció. Genera uno nuevo en tu app (simulado)");
+        }
+        boolean rechazado = billetera ? dato.endsWith("0000") : dato.contains("rechaz");
         if (rechazado) {
             return new ResultadoConsulta(ResultadoConsulta.Estado.RECHAZADO, null, null, null,
                     "Fondos insuficientes (simulado)");

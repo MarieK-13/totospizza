@@ -9,7 +9,6 @@ interface Beneficio {
   readonly tono: 'rojo' | 'verde' | 'amarillo';
 }
 
-/** Panel de beneficios que se apoya sobre el borde inferior del carrusel. */
 @Component({
   selector: 'app-benefits-strip',
   imports: [LucideAngularModule],

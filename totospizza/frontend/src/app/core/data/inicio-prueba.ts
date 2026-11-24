@@ -1,11 +1,6 @@
 import type { HomeResponse, PromocionResponse } from '../models/api';
 import { MENU_PRUEBA } from './menu-prueba';
 
-/**
- * Inicio sin backend (se activa con `environment.menuDatosDePrueba`).
- * Usa los productos de menu-prueba.ts: Pepperoni (1), Margherita (2), Diavola (3), Verde (4), Carnívora (5),
- * Coca-Cola (101), Inca Kola (102), Agua (103).
- */
 const vigencia = null;
 
 const item = (productoId: number, productoNombre: string, tamanoNombre: string | null = null, cantidad = 1) => ({ productoId, productoNombre, tamanoNombre, cantidad });

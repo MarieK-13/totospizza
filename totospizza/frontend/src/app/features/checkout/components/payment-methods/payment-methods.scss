@@ -1,0 +1,175 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+.metodos {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.metodo {
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-md;
+  background-color: $color-background-raised;
+  @include transition((border-color, box-shadow));
+
+  &.is-activo {
+    border-color: $color-rojo-tomate;
+    background-color: rgba($color-rojo-tomate, 0.03);
+    box-shadow: 0 0 0 1px $color-rojo-tomate;
+  }
+
+  &__cabecera {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    width: 100%;
+    padding: $space-4;
+    border: 0;
+    border-radius: inherit;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    @include focus-ring;
+  }
+
+  &__radio {
+    flex: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 2px solid $color-border-strong;
+    border-radius: 50%;
+    @include transition((border-color, box-shadow));
+  }
+
+  &.is-activo &__radio {
+    border: 5px solid $color-rojo-tomate;
+  }
+
+  &__logo {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.75rem;
+    height: 1.875rem;
+    border-radius: $radius-sm;
+    background-color: $tint-rojo-8;
+    color: $color-rojo-tomate;
+    font-family: $font-datos;
+    font-size: 0.75rem;
+    font-weight: $weight-bold;
+
+    &--yape {
+      background-color: #742284;
+      color: #fff;
+    }
+
+    &--plin {
+      background-color: #00b5ad;
+      color: #fff;
+    }
+
+    &--cmr {
+      background-color: #5b9b2c;
+      color: #fff;
+    }
+  }
+
+  &__texto {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__nombre {
+    font-weight: $weight-semibold;
+  }
+
+  &__ayuda {
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+  }
+
+  &__datos {
+    padding: 0 $space-4 $space-4;
+    animation: desplegar $duration-base $ease-out;
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+}
+
+.billetera {
+  display: grid;
+  gap: $space-4;
+
+  @include up(sm) {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+
+  &__ayuda {
+    grid-column: 1 / -1;
+    margin: (-$space-2) 0 0;
+    padding: $space-3 $space-4;
+    border-radius: $radius-md;
+    background-color: $tint-amarillo-24;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  &__prueba {
+    color: $color-verde-albahaca;
+
+    strong {
+      font-family: $font-datos;
+      font-size: 0.9375rem;
+      letter-spacing: 0.08em;
+    }
+  }
+
+  &__generar {
+    align-self: flex-start;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: $color-rojo-tomate;
+    font: inherit;
+    font-weight: $weight-semibold;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+    @include focus-ring;
+  }
+}
+
+.tarjeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-4;
+
+  &__numero,
+  &__titular {
+    grid-column: 1 / -1;
+  }
+}
+
+@keyframes desplegar {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}

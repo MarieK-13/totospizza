@@ -2,9 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, signal } from '@an
 import type { IngredienteResponse, TamanoPizzaResponse, TipoMasaResponse } from '../../../../core/models/api';
 import { FormaIngredienteComponent } from '../forma-ingrediente/forma-ingrediente';
 
-/** Radio de la pizza más grande, en unidades del viewBox (-200..200). */
 const RADIO_BASE = 178;
-/** Zona donde caen queso e ingredientes (no tocan el borde). */
 const RADIO_RELLENO = 128;
 const PIEZAS_POR_INGREDIENTE = 12;
 const GOTAS_DE_QUESO = 34;
@@ -51,7 +49,6 @@ interface CapaQueso {
   readonly hebras: readonly Punto[];
 }
 
-/** Formas reconocidas por nombre; lo que no coincide se dibuja como un trocito genérico. */
 const FORMAS: readonly (readonly [RegExp, FormaIngrediente])[] = [
   [/pepperoni|salami|chorizo/i, 'pepperoni'],
   [/jam[oó]n|prosciutto/i, 'jamon'],
@@ -67,7 +64,6 @@ const FORMAS: readonly (readonly [RegExp, FormaIngrediente])[] = [
   [/tomate/i, 'tomate'],
 ];
 
-/** [color principal, color oscuro del borde] por salsa. */
 const COLOR_SALSA: readonly (readonly [RegExp, readonly [string, string]])[] = [
   [/bbq|barbacoa/i, ['#7A3217', '#4E1D0C']],
   [/pesto|albahaca/i, ['#5F8D36', '#3D6420']],
@@ -77,7 +73,6 @@ const COLOR_SALSA: readonly (readonly [RegExp, readonly [string, string]])[] = [
 ];
 const COLOR_TOMATE: readonly [string, string] = ['#C33A22', '#8D2412'];
 
-/** [color, sombra] por queso. */
 const COLOR_QUESO: readonly (readonly [RegExp, readonly [string, string]])[] = [
   [/cheddar/i, ['#F2A43A', '#C97A17']],
   [/parmesano/i, ['#F1DE9E', '#CDB66F']],
@@ -87,11 +82,6 @@ const COLOR_QUESO: readonly (readonly [RegExp, readonly [string, string]])[] = [
 ];
 const COLOR_MOZZARELLA: readonly [string, string] = ['#F9E9B9', '#E0C37C'];
 
-/**
- * Vista previa dibujada en SVG con texturas (masa, salsa, queso derretido, tabla de madera).
- * Crece con el tamaño, cambia el borde con la masa, esparce la salsa, deja caer el queso rallado
- * y los ingredientes, se puede girar arrastrando y se "hornea" al final.
- */
 @Component({
   selector: 'app-pizza-preview',
   imports: [FormaIngredienteComponent],
@@ -105,25 +95,19 @@ const COLOR_MOZZARELLA: readonly [string, string] = ['#F9E9B9', '#E0C37C'];
 })
 export class PizzaPreview {
   readonly tamano = input<TamanoPizzaResponse | null>(null);
-  /** Todos los tamaños, para escalar de la más chica a la más grande. */
   readonly tamanos = input<readonly TamanoPizzaResponse[]>([]);
   readonly masa = input<TipoMasaResponse | null>(null);
   readonly quesos = input<readonly IngredienteResponse[]>([]);
   readonly salsas = input<readonly IngredienteResponse[]>([]);
   readonly ingredientes = input<readonly IngredienteResponse[]>([]);
-  /** Muestra la regla con los centímetros (paso de tamaño). */
   readonly mostrarMedida = input(false);
-  /** Resalta la pizza mientras se arrastra un ingrediente encima. */
   readonly recibiendo = input(false);
-  /** Borde dorado, queso gratinado y vapor. */
   readonly horneada = input(false);
 
-  /** Giro de la pizza en grados (se arrastra con el dedo o el mouse). */
   protected readonly giro = signal(0);
   protected readonly girando = signal(false);
   private arrastre: { readonly angulo: number; readonly giro: number } | null = null;
 
-  /** 0.62 (más chica) a 1 (más grande). */
   protected readonly escala = computed(() => {
     const actual = this.tamano();
     const diametros = this.tamanos().map((t) => t.diametroCm);
@@ -132,7 +116,6 @@ export class PizzaPreview {
     const max = Math.max(...diametros);
     return max === min ? 1 : 0.62 + (0.38 * (actual.diametroCm - min)) / (max - min);
   });
-  /** Medio ancho de la regla en unidades del viewBox (sigue al tamaño). */
   protected readonly anchoRegla = computed(() => Math.round(RADIO_BASE * this.escala()));
 
   protected readonly borde = computed<Borde>(() => {
@@ -141,10 +124,8 @@ export class PizzaPreview {
     if (/queso|borde|relleno/i.test(nombre)) return 'queso';
     return 'clasica';
   });
-  /** Radio donde empieza la salsa: el borde clásico es más grueso que el delgado. */
   protected readonly radioSalsa = computed(() => ({ clasica: 148, delgada: 162, queso: 138 })[this.borde()]);
 
-  /** Una capa por salsa; con dos, la segunda cubre media pizza. La clave relanza la animación al cambiar. */
   protected readonly capasSalsa = computed(() =>
     this.salsas().map((s, i) => {
       const [color, oscuro] = colorPorNombre(s.nombre, COLOR_SALSA, COLOR_TOMATE);
@@ -156,7 +137,6 @@ export class PizzaPreview {
     return `M0 ${-r} A${r} ${r} 0 0 1 0 ${r} Z`;
   });
 
-  /** Cada queso tiene su propia capa: así solo el recién elegido cae y se derrite. */
   protected readonly capasQueso = computed<readonly CapaQueso[]>(() =>
     this.quesos().map((q, i) => {
       const [color, sombra] = colorPorNombre(q.nombre, COLOR_QUESO, COLOR_MOZZARELLA);
@@ -180,14 +160,12 @@ export class PizzaPreview {
 
   protected readonly hayQueso = computed(() => this.quesos().length > 0);
 
-  // Detalles fijos (no cambian entre renders)
   protected readonly oregano = OREGANO;
   protected readonly quemados = QUEMADOS;
   protected readonly gratinado = GRATINADO;
   protected readonly burbujas = BURBUJAS;
   protected readonly RADIO_BASE = RADIO_BASE;
 
-  // ── Girar con el dedo o el mouse ─────────────────────────────────────────
   protected empezarGiro(evento: PointerEvent): void {
     const svg = evento.currentTarget as SVGSVGElement;
     svg.setPointerCapture(evento.pointerId);
@@ -206,7 +184,6 @@ export class PizzaPreview {
     this.girando.set(false);
   }
 
-  /** Flechas del teclado: girar sin mouse. */
   protected girarConTeclado(evento: KeyboardEvent): void {
     const paso = ({ ArrowLeft: -15, ArrowRight: 15 } as Readonly<Record<string, number>>)[evento.key];
     if (paso === undefined) return;
@@ -219,7 +196,6 @@ export function formaDe(ingrediente: Pick<IngredienteResponse, 'nombre' | 'tipo'
   return FORMAS.find(([patron]) => patron.test(ingrediente.nombre))?.[1] ?? (ingrediente.tipo === 'CARNE' ? 'carne' : 'otro');
 }
 
-/** Color de una salsa o un queso, para los íconos de las tarjetas. */
 export function colorDeIngrediente(ingrediente: Pick<IngredienteResponse, 'nombre' | 'tipo'>): string {
   return ingrediente.tipo === 'SALSA'
     ? colorPorNombre(ingrediente.nombre, COLOR_SALSA, COLOR_TOMATE)[0]
@@ -235,7 +211,6 @@ function anguloDesdeCentro(svg: SVGSVGElement, evento: PointerEvent): number {
   return (Math.atan2(evento.clientY - (caja.top + caja.height / 2), evento.clientX - (caja.left + caja.width / 2)) * 180) / Math.PI;
 }
 
-/** Generador pseudoaleatorio con semilla: la misma pizza siempre se ve igual. */
 function aleatorio(semilla: number): () => number {
   let t = semilla >>> 0;
   return () => {
@@ -246,7 +221,6 @@ function aleatorio(semilla: number): () => number {
   };
 }
 
-/** Puntos repartidos en el círculo sin amontonarse (muestreo con distancia mínima). */
 function repartir(semilla: number, cantidad: number, radio: number, separacion: number): Punto[] {
   const azar = aleatorio(semilla * 7919 + 17);
   const puntos: Punto[] = [];
@@ -264,7 +238,6 @@ function repartir(semilla: number, cantidad: number, radio: number, separacion: 
   return puntos;
 }
 
-/** Puntos en el anillo del borde, para las marcas de horno. */
 function enAnillo(semilla: number, cantidad: number, desde: number, hasta: number): Punto[] {
   const azar = aleatorio(semilla);
   return Array.from({ length: cantidad }, (_, i) => {

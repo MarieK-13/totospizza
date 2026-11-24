@@ -8,15 +8,6 @@ interface Garabato {
   readonly clase: string;
 }
 
-/**
- * Estructura de las pantallas de acceso: columna del formulario (título, logo y línea roja)
- * y panel de arte al lado. El contenido se proyecta así:
- *
- *   <app-auth-shell titulo="..." posicionArte="derecha" variante="ilustracion">
- *     ...formulario...
- *     <div arte>...textos sobre el arte...</div>
- *   </app-auth-shell>
- */
 @Component({
   selector: 'app-auth-shell',
   imports: [RouterLink, LucideAngularModule, SiteHeader],
@@ -27,9 +18,7 @@ interface Garabato {
 export class AuthShell {
   readonly titulo = input.required<string>();
   readonly posicionArte = input<'izquierda' | 'derecha'>('derecha');
-  /** `ilustracion`: panel rojo con la pizza · `foto`: foto a pantalla completa con degradado. */
   readonly variante = input<'ilustracion' | 'foto'>('ilustracion');
-  /** Imagen exportada de Figma. Si es null se usa la versión armada con CSS. */
   readonly imagenArte = input<string | null>(null);
 
   protected readonly garabatos: readonly Garabato[] = [

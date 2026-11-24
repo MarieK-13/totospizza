@@ -31,7 +31,6 @@
       animation: cta-drift 24s ease-in-out infinite alternate;
     }
 
-    // El color de marca cubre la zona del texto y deja ver la foto a la derecha
     &::after {
       content: '';
       position: absolute;
@@ -91,7 +90,6 @@
     gap: $space-3;
   }
 
-  // Botón fantasma sobre fondo rojo
   &__ghost {
     border-color: rgba($color-text-inverse, 0.7);
     color: $color-text-inverse;

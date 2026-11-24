@@ -3,14 +3,9 @@ import type { ProductoDetalleResponse } from '../models/api';
 export interface SeleccionProducto {
   readonly tamanoId: number | null;
   readonly tipoMasaId: number | null;
-  /** Cantidad por ingrediente adicional (id → cantidad). */
   readonly extras: Readonly<Record<number, number>>;
 }
 
-/**
- * Precio de una unidad con la selección actual, o null si faltan opciones obligatorias
- * (en una pizza: tamaño y masa). Es solo una estimación: el precio final lo fija el backend al agregar al carrito.
- */
 export function precioUnitario(producto: ProductoDetalleResponse, seleccion: SeleccionProducto): number | null {
   if (!producto.requiereTamano) return producto.precioBase;
   const tamano = producto.precios.find((p) => p.tamanoId === seleccion.tamanoId);

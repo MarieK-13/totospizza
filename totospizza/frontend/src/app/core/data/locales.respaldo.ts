@@ -16,10 +16,7 @@ function sede(datos: Omit<SucursalResponse, 'abiertoAhora' | 'activa' | 'zonas' 
   return { ...datos, telefono: '', activa: true, radioCoberturaKm: 5, zonas: [], abiertoAhora: estaAbierto(datos.horarios) };
 }
 
-/**
- * Locales de respaldo: solo se muestran si la API no responde.
- * Los datos reales (dirección, teléfono, horarios, coordenadas) los administra el backend.
- */
+
 export const LOCALES_RESPALDO: readonly SucursalResponse[] = [
   sede({
     id: 1,

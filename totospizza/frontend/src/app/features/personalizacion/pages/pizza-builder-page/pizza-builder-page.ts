@@ -25,7 +25,6 @@ const PASOS: readonly { readonly numero: NumeroPaso; readonly titulo: string }[]
   { numero: 5, titulo: 'Mi pizza' },
 ];
 
-/** El backend no describe las masas; estas frases se muestran si el nombre coincide. */
 const DESCRIPCION_MASA: readonly (readonly [RegExp, string])[] = [
   [/cl[aá]sica|tradicional/i, 'Nuestra masa de siempre: suave por dentro y dorada por fuera.'],
   [/delgad|fina|italian/i, 'Fina y crocante, al estilo italiano.'],
@@ -35,11 +34,7 @@ const DESCRIPCION_MASA: readonly (readonly [RegExp, string])[] = [
 const NOMBRE_MAXIMO = 80;
 const ESPERA_MAXIMA_MS = 15_000;
 
-/**
- * Arma tu pizza en 5 pasos (tamaño y masa, queso, salsa, ingredientes, resumen).
- * Opciones: GET /publico/personalizacion/opciones. Precio: misma fórmula del backend, en vivo.
- * Al agregar: con sesión se guarda la pizza y se agrega al carrito; sin sesión queda en el navegador.
- */
+
 @Component({
   selector: 'app-pizza-builder-page',
   imports: [RouterLink, LucideAngularModule, PizzaPreview, FormaIngredienteComponent, EntregaDialog],
@@ -59,7 +54,6 @@ export class PizzaBuilderPage {
     stream: () => this.personalizacion.opciones({ context: peticionSilenciosa() }).pipe(timeout(ESPERA_MAXIMA_MS)),
   });
 
-  // ── Selección ────────────────────────────────────────────────────────────
   protected readonly paso = signal<NumeroPaso>(1);
   protected readonly tamanoId = signal<number | null>(null);
   protected readonly masaId = signal<number | null>(null);
@@ -73,17 +67,12 @@ export class PizzaBuilderPage {
   protected readonly agregado = signal(false);
   protected readonly accionEntrega = signal<AccionEntrega | null>(null);
 
-  // ── Interacción con la vista previa ──────────────────────────────────────
-  /** Opción que se está arrastrando hacia la pizza. */
   private readonly enArrastre = signal<{ readonly lista: ListaIngredientes; readonly opcion: IngredienteResponse; readonly maximo: number } | null>(null);
   protected readonly recibiendo = signal(false);
-  /** Etiqueta "+ Pepperoni" que sube sobre la pizza al agregar algo. */
   protected readonly ultimoAgregado = signal<{ readonly texto: string; readonly clave: number } | null>(null);
-  /** Al llegar al paso 5 la pizza entra al horno: brillo naranja unos segundos y queda horneada. */
   protected readonly horneando = signal(false);
   protected readonly horneada = computed(() => this.paso() === 5);
 
-  // ── Datos derivados ──────────────────────────────────────────────────────
   protected readonly tamanos = computed(() => this.opciones.value()?.tamanos ?? []);
   protected readonly masas = computed(() => this.opciones.value()?.tiposMasa ?? []);
   protected readonly pasoQueso = computed(() => this.buscarPaso('QUESO', 2));
@@ -108,7 +97,6 @@ export class PizzaBuilderPage {
 
   protected readonly diametroMaximo = computed(() => Math.max(1, ...this.tamanos().map((t) => t.diametroCm)));
 
-  /** Por qué no se puede avanzar desde cada paso; vacío = se puede. */
   private readonly bloqueos = computed<Readonly<Record<NumeroPaso, string>>>(() => ({
     1: !this.tamano() ? 'Elige un tamaño' : !this.masa() ? 'Elige una masa' : '',
     2: this.quesoIds().length === 0 ? 'Elige al menos un queso' : '',
@@ -117,7 +105,6 @@ export class PizzaBuilderPage {
     5: '',
   }));
   protected readonly bloqueoActual = computed(() => this.bloqueos()[this.paso()]);
-  /** Hasta qué paso se puede saltar desde la barra de progreso. */
   protected readonly pasoAlcanzable = computed<NumeroPaso>(() => {
     for (const p of PASOS) if (this.bloqueos()[p.numero]) return p.numero;
     return 5;
@@ -154,7 +141,6 @@ export class PizzaBuilderPage {
       alLimpiar(() => clearTimeout(espera));
     });
 
-    // Al llegar las opciones se preselecciona el tamaño del medio y la primera masa: la pizza aparece de inmediato
     effect(() => {
       const o = this.opciones.value();
       if (!o) return;
@@ -165,7 +151,6 @@ export class PizzaBuilderPage {
     });
   }
 
-  // ── Navegación ───────────────────────────────────────────────────────────
   protected irA(numero: NumeroPaso): void {
     if (numero <= this.pasoAlcanzable()) this.paso.set(numero);
   }
@@ -183,7 +168,6 @@ export class PizzaBuilderPage {
     return numero < this.paso() ? 'hecho' : 'pendiente';
   }
 
-  // ── Elecciones ───────────────────────────────────────────────────────────
   protected descripcionMasa(nombre: string): string {
     return DESCRIPCION_MASA.find(([patron]) => patron.test(nombre))?.[1] ?? '';
   }
@@ -204,7 +188,6 @@ export class PizzaBuilderPage {
     this.agregado.set(false);
   }
 
-  // ── Arrastrar una opción y soltarla sobre la pizza ───────────────────────
   protected empezarArrastre(evento: DragEvent, lista: ListaIngredientes, opcion: IngredienteResponse, maximo: number): void {
     evento.dataTransfer?.setData('text/plain', opcion.nombre);
     if (evento.dataTransfer) evento.dataTransfer.effectAllowed = 'copy';
@@ -246,7 +229,6 @@ export class PizzaBuilderPage {
     this.cantidad.update((c) => Math.min(CANTIDAD_MAXIMA_ITEM, Math.max(1, c + delta)));
   }
 
-  // ── Agregar al carrito (la entrega es obligatoria, igual que en el detalle de producto) ──
   protected continuar(accion: Exclude<AccionEntrega, 'elegir'>): void {
     if (this.enviando() || !this.cotizacion() || this.pasoAlcanzable() < 5) return;
     if (this.entrega.actual()) this.enviar(accion === 'comprar');
@@ -295,7 +277,7 @@ export class PizzaBuilderPage {
           const espera = setTimeout(() => this.agregado.set(false), 2500);
           this.destroyRef.onDestroy(() => clearTimeout(espera));
         },
-        error: () => undefined, // el aviso lo muestra el interceptor
+        error: () => undefined,
       });
   }
 

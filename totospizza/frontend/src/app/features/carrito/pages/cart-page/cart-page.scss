@@ -52,7 +52,6 @@
   }
 }
 
-// ── Productos ───────────────────────────────────────────────────────────────
 .lineas {
   display: flex;
   flex-direction: column;
@@ -211,7 +210,6 @@
   }
 }
 
-// ── Para acompañar: fila deslizable con las mismas tarjetas del menú ────────
 .acompanar {
   &__cabecera {
     margin-bottom: $space-4;
@@ -250,7 +248,6 @@
   }
 }
 
-// ── Resumen ─────────────────────────────────────────────────────────────────
 .resumen {
   display: flex;
   flex-direction: column;
@@ -444,7 +441,6 @@
   }
 }
 
-// ── Vacío ───────────────────────────────────────────────────────────────────
 .vacio {
   display: flex;
   flex-direction: column;

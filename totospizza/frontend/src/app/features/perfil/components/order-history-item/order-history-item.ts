@@ -6,7 +6,6 @@ import { infoEstado, pedidoEnCurso } from '../../../../core/utils/estado-pedido'
 import { formatearFechaHora } from '../../../../core/utils/fechas';
 import { formatearSoles } from '../../../../core/utils/money';
 
-/** Una fila del historial: toda la fila lleva al detalle del pedido. */
 @Component({
   selector: 'app-order-history-item',
   imports: [RouterLink, LucideAngularModule],

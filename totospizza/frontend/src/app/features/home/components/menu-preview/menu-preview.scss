@@ -38,7 +38,6 @@
   }
 }
 
-// Carrusel por desplazamiento con "imán" en cada tarjeta
 .track {
   display: flex;
   gap: $space-5;
@@ -204,7 +203,6 @@
   }
 }
 
-// Etiquetas: alérgeno (ámbar), dieta (verde), picante (rojo)
 .tag {
   padding: 0.125rem $space-2;
   border-radius: $radius-pill;

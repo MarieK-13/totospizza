@@ -9,10 +9,6 @@ import type {
   TipoMasaResponse,
 } from '../models/api';
 
-/**
- * Datos de prueba del menú (solo para ver la interfaz sin backend).
- * Se activan con `environment.menuDatosDePrueba`.
- */
 
 const CATEGORIA: CategoriaResponse = { id: 1, nombre: 'Pizzas', slug: 'pizzas' };
 const BEBIDAS: CategoriaResponse = { id: 2, nombre: 'Bebidas', slug: 'bebidas' };
@@ -162,7 +158,6 @@ export const FILTROS_PRUEBA: MenuFiltrosResponse = {
   ],
 };
 
-/** Ids de tamaño en que se vende cada producto de prueba (las pizzas, en todos; bebidas y salsas, en ninguno). */
 export function tamanosDePrueba(producto: ProductoResumenResponse): readonly number[] {
   return producto.categoria === CATEGORIA.nombre ? PRECIOS.map((p) => p.tamanoId) : [];
 }

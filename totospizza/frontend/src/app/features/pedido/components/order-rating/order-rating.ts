@@ -8,7 +8,6 @@ import { esApiException, mensajeDeError } from '../../../../core/utils/api-excep
 const TEXTOS = ['', 'Muy mala', 'Mala', 'Regular', 'Buena', '¡Excelente!'] as const;
 const MAX_COMENTARIO = 500;
 
-/** Modal para calificar un pedido entregado (1 a 5 estrellas y un comentario opcional). */
 @Component({
   selector: 'app-order-rating',
   imports: [LucideAngularModule],
@@ -56,7 +55,6 @@ export class OrderRating {
     this.comentario.set((evento.target as HTMLTextAreaElement).value);
   }
 
-  /** Flechas izquierda/derecha cambian la nota (patrón de grupo de radio). */
   protected teclado(evento: KeyboardEvent): void {
     const delta = evento.key === 'ArrowRight' || evento.key === 'ArrowUp' ? 1 : evento.key === 'ArrowLeft' || evento.key === 'ArrowDown' ? -1 : 0;
     if (!delta) return;
@@ -78,7 +76,6 @@ export class OrderRating {
       .subscribe({
         next: (resena) => this.calificado.emit(resena),
         error: (error: unknown) => {
-          // Ya existía: para el cliente es lo mismo que haberla enviado
           if (esApiException(error) && error.codigo === 'RESENA_EXISTENTE') {
             this.calificado.emit(null);
             return;

@@ -1,6 +1,5 @@
 import type { Instante } from './enums.model';
 
-/** Respuesta de error uniforme del backend (dto.common.ApiError). */
 export interface ApiError {
   readonly fecha: Instante;
   readonly estado: number;
@@ -33,7 +32,6 @@ export interface MensajeResponse {
   readonly mensaje: string;
 }
 
-/** Parámetros de paginación comunes. */
 export interface PaginaParams {
   readonly pagina?: number;
   readonly tamano?: number;

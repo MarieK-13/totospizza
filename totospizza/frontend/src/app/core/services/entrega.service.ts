@@ -21,11 +21,6 @@ export interface EntregaRecojo {
 
 export type Entrega = EntregaDelivery | EntregaRecojo;
 
-/**
- * Cómo recibe el cliente su pedido (delivery con dirección validada por /publico/cobertura, o recojo en un local).
- * Se elige antes de agregar al carrito y el checkout lo reutiliza para armar el CheckoutRequest.
- * Vive en sessionStorage: dura la visita, no se queda en un equipo compartido.
- */
 @Injectable({ providedIn: 'root' })
 export class EntregaService {
   private readonly locales = inject(LocalesService);
@@ -39,7 +34,6 @@ export class EntregaService {
     try {
       sessionStorage.setItem(CLAVE_ENTREGA, JSON.stringify(entrega));
     } catch {
-      // modo privado: la elección vive solo en memoria
     }
   }
 
@@ -48,7 +42,6 @@ export class EntregaService {
     try {
       sessionStorage.removeItem(CLAVE_ENTREGA);
     } catch {
-      // sin almacenamiento
     }
   }
 }

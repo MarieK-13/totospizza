@@ -6,7 +6,6 @@ import type { PromocionResponse } from '../../../../core/models/api';
 import { AgregarRapidoService } from '../../../../core/services/agregar-rapido.service';
 import { formatearSoles } from '../../../../core/utils/money';
 
-/** Mismos tres colores de fondo que el backend (ColorPromocion). */
 type TemaPromo = 'rojo' | 'verde' | 'blanco';
 
 interface HeroSlide {
@@ -18,13 +17,8 @@ interface HeroSlide {
 }
 
 const INTERVALO_MS = 6500;
-/** Si la promoción no tiene imagen en la base, se usa una foto genérica del local. */
 const IMAGEN_POR_DEFECTO = 'images/hero-combo.jpg';
 
-/**
- * Carrusel de promociones vigentes (GET /publico/home, las que no son COMBO).
- * "Pedir esta promo" la agrega al carrito con su precio promocional.
- */
 @Component({
   selector: 'app-hero-carousel',
   imports: [RouterLink, LucideAngularModule],
@@ -56,7 +50,6 @@ export class HeroCarousel {
   );
 
   protected readonly actual = signal(0);
-  /** Cambia en cada avance para reiniciar la barra de progreso. */
   protected readonly ciclo = signal(0);
   protected readonly pausado = signal(false);
   protected readonly agregandoId = signal<number | null>(null);
@@ -65,7 +58,6 @@ export class HeroCarousel {
   private timer?: ReturnType<typeof setInterval>;
 
   constructor() {
-    // Arranca (o se reinicia) cuando llegan las promociones
     effect(() => {
       const total = this.slides().length;
       if (this.actual() >= total) this.actual.set(0);

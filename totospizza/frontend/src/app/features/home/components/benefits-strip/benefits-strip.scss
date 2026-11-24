@@ -6,7 +6,6 @@
   position: relative;
   z-index: 4;
   padding-inline: $container-gutter;
-  // Sube sobre el carrusel para que ambos se lean como un solo bloque
   margin-top: -$space-5;
 
   @include up(lg) {

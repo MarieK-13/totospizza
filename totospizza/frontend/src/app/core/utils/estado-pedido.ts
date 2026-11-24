@@ -1,6 +1,5 @@
 import type { EstadoPedido, MetodoPago } from '../models/api';
 
-/** Tono visual del estado: define el color del distintivo. */
 export type TonoEstado = 'pendiente' | 'curso' | 'listo' | 'entregado' | 'cancelado';
 
 interface InfoEstado {
@@ -24,12 +23,10 @@ export function infoEstado(estado: EstadoPedido): InfoEstado {
   return ESTADOS[estado];
 }
 
-/** El seguimiento y la cuenta regresiva solo tienen sentido mientras el pedido avanza. */
 export function pedidoEnCurso(estado: EstadoPedido): boolean {
   return ['PENDIENTE_PAGO', 'CONFIRMADO', 'EN_PREPARACION', 'EN_HORNO', 'LISTO', 'EN_CAMINO'].includes(estado);
 }
 
-/** El backend solo deja cancelar antes de que entre a cocina (reembolsa automáticamente). */
 export function pedidoCancelable(estado: EstadoPedido): boolean {
   return estado === 'PENDIENTE_PAGO' || estado === 'CONFIRMADO';
 }

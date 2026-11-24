@@ -63,6 +63,25 @@
     letter-spacing: -0.02em;
   }
 
+  &.is-invertido {
+    .eta__pista {
+      stroke: rgba($color-blanco, 0.22);
+    }
+
+    .eta__progreso {
+      stroke: $color-blanco;
+    }
+
+    .eta__reloj {
+      color: $color-blanco;
+    }
+
+    .eta__etiqueta,
+    .eta__hora {
+      color: rgba($color-blanco, 0.85);
+    }
+  }
+
   &.is-vencido {
     .eta__progreso {
       stroke: $color-verde-albahaca;
@@ -70,7 +89,6 @@
 
     .eta__reloj {
       font-size: 1.75rem;
-      color: $color-verde-albahaca;
     }
   }
 }

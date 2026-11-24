@@ -72,7 +72,6 @@ export class Registro {
   );
 
   constructor() {
-    // El formato del número depende del tipo: se revalida al cambiarlo
     this.form.controls.tipoDocumento.valueChanges.subscribe(() => {
       this.form.controls.numeroDocumento.updateValueAndValidity();
     });
@@ -129,7 +128,6 @@ export class Registro {
       this.error.set(sueltos.length > 0 ? sueltos.join(' ') : 'Revisa los campos marcados.');
       return;
     }
-    // Ej. 409: el correo o el documento ya existen
     this.error.set(mensajeDeError(error, 'No pudimos crear tu cuenta. Intenta de nuevo.'));
   }
 

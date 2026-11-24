@@ -20,7 +20,7 @@
     <div class="detalle">
       <div class="detalle__principal">
         <!-- Estado actual -->
-        <section class="panel estado" [class.is-curso]="enCurso()" aria-labelledby="titulo-estado">
+        <section class="panel estado" [class]="'panel estado estado--' + (enCurso() ? 'curso' : estado()?.tono)" aria-labelledby="titulo-estado">
           <div class="estado__texto">
             @if (estado(); as e) {
               <span class="chip" [class]="'chip chip--' + e.tono">{{ e.etiqueta }}</span>
@@ -35,7 +35,7 @@
             }
 
             @if (enCurso() && delivery()) {
-              <app-delivery-code [codigo]="seguimiento.value()?.codigoEntrega ?? null" [motorizado]="seguimiento.value()?.nombreMotorizado ?? null" />
+              <app-delivery-code [invertido]="true" [codigo]="seguimiento.value()?.codigoEntrega ?? null" [motorizado]="seguimiento.value()?.nombreMotorizado ?? null" />
             } @else if (enCurso()) {
               <p class="estado__ayuda">Recógelo en <strong>{{ p.sucursalNombre }}</strong> con el número de pedido.
                 @if (p.vencimientoRecojo) {
@@ -55,7 +55,7 @@
           </div>
 
           @if (enCurso() && seguimiento.value()?.entregaEstimada; as entrega) {
-            <app-eta-countdown class="estado__reloj" [entregaEstimada]="entrega" [minutosTotales]="p.minutosEstimados"
+            <app-eta-countdown class="estado__reloj" [invertido]="true" [entregaEstimada]="entrega" [minutosTotales]="p.minutosEstimados"
               [etiqueta]="delivery() ? 'Llega en' : 'Listo en'" />
           }
         </section>

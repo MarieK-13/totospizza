@@ -22,7 +22,6 @@ import type {
 } from '../../models/api';
 import { ApiClient, type OpcionesPeticion } from './api-client';
 
-/** /api/v1/publico: no requiere sesión. */
 @Injectable({ providedIn: 'root' })
 export class PublicoApi {
   private readonly api = inject(ApiClient);

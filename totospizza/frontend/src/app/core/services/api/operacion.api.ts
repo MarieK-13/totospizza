@@ -15,7 +15,6 @@ import type {
 } from '../../models/api';
 import { ApiClient } from './api-client';
 
-/** Cocina (PIZZERO), despacho (DESPACHADOR) y reparto (MOTORIZADO). */
 @Injectable({ providedIn: 'root' })
 export class OperacionApi {
   private readonly api = inject(ApiClient);

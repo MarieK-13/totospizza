@@ -97,6 +97,9 @@ public class PagoServiceImpl implements PagoService {
         if (CON_TELEFONO.contains(metodo) && esVacio(request.telefonoBilletera())) {
             throw new ReglaNegocioException("DATOS_PAGO_INCOMPLETOS", "Falta el celular de la billetera");
         }
+        if (CON_TELEFONO.contains(metodo) && esVacio(request.codigoAprobacion())) {
+            throw new ReglaNegocioException("DATOS_PAGO_INCOMPLETOS", "Falta el código de aprobación de la billetera");
+        }
     }
 
     @Override
@@ -173,7 +176,7 @@ public class PagoServiceImpl implements PagoService {
         pagoRepository.saveAndFlush(pago);
 
         return new Intento(pago.getId(), new SolicitudCobro(pago.getReferenciaIntento(), request.metodo(),
-                request.tokenTarjeta(), request.telefonoBilletera(), pedido.getTotal()));
+                request.tokenTarjeta(), request.telefonoBilletera(), request.codigoAprobacion(), pedido.getTotal()));
     }
 
     private static String nuevaReferencia(Pedido pedido) {

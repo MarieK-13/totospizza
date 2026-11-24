@@ -1,4 +1,3 @@
-// Enumeraciones del backend (com.totospizza.model.enums). Los valores coinciden exactamente con el JSON.
 
 export type Rol = 'ADMINISTRADOR' | 'CLIENTE' | 'PIZZERO' | 'DESPACHADOR' | 'MOTORIZADO';
 export type TipoDocumento = 'DNI' | 'CE' | 'PASAPORTE';
@@ -36,9 +35,6 @@ export type TipoNotificacion =
 export type TipoParametro = 'TEXTO' | 'NUMERO' | 'BOOLEANO';
 export type DiaSemana = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
 
-/** Fecha y hora ISO-8601 en UTC (java.time.Instant). */
 export type Instante = string;
-/** Fecha ISO `YYYY-MM-DD` (java.time.LocalDate). */
 export type Fecha = string;
-/** Hora ISO `HH:mm:ss` (java.time.LocalTime). */
 export type Hora = string;

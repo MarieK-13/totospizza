@@ -1,0 +1,176 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+@use '../../../../shared/components/account-shell/panel' as cuenta;
+
+:host {
+  display: block;
+}
+
+.confirmacion {
+  display: grid;
+  place-items: center;
+  min-height: calc(100dvh - #{$header-height} - 6rem);
+  padding-block: $space-8 $space-10;
+}
+
+.tarjeta {
+  width: min(100%, 34rem);
+  padding: $space-8 $space-6;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-xl;
+  background:
+    radial-gradient(circle at 50% 0, rgba($color-crema-claro, 0.95), transparent 65%),
+    $color-background-raised;
+  text-align: center;
+  box-shadow: $shadow-md;
+
+  @include up(md) {
+    padding: $space-10 $space-8;
+  }
+
+  &__titulo {
+    margin: $space-5 0 0;
+    font-family: $font-titulos;
+    font-size: clamp(2.25rem, 5vw, 3rem);
+    font-weight: 400;
+    line-height: 1.05;
+    animation: subir 0.5s 0.55s $ease-out both;
+  }
+
+  &__numero {
+    margin: $space-2 0 0;
+    color: $color-text-secondary;
+    font-size: 1rem;
+    animation: subir 0.5s 0.65s $ease-out both;
+
+    strong {
+      color: $color-marron-suave;
+      font-family: $font-datos;
+      font-size: 1.125rem;
+    }
+  }
+
+  &__texto {
+    max-width: 26rem;
+    margin: $space-4 auto 0;
+    color: $color-text-secondary;
+    line-height: 1.5;
+  }
+
+  &__pin {
+    margin: $space-5 0 0;
+    padding: $space-3 $space-4;
+    border-radius: $radius-md;
+    background-color: $tint-amarillo-24;
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+
+  &__acciones {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    margin-top: $space-6;
+
+    @include up(sm) {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  @include reduced-motion {
+    &__titulo,
+    &__numero {
+      animation: none;
+    }
+  }
+}
+
+.seguir {
+  @include cuenta.boton-marron;
+}
+
+.sello {
+  width: 5.5rem;
+  height: 5.5rem;
+
+  &__circulo {
+    fill: $tint-verde-10;
+    stroke: $color-verde-albahaca;
+    stroke-width: 3;
+    stroke-dasharray: 277;
+    stroke-dashoffset: 277;
+    animation: trazar 0.6s $ease-out forwards;
+  }
+
+  &__check {
+    fill: none;
+    stroke: $color-verde-albahaca;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 6;
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+    animation: trazar 0.35s 0.45s $ease-out forwards;
+  }
+
+  @include reduced-motion {
+    &__circulo,
+    &__check {
+      stroke-dashoffset: 0;
+      animation: none;
+    }
+  }
+}
+
+.datos {
+  display: grid;
+  gap: $space-3;
+  margin: $space-6 0 0;
+  padding: $space-4;
+  border-radius: $radius-md;
+  background-color: $color-background-alt;
+  text-align: left;
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    gap: $space-4;
+  }
+
+  dt {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: $space-2;
+    color: $color-text-secondary;
+    font-size: 0.875rem;
+  }
+
+  dd {
+    min-width: 0;
+    margin: 0;
+    font-weight: $weight-semibold;
+    text-align: right;
+  }
+
+  &__metodo {
+    display: block;
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+    font-weight: $weight-regular;
+  }
+}
+
+@keyframes trazar {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}

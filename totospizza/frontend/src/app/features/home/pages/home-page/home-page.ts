@@ -12,15 +12,8 @@ import { RecommendedProducts } from '../../components/recommended-products/recom
 import { SnackCategories } from '../../components/snack-categories/snack-categories';
 
 const ESPERA_MAXIMA_MS = 15_000;
-/** Máximo que acepta el backend por página: el menú completo cabe de sobra. */
 const TAMANO_MENU = 100;
 
-/**
- * Inicio. Dos llamadas para toda la página:
- * - GET /publico/home: promociones (carrusel y "Elige tu Duo") y destacados ("Recomendado para ti").
- * - GET /publico/menu: antojitos y "Explora nuestro menú".
- * Si alguna falla, sus secciones simplemente no se muestran.
- */
 @Component({
   selector: 'app-home-page',
   imports: [HeroCarousel, BenefitsStrip, MenuPreview, OrderNow, RecommendedProducts, CtaBanner, SnackCategories],
@@ -49,7 +42,6 @@ export class HomePage {
   protected readonly cargandoMenu = this.menu.isLoading;
 
   private readonly promociones = computed(() => this.inicio.value()?.promociones ?? []);
-  /** Combos del duo: tipo COMBO. El resto de promociones va al carrusel. */
   protected readonly combos = computed(() => this.promociones().filter((p) => p.tipo === 'COMBO'));
   protected readonly promocionesCarrusel = computed(() => this.promociones().filter((p) => p.tipo !== 'COMBO'));
   protected readonly destacados = computed(() => this.inicio.value()?.destacados ?? []);

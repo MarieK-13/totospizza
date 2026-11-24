@@ -8,11 +8,6 @@ export type EstadoCarga = 'cargando' | 'listo' | 'respaldo';
 
 const CLAVE_LOCAL = 'toto.local';
 
-/**
- * Locales de Toto's y el local elegido por el cliente.
- * Una sola carga para toda la app (header, página Locales, checkout).
- * Si la API no responde se usan los locales de respaldo, sin toast de error.
- */
 @Injectable({ providedIn: 'root' })
 export class LocalesService {
   private readonly api = inject(PublicoApi);
@@ -49,7 +44,6 @@ export class LocalesService {
       if (id === null) sessionStorage.removeItem(CLAVE_LOCAL);
       else sessionStorage.setItem(CLAVE_LOCAL, String(id));
     } catch {
-      // modo privado: la selección vive solo en memoria
     }
   }
 

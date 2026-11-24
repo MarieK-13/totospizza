@@ -6,7 +6,6 @@ export interface PasswordRule {
   readonly test: (value: string) => boolean;
 }
 
-/** Mismas reglas que el backend: 8–72 caracteres, con letras y números. */
 export const PASSWORD_RULES: readonly PasswordRule[] = [
   { id: 'length', label: 'Entre 8 y 72 caracteres', test: (v) => v.length >= 8 && v.length <= 72 },
   { id: 'letter', label: 'Al menos una letra', test: (v) => /[A-Za-z]/.test(v) },
@@ -21,9 +20,7 @@ export const passwordValidator: ValidatorFn = (control: AbstractControl): Valida
     : { password: { message: 'La contraseña no cumple los requisitos' } };
 };
 
-/** Celular peruano: 9 dígitos y empieza con 9 (igual que el backend). */
 export const phoneValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  // Acepta "987 654 321": se ignoran los espacios al validar
   const value = String(control.value ?? '').replace(/\s/g, '');
   if (!value) return null;
   return /^9\d{8}$/.test(value)
@@ -31,7 +28,6 @@ export const phoneValidator: ValidatorFn = (control: AbstractControl): Validatio
     : { phone: { message: 'Debe tener 9 dígitos y empezar con 9' } };
 };
 
-/** Validador de grupo: que dos campos coincidan (confirmar contraseña). */
 export function matchFields(field: string, confirmField: string, message = 'Las contraseñas no coinciden'): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
     const confirm = group.get(confirmField);

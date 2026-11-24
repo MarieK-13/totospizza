@@ -1,7 +1,6 @@
 @use '../../../styles/tokens/variables' as *;
 @use '../../../styles/mixins' as *;
 
-// Estilos compartidos por los formularios de acceso (aviso de error, enlaces, mensajes).
 @mixin alerta {
   display: flex;
   align-items: flex-start;

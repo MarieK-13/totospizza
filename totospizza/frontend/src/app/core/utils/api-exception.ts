@@ -1,6 +1,5 @@
 import type { ApiError, CampoError } from '../models/api';
 
-/** Error de la API ya normalizado por el interceptor de errores. */
 export class ApiException extends Error {
   constructor(readonly api: ApiError) {
     super(api.mensaje);

@@ -6,11 +6,6 @@ import { ToastService } from '../services/toast.service';
 import { ApiException } from '../utils/api-exception';
 import { SKIP_ERROR_TOAST } from './http-context';
 
-/**
- * Convierte cualquier fallo HTTP en un `ApiException` y avisa con un toast.
- * No avisa cuando: la pantalla lo pidió (SKIP_ERROR_TOAST), son errores de campos
- * (los muestra el formulario) o es un 401 (lo gestiona el interceptor de autenticación).
- */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(ToastService);
 

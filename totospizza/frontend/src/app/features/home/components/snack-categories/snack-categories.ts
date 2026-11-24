@@ -5,12 +5,9 @@ import type { ProductoResumenResponse } from '../../../../core/models/api';
 import { imagenDeProducto } from '../../../../core/utils/producto-imagen';
 import { AgregarProductoDirective } from '../../../../shared/directives/agregar-producto.directive';
 
-/** Orden de las pestañas; las categorías nuevas de la base aparecen al final. */
 const ORDEN_CATEGORIAS = ['Pizzas', 'Antojitos', 'Bebidas', 'Salsas'];
-/** Cuántos productos se muestran por pestaña; el resto, en el menú completo. */
 const MAXIMO_POR_CATEGORIA = 6;
 
-/** "Explora nuestro menú": productos reales de la base agrupados por categoría (GET /publico/menu). */
 @Component({
   selector: 'app-snack-categories',
   imports: [RouterLink, LucideAngularModule, AgregarProductoDirective],
@@ -36,7 +33,6 @@ export class SnackCategories {
   });
 
   private readonly elegida = signal<string | null>(null);
-  /** La pestaña elegida, o la primera disponible. */
   protected readonly categoriaActiva = computed(() => {
     const elegida = this.elegida();
     return elegida && this.categorias().includes(elegida) ? elegida : (this.categorias()[0] ?? null);
@@ -54,7 +50,6 @@ export class SnackCategories {
     this.elegida.set(categoria);
   }
 
-  /** Insignia de la tarjeta: "Favorito" para los destacados, o su dieta (Vegetariana, Picante...). */
   protected insignia(producto: ProductoResumenResponse): string | null {
     if (producto.destacado) return 'Favorito';
     return producto.etiquetas.find((e) => !e.slug.startsWith('contiene-') && !e.slug.startsWith('sin-'))?.nombre ?? null;

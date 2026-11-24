@@ -24,10 +24,6 @@ const MENSAJES_GEOLOCALIZACION: Readonly<Record<number, string>> = {
 
 const ETIQUETAS_RAPIDAS = ['Casa', 'Trabajo', 'Universidad'] as const;
 
-/**
- * Agregar o editar una dirección guardada. Las coordenadas salen del GPS del dispositivo
- * (el backend las usa para validar la zona de reparto), el texto lo escribe el cliente.
- */
 @Component({
   selector: 'app-direccion-dialog',
   imports: [ReactiveFormsModule, LucideAngularModule, TextField, CheckboxField],
@@ -36,9 +32,7 @@ const ETIQUETAS_RAPIDAS = ['Casa', 'Trabajo', 'Universidad'] as const;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DireccionDialog {
-  /** `undefined`: cerrado · `null`: nueva dirección · objeto: editar esa dirección. */
   readonly direccion = input<DireccionClienteResponse | null | undefined>(undefined);
-  /** La primera dirección se marca favorita por defecto. */
   readonly esPrimera = input(false);
   readonly guardada = output<DireccionClienteResponse>();
   readonly cerrado = output<void>();
@@ -131,7 +125,6 @@ export class DireccionDialog {
       next: (guardada) => this.guardada.emit(guardada),
       error: (error: unknown) => {
         if (esApiException(error) && error.errores.length > 0) {
-          // El backend nombra los campos anidados como "direccion.distrito": se quita el prefijo
           const errores = error.errores.map((e) => ({ ...e, campo: e.campo.replace(/^direccion\.(?!direccion$)/, '') }));
           const sueltos = aplicarErroresDeCampo(this.form, errores);
           this.error.set(sueltos.length > 0 ? sueltos.join(' ') : 'Revisa los campos marcados.');
@@ -150,7 +143,6 @@ export class DireccionDialog {
     if (evento.target === this.dialogo().nativeElement) this.cerrar();
   }
 
-  /** Esc: el cierre lo decide el padre (quita la dirección en edición). */
   protected alCancelar(evento: Event): void {
     evento.preventDefault();
     this.cerrar();
@@ -178,7 +170,6 @@ export class DireccionDialog {
     this.faltaUbicacion.set(false);
     this.publico.cobertura({ latitud, longitud }).subscribe({
       next: (cobertura) => this.ubicacion.set({ tipo: 'lista', latitud, longitud, cobertura }),
-      // Sin respuesta de cobertura igual se puede guardar: se valida al pagar
       error: () => this.ubicacion.set({ tipo: 'lista', latitud, longitud, cobertura: null }),
     });
   }

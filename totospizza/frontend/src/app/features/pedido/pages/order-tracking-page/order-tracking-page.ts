@@ -16,11 +16,9 @@ import { EtaCountdown } from '../../components/eta-countdown/eta-countdown';
 import { OrderRating } from '../../components/order-rating/order-rating';
 import { TrackingTimeline } from '../../components/tracking-timeline/tracking-timeline';
 
-/** Cada cuánto se refresca el seguimiento mientras el pedido avanza. */
 const INTERVALO_SEGUIMIENTO_MS = 30_000;
 const MAX_MOTIVO = 250;
 
-/** Frase corta para el estado actual: lo primero que lee el cliente. */
 const MENSAJE_ESTADO: Readonly<Record<PedidoResponse['estado'], string>> = {
   PENDIENTE_PAGO: 'Esperando la confirmación del pago.',
   CONFIRMADO: 'Recibimos tu pedido. La cocina ya lo tiene en pantalla.',
@@ -33,7 +31,6 @@ const MENSAJE_ESTADO: Readonly<Record<PedidoResponse['estado'], string>> = {
   NO_RECOGIDO: 'El pedido no se recogió a tiempo.',
 };
 
-/** Detalle de un pedido con seguimiento en vivo, PIN de entrega, cancelación y calificación. */
 @Component({
   selector: 'app-order-tracking-page',
   imports: [RouterLink, LucideAngularModule, AccountShell, EtaCountdown, TrackingTimeline, DeliveryCode, OrderRating],
@@ -54,7 +51,6 @@ export class OrderTrackingPage {
     params: () => this.numero() || undefined,
     stream: ({ params }) => this.api.pedido(params),
   });
-  /** Copia local: se reemplaza al cancelar sin volver a pedir el detalle. */
   protected readonly pedido = linkedSignal<PedidoResponse | undefined>(() => (this.recurso.hasValue() ? this.recurso.value() : undefined));
 
   protected readonly enCurso = computed(() => {
@@ -76,7 +72,6 @@ export class OrderTrackingPage {
     return p ? MENSAJE_ESTADO[this.seguimiento.value()?.estado ?? p.estado] : '';
   });
 
-  /** Etapas del backend; si aún no llegan (o el pedido terminó), se arman con el historial. */
   protected readonly etapas = computed<readonly EtapaSeguimientoResponse[]>(() => {
     const desdeServidor = this.seguimiento.value()?.etapas;
     if (desdeServidor?.length) return desdeServidor;
@@ -111,7 +106,6 @@ export class OrderTrackingPage {
   protected readonly StarIcon = Star;
 
   constructor() {
-    // Mientras el pedido avanza, se consulta el seguimiento y, si cambió el estado, el detalle
     const id = setInterval(() => {
       if (!this.enCurso() || document.hidden) return;
       const antes = this.seguimiento.value()?.estado;
@@ -162,7 +156,6 @@ export class OrderTrackingPage {
   }
 }
 
-/** Respaldo de las 4 etapas a partir del historial de estados del pedido. */
 function etapasDesdeHistorial(p: PedidoResponse): readonly EtapaSeguimientoResponse[] {
   const fecha = (...estados: PedidoResponse['estado'][]) => p.historial.find((h) => estados.includes(h.estado))?.fecha ?? null;
   const orden: PedidoResponse['estado'][] = ['CONFIRMADO', 'EN_PREPARACION', 'EN_HORNO', 'LISTO', 'EN_CAMINO', 'ENTREGADO'];

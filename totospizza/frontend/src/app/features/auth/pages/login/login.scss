@@ -4,7 +4,6 @@
 
 :host {
   display: block;
-  // Campos de esta pantalla: más altos y con esquinas suaves, como en el diseño
   --field-height: 3rem;
   --field-radius: 0.875rem;
 }
@@ -85,13 +84,11 @@
     font-size: inherit;
   }
 
-  // En escritorio la invitación a registrarse ya está en el panel rojo
   @include up(lg) {
     display: none;
   }
 }
 
-// ── Sobre el panel de arte ───────────────────────────────────────────────────
 .cta {
   @include pastilla;
 

@@ -32,6 +32,7 @@
     border: $border-width solid $color-border-strong;
     border-radius: $radius-md;
     background-color: $color-crema-claro;
+    color: $color-text-primary;
     font-family: $font-datos;
     font-size: 1.75rem;
     font-weight: $weight-bold;
@@ -77,5 +78,30 @@
   &__nombre {
     font-weight: $weight-semibold;
     line-height: 1.35;
+  }
+}
+
+:host(.is-invertido) {
+  color: $color-blanco;
+
+  .pin__titulo,
+  .pin__ayuda,
+  .moto__rol {
+    color: rgba($color-blanco, 0.85);
+  }
+
+  .pin__digito {
+    border-color: transparent;
+    background-color: $color-blanco;
+    color: $color-rojo-profundo;
+  }
+
+  .moto {
+    border-top-color: rgba($color-blanco, 0.25);
+  }
+
+  .moto__avatar {
+    background-color: rgba($color-blanco, 0.18);
+    color: $color-blanco;
   }
 }

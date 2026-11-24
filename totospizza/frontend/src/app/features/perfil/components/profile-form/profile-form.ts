@@ -12,7 +12,6 @@ import { aplicarErroresDeCampo } from '../../../../core/utils/form-errors';
 import { phoneValidator } from '../../../../core/utils/form-validators';
 import { TextField } from '../../../../shared/components/text-field/text-field';
 
-/** Datos personales del cliente. Documento y correo se muestran pero no se editan (son su identidad). */
 @Component({
   selector: 'app-profile-form',
   imports: [ReactiveFormsModule, LucideAngularModule, TextField],

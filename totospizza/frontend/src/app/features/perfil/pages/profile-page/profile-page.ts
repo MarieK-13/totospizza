@@ -32,17 +32,14 @@ export class ProfilePage {
 
   protected readonly recurso = rxResource({ stream: () => this.api.perfil() });
 
-  /** Copia local del perfil: se actualiza al guardar sin volver a pedirlo. */
   protected readonly perfil = linkedSignal<PerfilResponse | undefined>(() =>
     this.recurso.hasValue() ? this.recurso.value() : undefined,
   );
 
-  /** Favorita primero; luego en el orden en que se crearon. */
   protected readonly direcciones = computed(() =>
     [...(this.perfil()?.direcciones ?? [])].sort((a, b) => Number(b.favorita) - Number(a.favorita)),
   );
 
-  /** `undefined`: diálogo cerrado · `null`: nueva · objeto: edición. */
   protected readonly enEdicion = signal<DireccionClienteResponse | null | undefined>(undefined);
   protected readonly ocupada = signal<number | null>(null);
   protected readonly porEliminar = signal<number | null>(null);
@@ -63,7 +60,6 @@ export class ProfilePage {
   protected alGuardarDireccion(guardada: DireccionClienteResponse): void {
     const nueva = this.enEdicion() === null;
     this.reemplazarDirecciones((lista) => {
-      // Solo una favorita: el backend desmarca las demás
       const ajustada = guardada.favorita ? lista.map((d) => ({ ...d, favorita: false })) : lista;
       return ajustada.some((d) => d.id === guardada.id)
         ? ajustada.map((d) => (d.id === guardada.id ? guardada : d))
@@ -95,7 +91,6 @@ export class ProfilePage {
   }
 
   protected eliminar(direccion: DireccionClienteResponse): void {
-    // Primer clic pide confirmación en la misma tarjeta; el segundo elimina
     if (this.porEliminar() !== direccion.id) {
       this.porEliminar.set(direccion.id);
       return;

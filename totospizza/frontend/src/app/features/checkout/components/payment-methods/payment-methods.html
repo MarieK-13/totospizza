@@ -1,0 +1,54 @@
+<div class="metodos" role="radiogroup" aria-label="Medio de pago">
+  @for (opcion of opciones(); track opcion.metodo) {
+    <div class="metodo" [class.is-activo]="metodo() === opcion.metodo">
+      <button type="button" role="radio" class="metodo__cabecera" [attr.aria-checked]="metodo() === opcion.metodo" (click)="elegir(opcion.metodo)">
+        <span class="metodo__radio" aria-hidden="true"></span>
+        <span class="metodo__logo" [class]="'metodo__logo metodo__logo--' + opcion.metodo.toLowerCase()" aria-hidden="true">
+          @switch (opcion.metodo) {
+            @case ('YAPE') { yape }
+            @case ('PLIN') { plin }
+            @case ('CMR') { CMR }
+            @default { <lucide-icon [img]="opcion.icono" [size]="18" [strokeWidth]="1.8"></lucide-icon> }
+          }
+        </span>
+        <span class="metodo__texto">
+          <span class="metodo__nombre">{{ opcion.etiqueta }}</span>
+          <span class="metodo__ayuda">{{ opcion.ayuda }}</span>
+        </span>
+      </button>
+
+      @if (metodo() === opcion.metodo) {
+        <div class="metodo__datos">
+          @if (conTarjeta()) {
+            <form class="tarjeta" [formGroup]="tarjeta" novalidate (submit)="$event.preventDefault()">
+              <app-text-field class="tarjeta__numero" formControlName="numero" label="Número de tarjeta" inputmode="numeric" autocomplete="cc-number"
+                placeholder="1234 5678 9012 3456" [maxlength]="19" [required]="true" (input)="formatearNumero($event)" />
+              <app-text-field formControlName="vencimiento" label="Vencimiento" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/AA"
+                [maxlength]="5" [required]="true" (input)="formatearVencimiento($event)" />
+              <app-text-field formControlName="cvv" label="CVV" type="password" inputmode="numeric" autocomplete="cc-csc" placeholder="•••"
+                [maxlength]="4" [required]="true" />
+              <app-text-field class="tarjeta__titular" formControlName="titular" label="Nombre en la tarjeta" autocomplete="cc-name" [maxlength]="80" [required]="true" />
+            </form>
+          } @else {
+            <form class="billetera" [formGroup]="billetera" novalidate (submit)="$event.preventDefault()">
+              <app-text-field formControlName="telefono" [label]="'Celular afiliado a ' + opcion.etiqueta" type="tel" inputmode="tel" autocomplete="tel-national"
+                placeholder="987 654 321" [maxlength]="11" [required]="true" />
+              <app-text-field formControlName="codigo" label="Código de aprobación" inputmode="numeric" autocomplete="one-time-code"
+                placeholder="123456" [maxlength]="6" [required]="true" (input)="formatearCodigo($event)" />
+              <div class="billetera__ayuda">
+                <p>{{ ayudaCodigo(opcion.metodo) }}</p>
+                @if (modoPrueba) {
+                  @if (codigoPrueba(); as codigo) {
+                    <p class="billetera__prueba" aria-live="polite">Código de prueba: <strong>{{ codigo }}</strong> (solo en modo de prueba)</p>
+                  } @else {
+                    <button type="button" class="billetera__generar" (click)="generarCodigoPrueba()">Generar código de prueba</button>
+                  }
+                }
+              </div>
+            </form>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -60,6 +60,20 @@ export const routes: Routes = [
         title: "Política de privacidad | Toto's Pizza",
         loadComponent: () => import('./pages/privacidad/privacidad').then((m) => m.Privacidad),
       },
+      // Compra: solo clientes con sesión
+      {
+        path: 'checkout',
+        canActivate: [roleGuard('CLIENTE')],
+        title: "Finaliza tu pedido | Toto's Pizza",
+        loadComponent: () => import('./features/checkout/pages/checkout-page/checkout-page').then((m) => m.CheckoutPage),
+      },
+      {
+        path: 'pedido-confirmado/:numero',
+        canActivate: [roleGuard('CLIENTE')],
+        title: "¡Pedido recibido! | Toto's Pizza",
+        loadComponent: () =>
+          import('./features/pedido/pages/order-confirmation-page/order-confirmation-page').then((m) => m.OrderConfirmationPage),
+      },
       // Mi cuenta: solo clientes con sesión
       {
         path: 'perfil',
@@ -112,24 +126,5 @@ export const routes: Routes = [
       import('./features/auth/pages/restablecer-contrasena/restablecer-contrasena').then((m) => m.RestablecerContrasena),
   },
 
-  // TEMPORAL: vista previa de los demás layouts. Borrar cuando existan las páginas reales.
-  {
-    path: 'dev/admin',
-    data: { titulo: 'Administración' },
-    loadComponent: () =>
-      import('./layout/dashboard-layout/dashboard-layout').then((m) => m.DashboardLayout),
-    children: [{ path: '', loadComponent: previewComponent }],
-  },
-  {
-    path: 'dev/cocina',
-    data: { titulo: 'Cocina' },
-    loadComponent: () => import('./layout/staff-layout/staff-layout').then((m) => m.StaffLayout),
-    children: [{ path: '', loadComponent: previewComponent }],
-  },
-
   { path: '**', redirectTo: '' },
 ];
-
-function previewComponent() {
-  return import('./layout/layout-preview/layout-preview').then((m) => m.LayoutPreview);
-}

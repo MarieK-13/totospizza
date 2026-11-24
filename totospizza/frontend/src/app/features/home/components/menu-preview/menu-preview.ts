@@ -16,22 +16,16 @@ interface Tarjeta {
   readonly producto: ProductoResumenResponse;
   readonly imagen: string | null;
   readonly insignia: string;
-  /** "4.7" o null si aún no tiene reseñas. */
   readonly valoracion: string | null;
   readonly tags: readonly Tag[];
 }
 
-/** Las etiquetas del backend: "contiene-*" son alérgenos; picante y el resto, dietas. */
 function tipoDeEtiqueta(etiqueta: EtiquetaResponse): TipoTag {
   if (etiqueta.slug.startsWith('contiene-')) return 'alergeno';
   if (etiqueta.slug === 'picante') return 'picante';
   return 'dieta';
 }
 
-/**
- * "Recomendado para ti": productos destacados de la base (GET /publico/home → destacados).
- * "Añadir" agrega al carrito; si es una pizza lleva a elegir tamaño y masa.
- */
 @Component({
   selector: 'app-menu-preview',
   imports: [RouterLink, LucideAngularModule, AgregarProductoDirective],
@@ -70,7 +64,6 @@ export class MenuPreview {
     this.canNext.set(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
   }
 
-  /** Avanza o retrocede una "página" de tarjetas visibles. */
   protected mover(direccion: 1 | -1): void {
     const el = this.track()?.nativeElement;
     el?.scrollBy({ left: direccion * el.clientWidth * 0.9, behavior: 'smooth' });

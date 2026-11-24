@@ -12,7 +12,6 @@
   height: auto;
   overflow: visible;
   cursor: grab;
-  // Arrastre horizontal gira la pizza; vertical sigue desplazando la página en el celular
   touch-action: pan-y;
   user-select: none;
   @include focus-ring($color-brand-primary, 4px);
@@ -26,7 +25,6 @@
   }
 }
 
-// Anillo que aparece al arrastrar un ingrediente encima
 .destino {
   fill: none;
   stroke: $color-brand-primary;
@@ -41,7 +39,6 @@
   animation: girar-anillo 6s linear infinite;
 }
 
-// Crece y se encoge desde el centro con un pequeño rebote
 .pizza {
   transform: scale(var(--escala, 0.8));
   transform-origin: 0 0;
@@ -64,7 +61,6 @@
   transform: scale(calc(var(--escala, 0.8) * 1.03));
 }
 
-// La salsa se esparce en espiral desde el centro, como con el cucharón
 .salsa {
   transform-origin: 0 0;
   animation: esparcir 0.75s $ease-out both;
@@ -75,7 +71,6 @@
   animation: aparecer 0.6s 0.5s $ease-out both;
 }
 
-// El queso cae rallado y luego se funde
 .queso__derretido {
   opacity: 0.96;
   animation: fundir 0.5s 0.55s $ease-out both;
@@ -88,7 +83,6 @@
   animation-delay: calc(var(--orden, 0) * 14ms);
 }
 
-// Cada trozo cae sobre la pizza, uno tras otro
 .pieza {
   transform-box: fill-box;
   transform-origin: center;
@@ -96,7 +90,6 @@
   animation-delay: calc(var(--orden, 0) * 35ms);
 }
 
-// Horneado: aparece de a poco
 .horno {
   opacity: 0;
   transition: opacity 1.8s $ease-out;
@@ -236,7 +229,6 @@
     animation: none;
   }
 
-  // Sin animación el rallado no desaparece solo: se oculta y queda el queso derretido
   .queso__rallado {
     display: none;
   }

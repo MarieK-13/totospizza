@@ -1,0 +1,39 @@
+<section class="resumen" aria-labelledby="resumen-titulo">
+  <h2 id="resumen-titulo" class="resumen__titulo">Tu pedido</h2>
+
+  <ul class="lineas">
+    @for (linea of lineas(); track linea.clave) {
+      <li class="linea">
+        <span class="linea__foto" aria-hidden="true">
+          @if (linea.imagenUrl) {
+            <img [src]="linea.imagenUrl" alt="" width="48" height="48" loading="lazy" />
+          }
+          <span class="linea__cantidad">{{ linea.cantidad }}</span>
+        </span>
+        <span class="linea__texto">
+          <span class="linea__nombre">{{ linea.nombre }}</span>
+          @if (linea.detalle) {
+            <span class="linea__detalle">{{ linea.detalle }}</span>
+          }
+        </span>
+        <span class="linea__precio">{{ soles(linea.subtotal) }}</span>
+      </li>
+    }
+  </ul>
+
+  <dl class="montos">
+    <div><dt>Subtotal</dt><dd>{{ soles(subtotal()) }}</dd></div>
+    @if (descuento() > 0) {
+      <div class="montos__descuento"><dt>Descuento</dt><dd>−{{ soles(descuento()) }}</dd></div>
+    }
+    @if (!esRecojo()) {
+      <div><dt>Delivery</dt><dd>{{ envio() === null ? 'Por elegir' : envio() === 0 ? 'Gratis' : soles(envio()) }}</dd></div>
+    }
+    <div class="montos__total"><dt>Total a pagar</dt><dd>{{ soles(total()) }}</dd></div>
+  </dl>
+  @if (aviso()) {
+    <p class="resumen__aviso">{{ aviso() }}</p>
+  }
+
+  <ng-content />
+</section>

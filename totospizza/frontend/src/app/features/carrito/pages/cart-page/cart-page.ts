@@ -10,22 +10,13 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { CatalogoService } from '../../../../core/services/catalogo.service';
 import { CANTIDAD_MAXIMA_ITEM, CartService, type LineaCarrito } from '../../../../core/services/cart.service';
 import { EntregaService } from '../../../../core/services/entrega.service';
+import { COSTO_DELIVERY_BASE_DEFECTO, ENVIO_GRATIS_DESDE_DEFECTO, calcularEnvio, redondear } from '../../../../core/utils/envio';
 import { formatearSoles } from '../../../../core/utils/money';
 import { EntregaDialog, type AccionEntrega } from '../../../../shared/components/entrega-dialog/entrega-dialog';
 import { ProductCard } from '../../../../shared/components/product-card/product-card';
 
-/** Respaldo si /publico/configuracion no responde (mismos valores por defecto del backend). */
-const ENVIO_GRATIS_DESDE = 49;
-const COSTO_DELIVERY_BASE = 5;
-/** Cuántas sugerencias para acompañar se muestran. */
 const MAX_ACOMPANANTES = 8;
 
-/**
- * Carrito. Funciona con y sin sesión:
- * - Invitado: muestra lo guardado en el navegador y pide iniciar sesión para pagar (el carrito se sube solo).
- * - Cliente: muestra el carrito del backend y continúa al pago.
- * El envío es referencial; el backend recalcula todo al confirmar el pedido.
- */
 @Component({
   selector: 'app-cart-page',
   imports: [NgTemplateOutlet, RouterLink, LucideAngularModule, EntregaDialog, ProductCard],
@@ -44,7 +35,6 @@ export class CartPage {
     stream: () => this.api.configuracion({ context: peticionSilenciosa() }).pipe(catchError(() => of(null))),
   });
 
-  /** Menú completo: da los slugs de los ítems del backend y las sugerencias para acompañar. */
   private readonly menu = rxResource({
     stream: () => this.catalogo.menu({ tamano: 100 }, { context: peticionSilenciosa() }).pipe(catchError(() => of(null))),
   });
@@ -52,12 +42,10 @@ export class CartPage {
     () => new Map((this.menu.value()?.contenido ?? []).map((p) => [p.nombre.toLowerCase(), p.slug] as const)),
   );
 
-  /** Líneas con su enlace al detalle (si el producto sigue en el menú). */
   protected readonly lineas = computed(() =>
     this.cart.lineas().map((l) => ({ ...l, slug: l.slug ?? this.slugPorNombre().get(l.nombre.toLowerCase()) ?? null })),
   );
 
-  /** Bebidas y salsas que aún no están en el carrito, para sumar a último momento. */
   protected readonly acompanantes = computed(() => {
     const enCarrito = new Set(this.cart.lineas().map((l) => l.nombre.toLowerCase()));
     return (this.menu.value()?.contenido ?? [])
@@ -70,19 +58,14 @@ export class CartPage {
 
   protected readonly subtotal = this.cart.subtotal;
   private readonly envioGratisDesde = computed(
-    () => this.cart.carrito()?.montos.envioGratisDesde ?? this.configuracion.value()?.envioGratisDesde ?? ENVIO_GRATIS_DESDE,
+    () => this.cart.carrito()?.montos.envioGratisDesde ?? this.configuracion.value()?.envioGratisDesde ?? ENVIO_GRATIS_DESDE_DEFECTO,
   );
 
-  /** null = aún no se eligió cómo recibirlo. */
-  protected readonly envio = computed<number | null>(() => {
-    const e = this.entrega();
-    if (!e) return null;
-    if (e.tipo === 'RECOJO' || this.subtotal() >= this.envioGratisDesde()) return 0;
-    return e.costoEnvio ?? this.configuracion.value()?.costoDeliveryBase ?? COSTO_DELIVERY_BASE;
-  });
-  protected readonly total = computed(() => Math.round((this.subtotal() + (this.envio() ?? 0)) * 100) / 100);
+  protected readonly envio = computed(() =>
+    calcularEnvio(this.entrega(), this.subtotal(), this.envioGratisDesde(), this.configuracion.value()?.costoDeliveryBase ?? COSTO_DELIVERY_BASE_DEFECTO),
+  );
+  protected readonly total = computed(() => redondear(this.subtotal() + (this.envio() ?? 0)));
 
-  /** Barra de envío gratis: solo tiene sentido en delivery. */
   protected readonly faltaEnvioGratis = computed(() => Math.max(0, Math.round((this.envioGratisDesde() - this.subtotal()) * 100) / 100));
   protected readonly avanceEnvioGratis = computed(() => Math.min(100, Math.round((this.subtotal() / this.envioGratisDesde()) * 100)));
   protected readonly mostrarEnvioGratis = computed(() => this.entrega()?.tipo !== 'RECOJO');
@@ -119,7 +102,6 @@ export class CartPage {
     this.accionEntrega.set('elegir');
   }
 
-  /** Evita doble clic mientras responde el backend; los errores los muestra el interceptor. */
   private ejecutar(clave: string, accion$: ReturnType<CartService['vaciarTodo']>): void {
     if (this.ocupado()) return;
     this.ocupado.set(clave);

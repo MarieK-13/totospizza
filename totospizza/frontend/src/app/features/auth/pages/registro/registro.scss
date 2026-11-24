@@ -73,7 +73,6 @@
   text-align: center;
 }
 
-// Prefijo del teléfono: bandera de Perú dibujada con CSS + código
 .prefijo {
   display: inline-flex;
   flex: none;
@@ -95,7 +94,6 @@
   box-shadow: 0 0 0 1px rgba($color-cafe-tostado, 0.15);
 }
 
-// ── Sobre la foto ────────────────────────────────────────────────────────────
 .volver {
   @include pastilla;
   position: absolute;

@@ -11,10 +11,6 @@ export interface OpcionesPeticion {
   readonly context?: HttpContext;
 }
 
-/**
- * Envoltura delgada de HttpClient: antepone la URL base, descarta parámetros vacíos
- * y deja un único punto para cambiar cómo se habla con el backend.
- */
 @Injectable({ providedIn: 'root' })
 export class ApiClient {
   private readonly http = inject(HttpClient);
@@ -49,7 +45,6 @@ export class ApiClient {
   }
 }
 
-/** Quita null, undefined y cadenas vacías para no enviar `?q=&estado=`. */
 function limpiar(params?: Parametros): Record<string, string | number | boolean> | undefined {
   if (!params) return undefined;
   const salida: Record<string, string | number | boolean> = {};

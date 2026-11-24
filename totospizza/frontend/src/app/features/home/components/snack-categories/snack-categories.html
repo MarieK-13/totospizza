@@ -1,7 +1,6 @@
 @if (categorias().length > 0) {
 <section class="explore-menu-section" aria-label="Explora nuestro menú">
   <div class="explore-menu-section__container">
-    <!-- Cabecera centrada -->
     <header class="explore-header">
       <span class="eyebrow">
         <span class="eyebrow__dot"></span>
@@ -14,7 +13,6 @@
         Del clasicismo italiano a sabores que solo podían nacer en Ica. Elige una categoría y súmalo a tu pedido.
       </p>
 
-      <!-- Pestañas de Categoría Interactivas -->
       <div class="category-tabs" role="tablist" aria-label="Categorías del menú">
         @for (cat of categorias(); track cat) {
           <button
@@ -31,7 +29,6 @@
       </div>
     </header>
 
-    <!-- Grid de 2 Columnas con Tarjetas Horizontales -->
     <div class="menu-cards-grid" role="tabpanel">
       @for (item of itemsFiltrados(); track item.id) {
         <article class="menu-item-card">
@@ -74,7 +71,6 @@
       }
     </div>
 
-    <!-- Botón centrado inferior -->
     <div class="explore-footer">
       <a routerLink="/menu" class="btn-full-menu">
         <span>Ver menú completo</span>

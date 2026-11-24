@@ -2,11 +2,6 @@ import type { AbstractControl, FormGroup } from '@angular/forms';
 import { take } from 'rxjs';
 import type { CampoError } from '../models/api';
 
-/**
- * Pasa los errores de validación del backend a los controles del formulario.
- * Cada error queda en `control.errors.servidor` y se quita solo cuando la persona vuelve a escribir.
- * Devuelve los mensajes que no corresponden a ningún campo (para mostrarlos arriba del formulario).
- */
 export function aplicarErroresDeCampo(form: FormGroup, errores: readonly CampoError[]): readonly string[] {
   const sueltos: string[] = [];
   for (const { campo, mensaje } of errores) {

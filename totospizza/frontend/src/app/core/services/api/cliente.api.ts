@@ -23,7 +23,6 @@ import type {
 } from '../../models/api';
 import { ApiClient, type OpcionesPeticion } from './api-client';
 
-/** /api/v1/cliente: requiere rol CLIENTE. */
 @Injectable({ providedIn: 'root' })
 export class ClienteApi {
   private readonly api = inject(ApiClient);
@@ -50,8 +49,8 @@ export class ClienteApi {
   }
 
   // ---- Pedidos ----
-  checkout(cuerpo: CheckoutRequest): Observable<CheckoutResponse> {
-    return this.api.post('/cliente/pedidos', cuerpo);
+  checkout(cuerpo: CheckoutRequest, opciones?: OpcionesPeticion): Observable<CheckoutResponse> {
+    return this.api.post('/cliente/pedidos', cuerpo, opciones);
   }
 
   misPedidos(paginacion: PaginaParams = {}): Observable<PageResponse<PedidoResumenResponse>> {

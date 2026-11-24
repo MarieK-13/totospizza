@@ -7,10 +7,6 @@ interface ReglaDocumento {
   readonly ayuda: string;
 }
 
-/**
- * Formato de cada documento. Todos caben dentro de lo que acepta el backend
- * (8 a 20 caracteres alfanuméricos), pero son más estrictos según el tipo.
- */
 export const REGLAS_DOCUMENTO: Readonly<Record<TipoDocumento, ReglaDocumento>> = {
   DNI: { etiqueta: 'DNI', patron: /^\d{8}$/, ayuda: 'El DNI tiene 8 dígitos' },
   CE: { etiqueta: 'Carné de extranjería', patron: /^\d{9}$/, ayuda: 'El carné de extranjería tiene 9 dígitos' },
@@ -22,7 +18,6 @@ export const OPCIONES_DOCUMENTO = (Object.keys(REGLAS_DOCUMENTO) as TipoDocument
   etiqueta: REGLAS_DOCUMENTO[valor].etiqueta,
 }));
 
-/** Valida el número según el tipo elegido en el control hermano `tipoDocumento`. */
 export function documentoValidator(campoTipo = 'tipoDocumento'): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const valor = String(control.value ?? '');
@@ -33,7 +28,6 @@ export function documentoValidator(campoTipo = 'tipoDocumento'): ValidatorFn {
   };
 }
 
-/** La fecha debe ser pasada (igual que el backend con @Past) y razonable. */
 export const fechaPasadaValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const valor = String(control.value ?? '');
   if (!valor) return null;
@@ -46,7 +40,6 @@ export const fechaPasadaValidator: ValidatorFn = (control: AbstractControl): Val
   return null;
 };
 
-/** Hoy en formato yyyy-MM-dd, para el atributo `max` del campo de fecha. */
 export function ayerIso(): string {
   const ayer = new Date();
   ayer.setDate(ayer.getDate() - 1);
