@@ -1,10 +1,5 @@
 package com.totospizza.exception;
 
-/**
- * Base de los errores previstos por el negocio. Lleva el código HTTP y un código funcional
- * estable que el frontend usa para decidir qué mostrar. El manejador global la traduce a
- * {@code ApiError}.
- */
 public abstract class NegocioException extends RuntimeException {
 
     private final int estado;

@@ -8,10 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import com.totospizza.dto.common.ApiError;
 
-/**
- * Escribe un {@link ApiError} como JSON desde los filtros de seguridad, donde el manejador global
- * de excepciones no llega. Se arma a mano para no depender de la versión de Jackson.
- */
 final class ErrorJsonWriter {
 
     private ErrorJsonWriter() {

@@ -1,0 +1,111 @@
+<h1 class="sr-only">Menú</h1>
+
+<div class="barra">
+  <div class="wrap">
+    <nav class="tabs" aria-label="Categorías">
+      <button type="button" class="tab" [class.is-activa]="!categoria()" [attr.aria-pressed]="!categoria()" (click)="elegirCategoria('')">Ver todo</button>
+      @for (c of filtros.value()?.categorias ?? []; track c.id) {
+        <button type="button" class="tab" [class.is-activa]="categoria() === c.slug" [attr.aria-pressed]="categoria() === c.slug" (click)="elegirCategoria(c.slug)">{{ c.nombre }}</button>
+      }
+    </nav>
+  </div>
+</div>
+
+<section id="resultados" class="wrap resultados" aria-label="Productos" [attr.aria-busy]="cargando()">
+  <div class="herramientas">
+    <h2 class="herramientas__conteo">
+      @if (respuesta(); as r) {
+        {{ r.totalElementos }} {{ r.totalElementos === 1 ? 'resultado' : 'resultados' }}
+      } @else {
+        Cargando…
+      }
+    </h2>
+
+    <div class="herramientas__acciones">
+      @if (buscando()) {
+        <search class="buscador" role="search">
+          <label for="buscar" class="sr-only">Buscar en el menú</label>
+          <lucide-icon class="buscador__icono" [img]="SearchIcon" [size]="18" [strokeWidth]="1.6" aria-hidden="true"></lucide-icon>
+          <input id="buscar" type="search" class="buscador__campo" placeholder="Buscar por nombre" autocomplete="off" [value]="texto()" (input)="alEscribir($event)" />
+          <button type="button" class="buscador__cerrar" aria-label="Cerrar búsqueda" (click)="cerrarBusqueda()">
+            <lucide-icon [img]="ClearIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+          </button>
+        </search>
+      } @else {
+        <button type="button" class="icono-boton" aria-label="Buscar en el menú" (click)="abrirBusqueda()">
+          <lucide-icon [img]="SearchIcon" [size]="20" [strokeWidth]="1.6" aria-hidden="true"></lucide-icon>
+        </button>
+      }
+
+      <div class="vista" role="group" aria-label="Vista">
+        <span class="vista__texto">Vista:</span>
+        <button type="button" class="vista__boton" [class.is-activa]="vista() === 'grilla'" [attr.aria-pressed]="vista() === 'grilla'" aria-label="Cuadrícula" (click)="cambiarVista('grilla')">
+          <lucide-icon [img]="GridIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        </button>
+        <button type="button" class="vista__boton" [class.is-activa]="vista() === 'lista'" [attr.aria-pressed]="vista() === 'lista'" aria-label="Lista" (click)="cambiarVista('lista')">
+          <lucide-icon [img]="ListIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        </button>
+      </div>
+
+      <label class="orden">
+        <lucide-icon [img]="SortIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <span class="sr-only">Ordenar por</span>
+        <select class="orden__select" (change)="cambiarOrden($event)" [value]="orden()">
+          @for (o of opcionesOrden; track o.valor) {
+            <option [value]="o.valor" [selected]="o.valor === orden()">{{ o.etiqueta }}</option>
+          }
+        </select>
+        <lucide-icon class="orden__flecha" [img]="ChevronIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+      </label>
+    </div>
+  </div>
+
+  @if ((filtros.value()?.etiquetas?.length ?? 0) > 0) {
+    <div class="filtros" role="group" aria-label="Filtrar por">
+      @for (e of filtros.value()?.etiquetas ?? []; track e.id) {
+        <button type="button" class="filtro" [class.is-activo]="etiqueta() === e.slug" [attr.aria-pressed]="etiqueta() === e.slug" (click)="alternarEtiqueta(e.slug)">{{ e.nombre }}</button>
+      }
+      @if (hayFiltros()) {
+        <button type="button" class="limpiar" (click)="limpiar()">Limpiar filtros</button>
+      }
+    </div>
+  }
+
+  @if (resultados.error()) {
+    <div class="estado" role="alert">
+      <p class="estado__titulo">No pudimos cargar el menú</p>
+      <p class="estado__texto">Revisa tu conexión e intenta de nuevo.</p>
+      <button type="button" class="btn btn--primary" (click)="reintentar()">
+        <lucide-icon [img]="RetryIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        Reintentar
+      </button>
+    </div>
+  } @else if (cargando() && !respuesta()) {
+    <ul class="grilla" [class.es-lista]="vista() === 'lista'" aria-hidden="true">
+      @for (i of esqueletos; track i) {
+        <li class="esqueleto"></li>
+      }
+    </ul>
+  } @else if (respuesta()) {
+    @if (productos().length === 0) {
+      <div class="estado">
+        <lucide-icon class="estado__icono" [img]="EmptyIcon" [size]="40" [strokeWidth]="1.2" aria-hidden="true"></lucide-icon>
+        <p class="estado__titulo">No encontramos productos</p>
+        <p class="estado__texto">Prueba con otro nombre o quita algún filtro.</p>
+        <button type="button" class="btn btn--secondary" (click)="limpiar()">Limpiar filtros</button>
+      </div>
+    } @else {
+      <ul class="grilla" [class.es-lista]="vista() === 'lista'" [class.is-cargando]="cargando()">
+        @for (producto of productos(); track producto.id) {
+          <li><app-product-card [producto]="producto" [vista]="vista()" [conInfo]="true" (informacion)="infoProducto.set($event)" /></li>
+        }
+      </ul>
+      @if (incompleto()) {
+        <p class="aviso-corte">Mostramos los primeros {{ productos().length }} productos. Usa los filtros o la búsqueda para ver el resto.</p>
+      }
+    }
+  }
+  <p class="sr-only" aria-live="polite">{{ cargando() ? 'Cargando productos' : '' }}</p>
+</section>
+
+<app-product-info-dialog [producto]="infoProducto()" (cerrado)="infoProducto.set(null)" />

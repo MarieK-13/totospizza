@@ -1,0 +1,45 @@
+<div class="scrim" (click)="closed.emit()" aria-hidden="true"></div>
+
+<aside class="sidebar" aria-label="Panel lateral">
+  <div class="sidebar__head">
+    <a routerLink="/" class="sidebar__brand" aria-label="Toto's Pizza, ir al sitio">
+      <span class="sidebar__brand-name">Toto's Pizza</span>
+    </a>
+    <button type="button" class="sidebar__close" (click)="closed.emit()" aria-label="Cerrar menú">
+      <lucide-icon [img]="CloseIcon" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+    </button>
+  </div>
+
+  <nav class="sidebar__nav" aria-label="Secciones">
+    @for (item of items(); track item.route) {
+      @if (item.section) {
+        <p class="sidebar__section">{{ item.section }}</p>
+      }
+      <a
+        class="sidebar__link"
+        [routerLink]="item.route"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: !!item.exact }"
+        (click)="closed.emit()"
+      >
+        @if (item.icon) {
+          <lucide-icon [img]="item.icon" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+        }
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar__user">
+    <span class="sidebar__avatar" aria-hidden="true">{{ initials() }}</span>
+    <div class="sidebar__user-text">
+      <strong>{{ userName() }}</strong>
+      @if (userRole()) {
+        <span>{{ userRole() }}</span>
+      }
+    </div>
+    <button type="button" class="sidebar__logout" (click)="logout.emit()" aria-label="Cerrar sesión">
+      <lucide-icon [img]="LogoutIcon" [size]="18" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+    </button>
+  </div>
+</aside>

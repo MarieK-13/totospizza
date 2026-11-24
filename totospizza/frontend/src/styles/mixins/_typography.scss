@@ -1,0 +1,28 @@
+@use 'sass:map';
+@use '../tokens/variables' as *;
+@use 'breakpoints' as *;
+
+@mixin text($level) {
+  $style: map.get($type-scale, $level);
+  @if not $style {
+    @error "Nivel tipográfico desconocido: #{$level}";
+  }
+
+  font-family: map.get($style, font);
+  font-weight: map.get($style, weight);
+  font-size: map.get($style, size);
+  line-height: map.get($style, line);
+
+  @if map.has-key($style, tracking) {
+    letter-spacing: map.get($style, tracking);
+  }
+  @if map.get($style, uppercase) {
+    text-transform: uppercase;
+  }
+  @if map.has-key($style, size-md) {
+    @include up(md) {
+      font-size: map.get($style, size-md);
+      line-height: map.get($style, line-md);
+    }
+  }
+}

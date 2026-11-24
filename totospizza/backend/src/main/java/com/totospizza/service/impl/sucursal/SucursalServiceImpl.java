@@ -133,7 +133,6 @@ public class SucursalServiceImpl implements SucursalService {
         }
     }
 
-    /** Minutos de preparación más el trayecto; alimenta el reloj de cuenta regresiva del pedido. */
     private int minutosEstimados(BigDecimal distanciaKm) {
         int preparacion = parametros.entero(ParametroClaves.MINUTOS_PREPARACION, ParametroClaves.MINUTOS_PREPARACION_DEFECTO);
         int porKm = parametros.entero(ParametroClaves.MINUTOS_POR_KM, ParametroClaves.MINUTOS_POR_KM_DEFECTO);
@@ -163,7 +162,6 @@ public class SucursalServiceImpl implements SucursalService {
                 });
     }
 
-    /** Un horario por día. Se actualiza en el lugar para respetar la restricción única sucursal + día. */
     private void sincronizarHorarios(Sucursal sucursal, List<HorarioSucursalRequest> pedidos) {
         Map<DayOfWeek, HorarioSucursalRequest> porDia = pedidos.stream()
                 .collect(Collectors.toMap(HorarioSucursalRequest::diaSemana, Function.identity(), (a, b) -> {

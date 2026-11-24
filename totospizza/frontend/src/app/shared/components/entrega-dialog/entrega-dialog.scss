@@ -1,0 +1,444 @@
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+// Marrón de la marca para la opción activa y el botón principal
+$marron: $color-marron-suave;
+$marron-hover: $color-cafe-tostado;
+
+.entrega {
+  width: min(100% - #{$space-6}, 34rem);
+  max-height: calc(100dvh - #{$space-8});
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: $radius-xl;
+  background-color: $color-background-raised;
+  color: $color-text-primary;
+  box-shadow: $shadow-xl;
+
+  &::backdrop {
+    background-color: rgba($color-cafe-tostado, 0.55);
+    backdrop-filter: blur(2px);
+  }
+
+  &[open] {
+    display: flex;
+    flex-direction: column;
+    animation: aparecer 0.22s $ease-out;
+  }
+
+  &__cabecera {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    padding: $space-5 $space-10 $space-4;
+  }
+
+  &__titulo {
+    margin: 0;
+    font-family: $font-cuerpo;
+    font-size: 1.0625rem;
+    font-weight: $weight-semibold;
+    color: $color-text-secondary;
+  }
+
+  &__cerrar {
+    position: absolute;
+    top: 50%;
+    right: $space-4;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: $color-brand-primary;
+    cursor: pointer;
+    transform: translateY(-50%);
+    @include transition((background-color));
+    @include focus-ring;
+
+    &:hover {
+      background-color: $tint-rojo-8;
+    }
+  }
+
+  &__cuerpo {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+    min-height: 15rem;
+    padding: $space-4 $space-5 $space-5;
+    overflow-y: auto;
+  }
+
+  &__pie {
+    flex: none;
+    padding: $space-4 $space-5;
+    border-top: $border-width solid $color-border-default;
+  }
+}
+
+// ── Delivery / Recojo ───────────────────────────────────────────────────────
+.segmento {
+  display: grid;
+  flex: none;
+  grid-template-columns: 1fr 1fr;
+  margin-inline: $space-5;
+  padding: 3px;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-pill;
+  background-color: $color-crema-claro;
+
+  &__opcion {
+    height: 2.5rem;
+    border: 0;
+    border-radius: $radius-pill;
+    background: none;
+    color: $color-text-secondary;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: $weight-semibold;
+    cursor: pointer;
+    @include transition((background-color, color, box-shadow));
+    @include focus-ring;
+
+    &:hover:not(.is-activa) {
+      color: $color-text-primary;
+    }
+
+    &.is-activa {
+      background-color: $marron;
+      color: $color-text-inverse;
+      box-shadow: $shadow-sm;
+    }
+  }
+}
+
+.ubicar {
+  display: inline-flex;
+  align-self: center;
+  align-items: center;
+  gap: $space-2;
+  height: 2.5rem;
+  padding-inline: $space-4;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-pill;
+  background-color: $color-background-raised;
+  color: $color-text-primary;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: $weight-semibold;
+  cursor: pointer;
+  @include transition((border-color, color));
+  @include focus-ring;
+
+  &:hover:not(:disabled) {
+    border-color: $marron;
+    color: $marron;
+  }
+
+  &:disabled {
+    cursor: progress;
+    opacity: 0.75;
+  }
+}
+
+.gira {
+  animation: girar 0.9s linear infinite;
+}
+
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-6 $space-4;
+  text-align: center;
+  list-style: none;
+
+  &__icono {
+    color: $color-text-secondary;
+  }
+
+  &__texto {
+    max-width: 22rem;
+    margin: 0;
+    color: $color-text-secondary;
+    font-size: 0.9375rem;
+  }
+}
+
+.resultado {
+  padding: $space-4;
+  border-radius: $radius-md;
+
+  &--ok {
+    background-color: $tint-verde-10;
+  }
+
+  &--no {
+    background-color: $tint-rojo-8;
+  }
+
+  &__titulo {
+    margin: 0 0 $space-2;
+    font-weight: $weight-bold;
+  }
+
+  &--ok &__titulo {
+    color: $color-success;
+  }
+
+  &--no &__titulo {
+    color: $color-brand-primary;
+  }
+
+  &__texto {
+    margin: 0 0 $space-2;
+    font-size: 0.9375rem;
+  }
+}
+
+.datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2 $space-5;
+  margin: 0;
+
+  &__item {
+    dt {
+      display: flex;
+      align-items: center;
+      gap: $space-1;
+      color: $color-text-secondary;
+      font-size: 0.75rem;
+    }
+
+    dd {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: $weight-semibold;
+    }
+  }
+}
+
+.campos {
+  display: grid;
+  gap: $space-3;
+
+  @include up(sm) {
+    grid-template-columns: 3fr 2fr;
+  }
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  min-width: 0;
+
+  &--ancho {
+    grid-column: 1 / -1;
+  }
+
+  &__etiqueta {
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
+
+    small {
+      color: $color-text-secondary;
+      font-weight: $weight-regular;
+    }
+  }
+
+  &__input {
+    height: 2.75rem;
+    padding-inline: $space-3;
+    border: $border-width solid $color-border-default;
+    border-radius: $radius-md;
+    background-color: $color-background-raised;
+    color: $color-text-primary;
+    font: inherit;
+    font-size: 1rem; // 16px: evita el zoom automático en iOS
+    @include transition((border-color, box-shadow));
+
+    &:focus-visible {
+      outline: none;
+      border-color: $marron;
+      box-shadow: 0 0 0 3px rgba($marron, 0.2);
+    }
+
+    &.is-error {
+      border-color: $color-error;
+    }
+  }
+
+  &__error {
+    min-height: 1rem;
+    margin: 0;
+    color: $color-error;
+    font-size: 0.75rem;
+  }
+}
+
+.enlace {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: $marron;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: $weight-semibold;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+  @include focus-ring;
+}
+
+// ── Recojo ──────────────────────────────────────────────────────────────────
+.locales {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.local {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  width: 100%;
+  padding: $space-3 $space-4;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-md;
+  background-color: $color-background-raised;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  @include transition((border-color, background-color, box-shadow));
+  @include focus-ring;
+
+  &:hover:not(:disabled) {
+    border-color: $marron;
+  }
+
+  &.is-activo {
+    border-color: $marron;
+    background-color: $color-crema-claro;
+    box-shadow: inset 0 0 0 1px $marron;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  &__icono {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background-color: $color-crema-claro;
+    color: $marron;
+  }
+
+  &__texto {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__nombre {
+    font-weight: $weight-semibold;
+  }
+
+  &__direccion {
+    overflow: hidden;
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.estado-local {
+  flex: none;
+  padding: 0.125rem $space-2;
+  border-radius: $radius-pill;
+  background-color: $tint-verde-10;
+  color: $color-success;
+  font-size: 0.75rem;
+  font-weight: $weight-semibold;
+
+  &.is-cerrado {
+    background-color: $tint-cafe-10;
+    color: $color-text-secondary;
+  }
+}
+
+// ── Botón final ─────────────────────────────────────────────────────────────
+.confirmar {
+  width: 100%;
+  height: 3rem;
+  border: 0;
+  border-radius: $radius-pill;
+  background-color: $marron;
+  color: $color-text-inverse;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: $weight-bold;
+  cursor: pointer;
+  @include transition((background-color, opacity));
+  @include focus-ring;
+
+  &:hover:not(:disabled) {
+    background-color: $marron-hover;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}
+
+// Móvil: hoja inferior a todo lo ancho
+@include down(sm) {
+  .entrega {
+    width: 100%;
+    max-width: none;
+    max-height: 92dvh;
+    margin: auto 0 0;
+    border-radius: $radius-xl $radius-xl 0 0;
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@include reduced-motion {
+  .entrega[open],
+  .gira {
+    animation: none;
+  }
+}

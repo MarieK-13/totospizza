@@ -3,7 +3,7 @@ package com.totospizza.rules.calculator;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-/** Distancia en línea recta entre dos coordenadas (fórmula de Haversine). */
+/** Distancia en línea recta entre dos coordenadas . */
 public final class CalculadoraDistancia {
 
     private static final double RADIO_TIERRA_KM = 6371.0088;

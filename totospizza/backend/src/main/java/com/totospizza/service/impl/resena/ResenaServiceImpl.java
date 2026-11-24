@@ -71,7 +71,6 @@ public class ResenaServiceImpl implements ResenaService {
         agregarCalificaciones(resena, pedido, request.calificaciones());
         resenaRepository.save(resena);
 
-        // La respuesta se arma antes de actualizar los promedios: esas actualizaciones limpian el contexto.
         ResenaResponse respuesta = resenaMapper.toResponse(resena);
         actualizarPromedios(resena.getCalificaciones().stream().map(c -> c.getProducto().getId()).distinct().toList());
         return respuesta;
@@ -113,7 +112,6 @@ public class ResenaServiceImpl implements ResenaService {
         return resenaMapper.toResponse(resena);
     }
 
-    /** Solo se puede calificar un producto que el cliente realmente compró en ese pedido, una vez cada uno. */
     private void agregarCalificaciones(Resena resena, Pedido pedido, List<CalificacionProductoRequest> pedidas) {
         if (pedidas == null || pedidas.isEmpty()) {
             return;
@@ -139,7 +137,6 @@ public class ResenaServiceImpl implements ResenaService {
         }
     }
 
-    /** Recalcula el promedio y el total que se muestran en el menú. Limpia el contexto de persistencia. */
     private void actualizarPromedios(List<Long> productoIds) {
         Instant ahora = Instant.now(clock);
         for (Long productoId : productoIds) {

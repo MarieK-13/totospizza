@@ -96,10 +96,6 @@ public class ProductoServiceImpl implements ProductoService {
         return new HashSet<>(encontradas);
     }
 
-    /**
-     * Actualiza los precios en el lugar (modifica, agrega y quita) en vez de borrar y recrear:
-     * Hibernate inserta antes de borrar y chocaría con la restricción única producto + tamaño.
-     */
     private void sincronizarPrecios(Producto producto, ProductoRequest request) {
         List<ProductoTamanoRequest> pedidos = request.precios();
         if (request.requiereTamano() && pedidos.isEmpty()) {

@@ -1,0 +1,487 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+// ── 1. Portada ────────────────────────────────────────────────────────────────
+.portada {
+  padding-block: clamp(2.5rem, 6vw, 5rem);
+  background-color: $color-background-canvas;
+
+  &__grid {
+    display: grid;
+    gap: $space-8;
+    align-items: center;
+
+    @include up(lg) {
+      grid-template-columns: 1.05fr 0.95fr;
+    }
+  }
+
+  &__titulo {
+    margin: $space-3 0 $space-4;
+    font-family: $font-titulos;
+    font-size: clamp(2.5rem, 5vw, 3.75rem);
+    font-weight: 400;
+    line-height: 1.05;
+  }
+
+  &__lead {
+    max-width: 34rem;
+    margin: 0 0 $space-6;
+    color: $color-text-secondary;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+
+  &__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-3;
+  }
+}
+
+// Collage: la foto principal manda; las otras dos la acompañan y el sello es el único acento
+.collage {
+  position: relative;
+  width: 100%;
+  max-width: 30rem;
+  margin-inline: auto;
+  aspect-ratio: 1;
+
+  img {
+    position: absolute;
+    object-fit: cover;
+    border-radius: $radius-xl;
+  }
+
+  &__principal {
+    top: 0;
+    left: 0;
+    width: 74%;
+    height: 80%;
+    box-shadow: $shadow-lg;
+  }
+
+  &__secundaria {
+    border: 0.375rem solid $color-background-canvas;
+    box-shadow: $shadow-md;
+
+    &--arriba {
+      top: 9%;
+      right: 0;
+      width: 34%;
+      aspect-ratio: 1;
+    }
+
+    &--abajo {
+      right: 6%;
+      bottom: 0;
+      width: 50%;
+      aspect-ratio: 5 / 4;
+    }
+  }
+
+  &__sello {
+    position: absolute;
+    left: -0.5rem;
+    bottom: 8%;
+    display: grid;
+    place-content: center;
+    width: 6.5rem;
+    height: 6.5rem;
+    border-radius: $radius-pill;
+    background-color: $color-brand-primary;
+    color: $color-text-inverse;
+    box-shadow: $shadow-lg;
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    text-align: center;
+
+    strong {
+      font-family: $font-titulos;
+      font-size: 1.75rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    @include up(md) {
+      left: -1.5rem;
+    }
+  }
+}
+
+// ── 2. Datos ──────────────────────────────────────────────────────────────────
+.datos-franja {
+  border-block: $border-width solid $color-border-default;
+  background-color: $color-background-raised;
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 0;
+
+  @include up(md) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  &__item {
+    padding: $space-5 $space-4;
+    text-align: center;
+
+    // Separadores finos: agrupan las cifras sin encerrarlas en cajas
+    & + & {
+      border-left: $border-width solid $color-border-default;
+    }
+
+    &:nth-child(3) {
+      border-left: 0;
+
+      @include up(md) {
+        border-left: $border-width solid $color-border-default;
+      }
+    }
+
+    &:nth-child(n + 3) {
+      border-top: $border-width solid $color-border-default;
+
+      @include up(md) {
+        border-top: 0;
+      }
+    }
+  }
+
+  &__valor {
+    font-family: $font-titulos;
+    font-size: clamp(2.25rem, 4vw, 3rem);
+    line-height: 1;
+    color: $color-brand-primary;
+
+    span {
+      margin-left: 0.125rem;
+      font-size: 0.55em;
+    }
+  }
+
+  &__detalle {
+    margin: $space-2 0 0;
+    color: $color-text-secondary;
+    font-size: 0.875rem;
+  }
+}
+
+// ── 3. Recorrido ──────────────────────────────────────────────────────────────
+.recorrido {
+  --nodo: 2.75rem;
+  --sangria: #{$space-4};
+  --separacion: #{$space-8};
+  background-color: $color-background-canvas;
+}
+
+.linea {
+  display: grid;
+  gap: var(--separacion);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.etapa {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--nodo) minmax(0, 1fr);
+  column-gap: $space-4;
+  row-gap: $space-4;
+
+  @include up(md) {
+    grid-template-columns: minmax(0, 1fr) var(--nodo) minmax(0, 1fr);
+    column-gap: $space-6;
+    align-items: center;
+  }
+
+  // Tramos de línea entre un nodo y el siguiente: gris de fondo y rojo que avanza al hacer scroll
+  &:not(:last-child)::before,
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: calc(var(--sangria) + var(--nodo) / 2);
+    bottom: calc(-1 * (var(--separacion) + var(--sangria) + var(--nodo) / 2));
+    left: calc(var(--nodo) / 2 - 1px);
+    width: 2px;
+    border-radius: 1px;
+
+    @include up(md) {
+      left: calc(50% - 1px);
+      top: 50%;
+      bottom: calc(-1 * (var(--separacion) + 50%));
+    }
+  }
+
+  &:not(:last-child)::before {
+    background-color: $color-border-default;
+  }
+
+  &:not(:last-child)::after {
+    background-color: $color-brand-primary;
+    transform-origin: top;
+  }
+
+  &__nodo {
+    z-index: 1;
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: start;
+    display: grid;
+    place-items: center;
+    width: var(--nodo);
+    height: var(--nodo);
+    margin-top: var(--sangria);
+    border: 2px solid $color-brand-primary;
+    border-radius: $radius-pill;
+    background-color: $color-brand-primary;
+    color: $color-text-inverse;
+
+    @include up(md) {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: center;
+      margin-top: 0;
+    }
+  }
+
+  &__foto {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    max-width: 24rem;
+    margin: 0;
+    overflow: hidden;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-sm;
+    aspect-ratio: 5 / 4;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @include up(md) {
+      grid-column: 1;
+      justify-self: end;
+    }
+  }
+
+  &__texto {
+    grid-column: 2;
+    grid-row: 2;
+    color: $color-text-secondary;
+    line-height: 1.65;
+
+    p {
+      margin: 0;
+    }
+
+    @include up(md) {
+      grid-column: 3;
+      grid-row: 1;
+      max-width: 24rem;
+    }
+  }
+
+  // Las etapas pares cambian de lado: se lee en zigzag sin perder el hilo
+  @include up(md) {
+    &--invertida &__foto {
+      grid-column: 3;
+      justify-self: start;
+    }
+
+    &--invertida &__texto {
+      grid-column: 1;
+      justify-self: end;
+      text-align: right;
+    }
+  }
+
+  &__paso {
+    display: block;
+    margin-bottom: $space-1;
+    color: $color-brand-primary;
+    font-family: $font-datos;
+    font-size: 0.8125rem;
+    font-weight: $weight-bold;
+  }
+
+  &__titulo {
+    margin: 0;
+    color: $color-text-primary;
+    font-family: $font-titulos;
+    font-size: clamp(1.5rem, 2.6vw, 1.875rem);
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  &__dato {
+    margin: $space-1 0 $space-3;
+    color: $color-text-primary;
+    font-family: $font-datos;
+    font-weight: $weight-semibold;
+  }
+}
+
+// El recorrido se dibuja con el scroll (solo donde el navegador lo soporta; si no, queda dibujado)
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .etapa {
+      &:not(:last-child)::after {
+        animation: tramo linear both;
+        animation-timeline: view();
+        animation-range: entry 45% cover 55%;
+      }
+
+      &__nodo {
+        animation: nodo-on linear both;
+        animation-timeline: view();
+        animation-range: entry 30% entry 75%;
+      }
+    }
+  }
+}
+
+@keyframes tramo {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes nodo-on {
+  from {
+    border-color: $color-border-default;
+    background-color: $color-background-raised;
+    color: $color-text-secondary;
+  }
+}
+
+// ── 4. Cierre ─────────────────────────────────────────────────────────────────
+.cierre {
+  padding-top: 0;
+  background-color: $color-background-canvas;
+
+  &__panel {
+    display: grid;
+    gap: $space-6;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border-radius: $radius-xl;
+    background-color: $color-verde-albahaca;
+    color: $color-text-inverse;
+
+    @include up(lg) {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: $space-8;
+    }
+  }
+
+  &__titulo {
+    margin: 0 0 $space-3;
+    font-family: $font-titulos;
+    font-size: clamp(2rem, 3.6vw, 2.75rem);
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  &__texto p {
+    max-width: 28rem;
+    margin: 0 0 $space-5;
+    line-height: 1.6;
+    opacity: 0.92;
+  }
+
+  &__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-4 $space-5;
+  }
+
+  &__enlace {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    color: inherit;
+    font-weight: $weight-semibold;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+    @include focus-ring($color-blanco);
+  }
+
+  &__locales {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.local {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-4;
+  border: $border-width solid rgba($color-blanco, 0.22);
+  border-radius: $radius-lg;
+  background-color: rgba($color-blanco, 0.08);
+  color: inherit;
+  text-decoration: none;
+  @include transition((background-color, border-color));
+  @include focus-ring($color-blanco);
+
+  &:hover {
+    border-color: rgba($color-blanco, 0.5);
+    background-color: rgba($color-blanco, 0.16);
+  }
+
+  &__texto {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__nombre {
+    font-family: $font-titulos;
+    font-size: 1.125rem;
+    line-height: 1.2;
+  }
+
+  &__zona {
+    overflow: hidden;
+    font-size: 0.8125rem;
+    opacity: 0.8;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__estado {
+    padding: 0.25rem $space-3;
+    border-radius: $radius-pill;
+    background-color: rgba($color-blanco, 0.14);
+    font-family: $font-datos;
+    font-size: 0.75rem;
+    font-weight: $weight-semibold;
+
+    &.is-open {
+      background-color: $color-blanco;
+      color: $color-verde-albahaca;
+    }
+  }
+}

@@ -6,7 +6,7 @@ import com.totospizza.dto.request.catalogo.CambiarDisponibilidadRequest;
 import com.totospizza.dto.request.catalogo.TipoMasaRequest;
 import com.totospizza.dto.response.catalogo.TipoMasaResponse;
 
-/** Tipos de masa: lista pública de activas y administración (el administrador crea masas nuevas). */
+/** Tipos de masa: lista pública de activas y administración. */
 public interface TipoMasaService {
 
     List<TipoMasaResponse> listarActivas();
@@ -17,6 +17,5 @@ public interface TipoMasaService {
 
     TipoMasaResponse actualizar(Long id, TipoMasaRequest request);
 
-    /** Activa o desactiva la masa; el campo {@code disponible} del request indica si queda activa. */
     TipoMasaResponse cambiarActiva(Long id, CambiarDisponibilidadRequest request);
 }

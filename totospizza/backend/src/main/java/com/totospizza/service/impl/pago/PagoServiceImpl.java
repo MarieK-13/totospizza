@@ -55,7 +55,6 @@ public class PagoServiceImpl implements PagoService {
     private static final Set<MetodoPago> CON_TOKEN = EnumSet.of(MetodoPago.TARJETA, MetodoPago.CMR);
     private static final Set<MetodoPago> CON_TELEFONO = EnumSet.of(MetodoPago.YAPE, MetodoPago.PLIN);
 
-    /** Tiempo que se le da a un cobro para responder antes de que la conciliación lo investigue. */
     private static final Duration ESPERA_CONCILIACION = Duration.ofMinutes(2);
 
     private final PedidoRepository pedidoRepository;
@@ -69,19 +68,15 @@ public class PagoServiceImpl implements PagoService {
     private final TransactionTemplate transaccion;
     private final Clock clock;
 
-    /** Lo que sale de la primera transacción y entra a la pasarela. */
     private record Intento(Long pagoId, SolicitudCobro solicitud) {
     }
 
-    /** Pago pendiente a conciliar: lo mínimo que hace falta para consultar a la pasarela. */
     private record PendienteConciliar(Long pagoId, Long pedidoId, String referenciaIntento) {
     }
 
-    /** Resultado de registrar un cobro; {@code reembolsar} indica que se cobró un pedido ya cancelado. */
     private record Registro(PagoResponse pago, boolean reembolsar) {
     }
 
-    /** Lo que sale de la primera transacción de un reembolso y entra a la pasarela. */
     private record IntentoReembolso(Long pagoId, String referencia, BigDecimal monto) {
     }
 
@@ -181,15 +176,10 @@ public class PagoServiceImpl implements PagoService {
                 request.tokenTarjeta(), request.telefonoBilletera(), pedido.getTotal()));
     }
 
-    /** Única por intento (no por pedido): un reintento tras un rechazo es otro cobro y no debe confundirse con el anterior. */
     private static String nuevaReferencia(Pedido pedido) {
         return pedido.getNumero() + "-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
     }
 
-    /**
-     * Una excepción de la pasarela significa que no se sabe si cobró (tiempo de espera, red caída). No se
-     * marca como rechazado: el pago queda PENDIENTE y {@link #conciliarPendientes()} lo resuelve consultando.
-     */
     private ResultadoCobro cobrarEnPasarela(SolicitudCobro solicitud) {
         try {
             return pasarela.cobrar(solicitud);
@@ -201,11 +191,6 @@ public class PagoServiceImpl implements PagoService {
         }
     }
 
-    /**
-     * Guarda el resultado del cobro y avanza el pedido. Es idempotente: si el pago ya se resolvió (por
-     * la conciliación, por ejemplo) no vuelve a registrar nada. Con {@code cancelarSiRechazado} un
-     * rechazo también cancela el pedido y devuelve las masas, para los casos en que nadie espera la respuesta.
-     */
     private Registro registrarResultado(Long pedidoId, Long pagoId, ResultadoCobro resultado, boolean cancelarSiRechazado) {
         Pedido pedido = pedidoRepository.findByIdForUpdate(pedidoId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Pedido", pedidoId));
@@ -231,7 +216,7 @@ public class PagoServiceImpl implements PagoService {
         }
 
         pago.setEstado(EstadoPago.RECHAZADO);
-        PagoResponse respuesta = pagoMapper.toResponse(pago); // antes de cancelar: la reposición de stock limpia el contexto
+        PagoResponse respuesta = pagoMapper.toResponse(pago); 
         if (cancelarSiRechazado && pedido.getEstado() == EstadoPedido.PENDIENTE_PAGO) {
             pedidoEstadoService.cancelar(pedidoId, null, "Pago no completado");
         }
@@ -244,9 +229,6 @@ public class PagoServiceImpl implements PagoService {
                 : resultado.motivoRechazo();
     }
 
-    // ---- conciliación ----
-
-    /** Devuelve true si el pago quedó resuelto. Un fallo con un pago no detiene a los demás. */
     private boolean conciliar(PendienteConciliar pendiente) {
         ResultadoConsulta consulta;
         try {
@@ -279,7 +261,6 @@ public class PagoServiceImpl implements PagoService {
         }
     }
 
-    /** Se cobró un pedido que ya estaba cancelado: se devuelve el dinero; si falla se avisa a los administradores. */
     private void reembolsarOAvisar(Long pedidoId) {
         try {
             reembolsarCancelacion(pedidoId, "Pago recibido con el pedido ya cancelado");
@@ -291,8 +272,6 @@ public class PagoServiceImpl implements PagoService {
                             + pedidoId + ")."));
         }
     }
-
-    // ---- reembolso ----
 
     private PagoResponse reembolsarMonto(Long pedidoId, BigDecimal monto, String motivo) {
         IntentoReembolso intento = transaccion.execute(estado -> iniciarReembolso(pedidoId, monto));
@@ -338,8 +317,6 @@ public class PagoServiceImpl implements PagoService {
                 "Reembolso pedido " + pago.getPedido().getNumero(), intento.monto());
         return pagoMapper.toResponse(pago);
     }
-
-    // ---- apoyo ----
 
     private Optional<Pago> pagoAprobado(Long pedidoId) {
         return pagoRepository.findFirstByPedidoIdAndEstadoOrderByPagadoEnDesc(pedidoId, EstadoPago.APROBADO);

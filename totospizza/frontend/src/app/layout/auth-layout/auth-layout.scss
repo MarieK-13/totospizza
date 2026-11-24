@@ -1,0 +1,88 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+.auth {
+  display: grid;
+  min-height: 100dvh;
+  background-color: $color-background-canvas;
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  }
+
+  &__brand {
+    display: none;
+    position: relative;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: $space-8;
+    background:
+      linear-gradient(180deg, rgba($color-cafe-tostado, 0.35), rgba($color-cafe-tostado, 0.82)),
+      url('/images/cta-pizza-box.jpg') center / cover no-repeat,
+      $color-cafe-tostado;
+    color: $color-text-inverse;
+
+    @include up(lg) {
+      display: flex;
+    }
+  }
+
+  &__brand-logo {
+    width: auto;
+    height: 3.5rem;
+    align-self: flex-start;
+    padding: $space-2;
+    border-radius: $radius-md;
+    background-color: $color-background-canvas;
+  }
+
+  &__brand-quote {
+    max-width: 22rem;
+    margin: 0;
+    font-family: $font-titulos;
+    font-size: 2rem;
+    line-height: 2.375rem;
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    padding: $space-5 $container-gutter $space-8;
+    outline: none;
+
+    @include up(lg) {
+      padding: $space-6 $space-8;
+    }
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    align-self: flex-start;
+    border-radius: $radius-sm;
+    color: $color-text-secondary;
+    font-size: 0.875rem;
+    @include transition((color));
+    @include focus-ring;
+
+    &:hover {
+      color: $color-brand-primary;
+    }
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    width: 100%;
+    max-width: 26rem;
+    margin-inline: auto;
+    padding-block: $space-6;
+  }
+}

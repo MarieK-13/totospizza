@@ -1,0 +1,29 @@
+<header class="head">
+  <h1 class="head__title">Crea tu cuenta</h1>
+  <p class="head__lead">Pide en minutos y sigue tu pedido en tiempo real.</p>
+</header>
+
+<form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <app-text-field
+    label="Correo electrónico"
+    type="email"
+    placeholder="tucorreo@ejemplo.com"
+    autocomplete="email"
+    [icon]="MailIcon"
+    [required]="true"
+    formControlName="correo"
+  />
+
+  <app-text-field
+    label="Contraseña"
+    type="password"
+    placeholder="Crea una contraseña"
+    autocomplete="new-password"
+    [icon]="LockIcon"
+    [rules]="rules"
+    [required]="true"
+    formControlName="contrasena"
+  />
+
+  <button type="submit" class="btn btn--primary btn--lg btn--block">Crear cuenta</button>
+</form>

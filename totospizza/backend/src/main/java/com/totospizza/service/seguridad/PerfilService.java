@@ -16,7 +16,6 @@ public interface PerfilService {
 
     List<DireccionClienteResponse> listarDirecciones(Long usuarioId);
 
-    /** La primera dirección del cliente queda como favorita automáticamente. */
     DireccionClienteResponse agregarDireccion(Long usuarioId, DireccionClienteRequest request);
 
     DireccionClienteResponse actualizarDireccion(Long usuarioId, Long direccionId, DireccionClienteRequest request);

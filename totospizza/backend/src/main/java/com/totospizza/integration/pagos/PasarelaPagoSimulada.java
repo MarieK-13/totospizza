@@ -14,18 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.totospizza.model.enums.MetodoPago;
 
-/**
- * Pasarela de pruebas para desarrollo: no existe en producción ({@code prod}), donde debe entrar la
- * implementación real. Respeta la idempotencia por referencia y permite ensayar los casos difíciles
- * con el token de la tarjeta o el celular de la billetera:
- *
- * <ul>
- *   <li>token que contiene {@code rechaz}, o celular que termina en {@code 0000}: pago rechazado;</li>
- *   <li>{@code tok_timeout}: la pasarela no responde y no cobra (la conciliación lo ve como no encontrado);</li>
- *   <li>{@code tok_timeout_cobrado}: cobra pero la respuesta se pierde (la conciliación lo ve aprobado);</li>
- *   <li>cualquier otro valor: pago aprobado.</li>
- * </ul>
- */
 @Slf4j
 @Component
 @Profile("!prod")

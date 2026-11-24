@@ -1,0 +1,13 @@
+<header class="topbar">
+  @if (showMenuButton()) {
+    <button type="button" class="topbar__menu" (click)="menuToggle.emit()" aria-label="Abrir menú">
+      <lucide-icon [img]="MenuIcon" [size]="22" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+    </button>
+  }
+
+  <p class="topbar__title">{{ title() }}</p>
+
+  <div class="topbar__actions">
+    <ng-content />
+  </div>
+</header>

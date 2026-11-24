@@ -13,7 +13,6 @@ import com.totospizza.dto.response.configuracion.PerfilNegocioResponse;
 /** Perfil del negocio, parámetros del sistema y métodos de pago habilitados. */
 public interface ConfiguracionService {
 
-    /** Datos que el sitio público necesita: contacto, envío gratis, cobertura y métodos de pago. */
     ConfiguracionPublicaResponse publica();
 
     PerfilNegocioResponse perfil();
@@ -22,7 +21,6 @@ public interface ConfiguracionService {
 
     List<ParametroSistemaResponse> parametros();
 
-    /** Cambia el valor de un parámetro validando que respete su tipo (número, booleano o texto). */
     ParametroSistemaResponse actualizarParametro(String clave, ParametroSistemaRequest request);
 
     List<MetodoPagoHabilitadoResponse> metodosPago();

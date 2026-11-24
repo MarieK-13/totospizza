@@ -1,44 +1,29 @@
-<section class="cta-section" aria-label="Haz tu pedido o reserva">
-  <div class="cta-section__container">
-    <div class="cta-card">
-      <!-- Columna Izquierda: Contenido Rojo Tomate -->
-      <div class="cta-card__content">
-        <span class="cta-card__eyebrow">¿YA SE TE ANTOJÓ?</span>
+<section class="cta" aria-labelledby="cta-titulo">
+  <div class="cta__bg" aria-hidden="true">
+    <img src="images/cta-pizza-box.jpg" alt="" loading="lazy" />
+  </div>
+  <div class="wrap cta__inner">
+    <div class="cta__content">
+      <span class="cta__tag">¿Ya se te antojó?</span>
+      <h2 id="cta-titulo" class="cta__title">Tu pizza favorita, recién salida del horno de piedra</h2>
+      <p class="cta__text">Elige, revisa los alérgenos y paga en línea. Te avisamos cuando entra al horno y cuando sale a tu puerta.</p>
 
-        <h2 class="cta-card__title">Tu pizza favorita está a pocos clics</h2>
-
-        <p class="cta-card__desc">
-          Elige, personaliza y recibe recién horneado. Acumula Puntos Pomodoro con cada pedido.
-        </p>
-
-        <div class="cta-card__actions">
-          <a routerLink="/menu" class="btn-cta btn-cta--white">
-            <span>Pedir ahora</span>
-            <lucide-icon [img]="ArrowRightIcon" [size]="16" [strokeWidth]="2"></lucide-icon>
-          </a>
-          <a routerLink="/locales" class="btn-cta btn-cta--outline">
-            Reserva una mesa
-          </a>
-        </div>
-
-        <ul class="cta-card__perks">
-          @for (item of garantias; track item) {
-            <li>
-              <lucide-icon [img]="CheckCircleIcon" [size]="15" [strokeWidth]="2"></lucide-icon>
-              <span>{{ item }}</span>
-            </li>
-          }
-        </ul>
+      <div class="cta__actions">
+        <a routerLink="/menu" class="btn btn--light btn--lg">
+          Pedir ahora
+          <lucide-icon [img]="ArrowRightIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+        </a>
+        <a routerLink="/locales" class="btn btn--ghost btn--lg cta__ghost">Ver locales</a>
       </div>
 
-      <!-- Columna Derecha: Fotografía -->
-      <div class="cta-card__media">
-        <img
-          src="images/cta-pizza-box.jpg"
-          alt="Pizza artesanal recién horneada en su caja"
-          class="cta-card__img"
-        />
-      </div>
+      <ul class="cta__perks">
+        @for (g of garantias; track g.texto) {
+          <li>
+            <lucide-icon [img]="g.icono" [size]="18" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+            {{ g.texto }}
+          </li>
+        }
+      </ul>
     </div>
   </div>
 </section>

@@ -9,8 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
- * Agrega un ítem al carrito. Debe venir exactamente uno de productoId, pizzaPersonalizadaId o
- * promocionId (lo valida el servicio).
+ * Agrega un ítem al carrito.
  */
 public record AgregarProductoRequest(
         Long productoId,

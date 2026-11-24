@@ -130,7 +130,6 @@ public class ConfiguracionServiceImpl implements ConfiguracionService {
                 }
             }
             case TEXTO -> {
-                // cualquier texto es válido
             }
         }
     }

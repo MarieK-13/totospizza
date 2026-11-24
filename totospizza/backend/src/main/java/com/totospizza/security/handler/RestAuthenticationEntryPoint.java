@@ -10,7 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-/** 401 en formato {@code ApiError} cuando falta el token o no es válido. */
+/** 401 cuando falta el token o no es válido. */
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

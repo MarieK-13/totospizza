@@ -1,0 +1,90 @@
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  &__label {
+    color: $color-text-primary;
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
+    line-height: 1.25rem;
+  }
+
+  &__required {
+    color: $color-error;
+  }
+
+  &__control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: var(--field-height, #{$control-height-lg - 0.25rem});
+    border: 1.5px solid $color-border-default;
+    border-radius: var(--field-radius, #{$radius-pill});
+    background-color: $color-background-raised;
+    @include transition((border-color, box-shadow));
+
+    &:hover {
+      border-color: $color-marron-suave;
+    }
+  }
+
+  &.is-focused &__control {
+    border-color: $color-border-strong;
+    box-shadow: 0 0 0 4px $tint-cafe-10;
+  }
+
+  &.is-invalid &__control {
+    border-color: $color-error;
+  }
+
+  &.is-disabled &__control {
+    background-color: $color-background-alt;
+    opacity: 0.6;
+  }
+
+  &__select {
+    appearance: none;
+    width: 100%;
+    height: 100%;
+    padding: 0 3.25rem 0 $space-4;
+    border: 0;
+    border-radius: inherit;
+    outline: none;
+    background: transparent;
+    color: $color-text-primary;
+    font-family: $font-cuerpo;
+    font-size: 0.9375rem;
+    cursor: pointer;
+  }
+
+  // Chevron dentro de un recuadro rojo suave, como en el diseño
+  &__chevron {
+    position: absolute;
+    right: $space-2;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.625rem;
+    background-color: $tint-rojo-8;
+    color: $color-brand-primary;
+    pointer-events: none;
+  }
+
+  &__error {
+    margin: 0;
+    padding-left: $space-4;
+    color: $color-error;
+    font-size: 0.8125rem;
+    font-weight: $weight-medium;
+    line-height: 1.25rem;
+  }
+}

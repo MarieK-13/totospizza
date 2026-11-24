@@ -15,10 +15,7 @@ import com.totospizza.dto.response.seguridad.ResumenEmpleadosResponse;
 import com.totospizza.model.enums.EstadoEmpleado;
 import com.totospizza.model.enums.Rol;
 
-/**
- * Gestión de personal (solo administrador): pizzeros, despachadores y motorizados, con sus
- * turnos. Un empleado es un usuario con acceso más sus datos laborales.
- */
+
 public interface EmpleadoService {
 
     PageResponse<EmpleadoResponse> buscar(Long sucursalId, Rol rol, EstadoEmpleado estado, String texto, Pageable pageable);

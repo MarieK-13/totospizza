@@ -1,0 +1,62 @@
+<app-auth-shell titulo="¡Únete a la familia!" posicionArte="izquierda" variante="foto" [imagenArte]="arte">
+  <form class="form" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    @if (error(); as mensaje) {
+      <div class="alert" role="alert">
+        <lucide-icon [img]="AlertIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <p>{{ mensaje }}</p>
+      </div>
+    }
+
+    <div class="form__grid">
+      <app-text-field label="Nombres" placeholder="Ej. Juan" autocomplete="given-name" [icon]="UserIcon" [required]="true" formControlName="nombres" />
+      <app-text-field label="Apellidos" placeholder="Ej. Pérez" autocomplete="family-name" [icon]="UserIcon" [required]="true" formControlName="apellidos" />
+
+      <app-select-field label="Tipo de documento" [opciones]="opcionesDocumento" [required]="true" formControlName="tipoDocumento" />
+      <app-text-field
+        label="Número de documento"
+        placeholder="Ej. 12345678"
+        inputmode="text"
+        [maxlength]="20"
+        [hint]="ayudaDocumento()"
+        [required]="true"
+        formControlName="numeroDocumento"
+      />
+
+      <app-text-field label="Fecha de nacimiento" type="date" autocomplete="bday" [max]="fechaMaxima" [required]="true" formControlName="fechaNacimiento" />
+      <app-text-field label="Teléfono" type="tel" placeholder="Ej. 987 654 321" autocomplete="tel-national" inputmode="tel" [maxlength]="11" [required]="true" formControlName="telefono">
+        <span prefijo class="prefijo"><span class="bandera" aria-hidden="true"></span>+51</span>
+      </app-text-field>
+    </div>
+
+    <app-text-field label="Correo electrónico" type="email" placeholder="Ej. juan@correo.com" autocomplete="email" [icon]="MailIcon" [required]="true" formControlName="correo" />
+
+    <div class="form__grid">
+      <div>
+        <app-text-field label="Contraseña" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" [icon]="LockIcon" [required]="true" formControlName="contrasena" />
+        <app-password-strength [valor]="contrasena()" />
+      </div>
+      <app-text-field label="Confirmar contraseña" type="password" placeholder="Repite tu contraseña" autocomplete="new-password" [icon]="LockIcon" [required]="true" formControlName="confirmarContrasena" />
+    </div>
+
+    <app-checkbox-field formControlName="aceptaTerminos">
+      Acepto los <a routerLink="/terminos" class="link" target="_blank">términos y condiciones</a>
+    </app-checkbox-field>
+
+    <button type="submit" class="btn btn--primary btn--lg submit" [disabled]="enviando()" [attr.aria-busy]="enviando()">
+      {{ enviando() ? 'Creando cuenta…' : 'Crear cuenta' }}
+    </button>
+  </form>
+
+  <p class="switch">¿Ya tienes una cuenta? <a routerLink="/login" class="link">Inicia sesión</a></p>
+
+  <ng-container ngProjectAs="[arte]">
+    <button type="button" class="volver" (click)="volver()">
+      <lucide-icon [img]="BackIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+      Volver
+    </button>
+    <div class="pie">
+      <p class="pie__titulo">La mejor pizza, directo a ti</p>
+      <p class="pie__texto">Regístrate y disfruta de ofertas exclusivas para miembros</p>
+    </div>
+  </ng-container>
+</app-auth-shell>

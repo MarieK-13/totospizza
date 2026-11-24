@@ -1,80 +1,25 @@
-<section class="antojitos-section" aria-label="Antojitos para compartir">
-  <div class="antojitos-section__container">
-    <!-- Encabezado -->
-    <header class="antojitos-header">
-      <div>
-        <span class="eyebrow">
-          <span class="eyebrow__dot"></span>
-          PARA COMPARTIR
-        </span>
-        <h2 class="antojitos-header__title">Antojitos</h2>
-      </div>
-
-      <a routerLink="/menu" class="btn-outline-pill">
-        <span>Ver todos</span>
-        <lucide-icon [img]="ArrowRightIcon" [size]="16" [strokeWidth]="1.8"></lucide-icon>
-      </a>
+<section class="band band--white" aria-labelledby="antojitos-titulo">
+  <div class="wrap">
+    <header class="section-head section-head--center">
+      <span class="kicker">Para acompañar</span>
+      <h2 id="antojitos-titulo" class="section-head__title">Antojitos</h2>
+      <p class="section-head__lead">Toca el que se te antoje y súmalo a tu pizza.</p>
     </header>
 
-    <!-- Fila de 7 Categorías Circulares Interactivas -->
-    <div class="antojitos-grid" role="list">
-      @for (item of antojitos; track item.id) {
-        <button
-          type="button"
-          class="antojito-item"
-          [class.is-active]="seleccionadoId() === item.id"
-          (click)="seleccionarAntojito(item.id)"
-          [attr.aria-expanded]="seleccionadoId() === item.id"
-        >
-          <div class="antojito-item__circle">
-            <img [src]="item.imagen" [alt]="item.nombre" class="antojito-item__img" />
-          </div>
-          <span class="antojito-item__name">{{ item.nombre }}</span>
-        </button>
+    <ul class="row">
+      @for (a of antojitos; track a.id) {
+        <li class="row__item">
+          <button type="button" class="item" (click)="agregar(a)" [attr.aria-label]="'Agregar ' + a.nombre + ', S/ ' + a.precio.toFixed(2)">
+            <span class="item__disc">
+              <img [src]="a.imagen" [alt]="" loading="lazy" />
+              <span class="item__plus" aria-hidden="true">+</span>
+            </span>
+            <span class="item__name">{{ a.nombre }}</span>
+            <span class="item__meta">{{ a.porcion }}</span>
+            <span class="item__price">S/ {{ a.precio.toFixed(2) }}</span>
+          </button>
+        </li>
       }
-    </div>
-
-    <!-- Vista Rápida Interactiva al hacer clic en un antojito -->
-    @if (antojitoActivo(); as activo) {
-      <div class="antojito-preview" role="region" [attr.aria-label]="'Detalle de ' + activo.nombre">
-        <img [src]="activo.imagen" [alt]="activo.nombre" class="antojito-preview__thumb" />
-
-        <div class="antojito-preview__info">
-          <div class="antojito-preview__top">
-            <h3>{{ activo.nombre }}</h3>
-            <span class="antojito-preview__portion">{{ activo.porcion }}</span>
-          </div>
-          <p>{{ activo.detalle }}</p>
-        </div>
-
-        <div class="antojito-preview__actions">
-          <strong class="antojito-preview__price">S/ {{ activo.precio.toFixed(2) }}</strong>
-
-          <button
-            type="button"
-            class="btn-add-antojito"
-            [class.is-added]="agregadoId() === activo.id"
-            (click)="agregarAntojito(activo)"
-          >
-            @if (agregadoId() === activo.id) {
-              <lucide-icon [img]="CheckIcon" [size]="16" [strokeWidth]="2.4"></lucide-icon>
-              <span>Agregado</span>
-            } @else {
-              <lucide-icon [img]="PlusIcon" [size]="16" [strokeWidth]="2.2"></lucide-icon>
-              <span>Agregar</span>
-            }
-          </button>
-
-          <button
-            type="button"
-            class="btn-close-preview"
-            (click)="seleccionarAntojito(activo.id)"
-            aria-label="Cerrar vista rápida"
-          >
-            <lucide-icon [img]="CloseIcon" [size]="16" [strokeWidth]="2"></lucide-icon>
-          </button>
-        </div>
-      </div>
-    }
+    </ul>
   </div>
 </section>

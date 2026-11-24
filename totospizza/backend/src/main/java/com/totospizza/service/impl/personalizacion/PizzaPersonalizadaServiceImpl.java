@@ -59,7 +59,6 @@ public class PizzaPersonalizadaServiceImpl implements PizzaPersonalizadaService 
     private final TipoMasaMapper tipoMasaMapper;
     private final IngredienteMapper ingredienteMapper;
 
-    /** Lo elegido por el cliente, ya validado y resuelto a entidades. */
     private record Seleccion(TamanoPizza tamano, TipoMasa masa, List<Ingrediente> quesos,
                              List<Ingrediente> salsas, List<Ingrediente> extras) {
 

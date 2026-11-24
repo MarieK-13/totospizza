@@ -1,0 +1,41 @@
+<div class="topbar">
+  <div class="ticker" role="region" aria-label="Avisos de Toto's Pizza">
+    <div class="ticker__track">
+      @for (copy of copies; track copy) {
+        <ul class="ticker__group" [attr.aria-hidden]="copy === 1 ? 'true' : null">
+          @for (message of messages; track message) {
+            <li class="ticker__item">{{ message }}</li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+
+  <div class="place">
+    <button type="button" class="place__btn" (click)="toggle()" [attr.aria-expanded]="open()" aria-haspopup="listbox" aria-controls="lista-locales">
+      <lucide-icon [img]="PinIcon" [size]="16" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+      <span>{{ selected()?.nombre ?? 'Ver ubicación' }}</span>
+      <lucide-icon class="place__chevron" [class.is-open]="open()" [img]="ChevronIcon" [size]="14" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+    </button>
+
+    @if (open()) {
+      <div class="place__menu" id="lista-locales">
+        <p class="place__title">Elige tu local</p>
+        <ul role="listbox" aria-label="Locales">
+          @for (local of locales(); track local.id) {
+            <li>
+              <button type="button" role="option" class="place__option" [attr.aria-selected]="selected()?.id === local.id" (click)="choose(local)">
+                <lucide-icon [img]="PinIcon" [size]="16" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+                <span class="place__name">{{ local.nombre }}<small>{{ local.direccion.distrito }}</small></span>
+                @if (selected()?.id === local.id) {
+                  <lucide-icon [img]="CheckIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                }
+              </button>
+            </li>
+          }
+        </ul>
+        <a routerLink="/locales" class="place__all" (click)="close()">Ver todos los locales</a>
+      </div>
+    }
+  </div>
+</div>

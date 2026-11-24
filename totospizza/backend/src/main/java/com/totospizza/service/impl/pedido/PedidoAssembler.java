@@ -12,7 +12,6 @@ import com.totospizza.model.entity.pedido.Pedido;
 import com.totospizza.repository.pago.PagoRepository;
 import com.totospizza.repository.pedido.PedidoEstadoHistorialRepository;
 
-/** Arma el detalle completo de un pedido: pago más reciente e historial. Debe llamarse dentro de una transacción. */
 @Component
 @RequiredArgsConstructor
 class PedidoAssembler {

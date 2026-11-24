@@ -1,0 +1,70 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background-color: $color-background-canvas;
+}
+
+.staff-bar {
+  position: sticky;
+  top: 0;
+  z-index: $z-header;
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  height: 4rem;
+  padding-inline: $container-gutter;
+  background-color: $color-cafe-tostado;
+  color: $color-text-inverse;
+
+  &__brand {
+    border-radius: $radius-sm;
+    font-family: $font-titulos;
+    font-size: 1.5rem;
+    line-height: 1.875rem;
+    @include focus-ring($color-brand-accent);
+  }
+
+  &__title {
+    margin: 0 auto 0 $space-2;
+    padding-left: $space-4;
+    border-left: $border-width solid rgba($color-crema-masa, 0.24);
+    font-size: 1rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__logout {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    height: $control-height-sm + 0.5rem;
+    padding-inline: $space-4;
+    border: $border-width solid rgba($color-crema-masa, 0.24);
+    border-radius: $radius-sm;
+    background: none;
+    color: inherit;
+    @include text('cuerpo-sm');
+    font-weight: $weight-semibold;
+    cursor: pointer;
+    @include transition((background-color, border-color));
+    @include focus-ring($color-brand-accent);
+
+    &:hover {
+      border-color: $color-text-inverse;
+      background-color: rgba($color-crema-masa, 0.1);
+    }
+  }
+}
+
+.staff-content {
+  flex: 1;
+  padding: $space-5 $container-gutter $space-8;
+  outline: none;
+
+  @include up(lg) {
+    padding-inline: $space-8;
+  }
+}

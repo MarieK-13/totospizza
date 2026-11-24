@@ -1,0 +1,109 @@
+@use '../tokens/variables' as *;
+@use '../mixins' as *;
+
+// Botones del sistema (Figma): .btn + variante + tamaño
+//   <a class="btn btn--primary">Pedir</a>
+//   <button class="btn btn--secondary btn--sm">Cancelar</button>
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  height: $control-height-md;
+  padding-inline: $control-padding-x;
+  border: $border-width solid transparent;
+  border-radius: $radius-pill;
+  font-family: $font-cuerpo;
+  font-size: 0.875rem;
+  font-weight: $weight-semibold;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  cursor: pointer;
+  @include transition((background-color, border-color, color, box-shadow, transform));
+  @include focus-ring;
+
+  &:active {
+    transform: scale($press-scale);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  // Tamaños: 56 / 44 / 32 (Figma)
+  &--lg {
+    height: $control-height-lg;
+    padding-inline: $space-6;
+    font-size: 1rem;
+  }
+
+  &--sm {
+    height: $control-height-sm + 0.25rem;
+    padding-inline: $space-4;
+    font-size: 0.8125rem;
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  &--primary {
+    background-color: $color-brand-primary;
+    color: $color-text-inverse;
+
+    &:hover {
+      background-color: $color-rojo-intenso;
+      box-shadow: 0 8px 20px rgba($color-brand-primary, 0.32);
+    }
+
+    &:active {
+      background-color: $color-rojo-profundo;
+    }
+  }
+
+  &--secondary {
+    border-color: $color-cafe-tostado;
+    background-color: transparent;
+    color: $color-text-primary;
+
+    &:hover {
+      background-color: $color-cafe-tostado;
+      color: $color-text-inverse;
+    }
+
+    &:active {
+      background-color: $color-text-primary;
+      color: $color-text-inverse;
+    }
+  }
+
+  &--dark {
+    background-color: $color-cafe-tostado;
+    color: $color-text-inverse;
+
+    &:hover {
+      background-color: #3d322a;
+      box-shadow: $shadow-md;
+    }
+  }
+
+  &--light {
+    background-color: $color-background-canvas;
+    color: $color-text-primary;
+
+    &:hover {
+      background-color: $color-brand-accent;
+    }
+  }
+
+  &--ghost {
+    background-color: transparent;
+    color: $color-text-primary;
+
+    &:hover {
+      background-color: $tint-cafe-10;
+    }
+  }
+}

@@ -7,13 +7,7 @@ import com.totospizza.dto.response.pedido.ResumenMontosResponse;
 import com.totospizza.model.enums.TipoEntrega;
 
 /**
- * Reglas de precio del pedido. Sin cupones ni puntos: el único descuento es el que viene de
- * promociones ya aplicadas en el precio del ítem.
- * <ul>
- *   <li>Recojo en tienda: sin costo de delivery.</li>
- *   <li>Delivery: costo de la zona (o el costo base si no hay zona) y gratis desde el monto
- *       configurado (S/ 49 por defecto).</li>
- * </ul>
+ * Reglas de precio del pedido. 
  */
 public final class CalculadoraMontos {
 

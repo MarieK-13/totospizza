@@ -81,7 +81,6 @@ public class RepartoServiceImpl implements RepartoService {
         return entregaMapper.toResponse(entrega);
     }
 
-    /** La entrega debe ser del motorizado que la pide; para otro usuario "no existe". */
     private Entrega entregaBloqueada(Long usuarioId, Long entregaId) {
         Empleado motorizado = personalActual.de(usuarioId);
         Long pedidoId = entregaRepository.findById(entregaId)

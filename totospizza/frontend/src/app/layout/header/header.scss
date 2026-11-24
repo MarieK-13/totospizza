@@ -1,0 +1,447 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+// Crema cálido y claro del carrito (entre Crema Masa y Beige Horno)
+$cart-bg: #f9eedb;
+$cart-bg-hover: #f4e3c6;
+
+// Header plano a todo el ancho: logo a la izquierda, navegación al centro, acciones a la derecha
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: $z-header;
+  border-bottom: $border-width solid $color-border-default;
+  background-color: $color-background-raised;
+  @include transition((box-shadow), $duration-base);
+}
+
+:host(.is-scrolled) {
+  box-shadow: $shadow-md;
+}
+
+.bar {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: $space-4;
+  max-width: $container-max;
+  height: 4.25rem;
+  margin-inline: auto;
+  padding-inline: $container-gutter;
+
+  @include up(lg) {
+    grid-template-columns: 1fr auto 1fr;
+    height: 5rem;
+  }
+
+  &__logo {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    border-radius: $radius-sm;
+    @include focus-ring;
+
+    img {
+      width: auto;
+      height: 2.5rem;
+    }
+  }
+
+  &__logo-wide {
+    display: none;
+  }
+
+  @include up(md) {
+    &__logo-wide {
+      display: block;
+    }
+
+    &__logo-compact {
+      display: none;
+    }
+
+    &__logo img {
+      height: 3rem;
+    }
+  }
+
+  &__nav {
+    display: none;
+
+    @include up(lg) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $space-6;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-self: end;
+    gap: $space-1;
+  }
+
+}
+
+// Enlaces: subrayado rojo que crece desde el centro
+.nav-link {
+  position: relative;
+  padding: $space-2 0;
+  color: $color-text-primary;
+  font-size: 0.9375rem;
+  font-weight: $weight-semibold;
+  line-height: 1.25rem;
+  @include transition((color));
+  @include focus-ring;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 -0.25rem;
+    height: 2px;
+    border-radius: 2px;
+    background-color: $color-brand-primary;
+    transform: scaleX(0);
+    transition: transform $duration-base $ease-out;
+  }
+
+  &:hover {
+    color: $color-brand-primary;
+  }
+
+  &:hover::after,
+  &.is-active::after {
+    transform: scaleX(1);
+  }
+
+  &.is-active {
+    color: $color-brand-primary;
+  }
+}
+
+.action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: $control-height-md;
+  min-width: $control-height-md;
+  padding: 0 $space-3;
+  border: 0;
+  border-radius: $radius-pill;
+  background: none;
+  color: $color-text-primary;
+  cursor: pointer;
+  @include transition((background-color, color));
+  @include focus-ring;
+
+  &:hover {
+    background-color: $color-background-alt;
+    color: $color-brand-primary;
+  }
+}
+
+// Usuario: icono + saludo en dos líneas
+.user {
+  display: none;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-1 $space-3;
+  border-radius: $radius-md;
+  color: $color-text-primary;
+  @include transition((background-color, color));
+  @include focus-ring;
+
+  &:hover {
+    color: $color-brand-primary;
+  }
+
+  @include up(md) {
+    display: inline-flex;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+
+    small {
+      color: $color-text-secondary;
+      font-size: 0.75rem;
+    }
+
+    strong {
+      font-size: 0.875rem;
+      font-weight: $weight-bold;
+    }
+  }
+}
+
+// Carrito: píldora crema clara, sin borde, para destacar frente a "Hola, inicia sesión"
+.cart {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-3;
+  min-width: 2.75rem;
+  height: $control-height-md;
+  margin-left: $space-3;
+  padding-inline: $space-3;
+  border: 0;
+
+  @include up(sm) {
+    min-width: 8.5rem;
+    padding-inline: $space-5;
+  }
+
+  border-radius: $radius-pill;
+  background-color: $cart-bg;
+  color: $color-text-primary;
+  font-weight: $weight-semibold;
+  @include transition((color, border-color, background-color));
+  @include focus-ring;
+
+  &:hover {
+    background-color: $cart-bg-hover;
+    color: $color-brand-primary;
+  }
+
+  &__amount {
+    display: none;
+    font-family: $font-datos;
+    font-size: 0.875rem;
+
+    @include up(sm) {
+      display: inline;
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: -0.375rem;
+    right: -0.25rem;
+    border: 2px solid $color-background-raised;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding-inline: 0.25rem;
+    border-radius: $radius-pill;
+    background-color: $color-brand-primary;
+    color: $color-text-inverse;
+    font-family: $font-datos;
+    font-size: 0.6875rem;
+    font-weight: $weight-semibold;
+    line-height: 1.125rem;
+    text-align: center;
+  }
+}
+
+.action.action--toggle {
+  @include up(lg) {
+    display: none;
+  }
+}
+
+// Menú móvil a pantalla completa
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  padding: $space-3 $container-gutter $space-6;
+  background-color: $color-cafe-tostado;
+  color: $color-text-inverse;
+  pointer-events: auto;
+  animation: sheet-in $duration-base $ease-out;
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+  }
+
+  &__brand {
+    font-family: $font-titulos;
+    font-size: 1.5rem;
+  }
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: $control-height-md;
+    height: $control-height-md;
+    padding: 0;
+    border: $border-width solid rgba($color-crema-masa, 0.24);
+    border-radius: $radius-pill;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    @include focus-ring($color-brand-accent);
+  }
+
+  &__nav {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: $space-2;
+  }
+
+  &__link {
+    font-family: $font-titulos;
+    font-size: clamp(2.5rem, 12vw, 4rem);
+    line-height: 1.1;
+    opacity: 0;
+    animation: link-in 450ms $ease-out forwards;
+    @include transition((color));
+    @include focus-ring($color-brand-accent);
+
+    &:hover,
+    &.is-active {
+      color: $color-brand-accent;
+    }
+  }
+
+  &__foot {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  @include up(lg) {
+    display: none;
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes link-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@include reduced-motion {
+  .sheet,
+  .sheet__link {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+// Cuenta: el saludo se vuelve un botón que abre un menú corto
+.account {
+  position: relative;
+}
+
+.user--button {
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.user__chevron {
+  color: $color-text-secondary;
+  transition: transform $duration-fast $ease-standard;
+
+  &.is-open {
+    transform: rotate(180deg);
+  }
+}
+
+.account__menu {
+  position: absolute;
+  top: calc(100% + #{$space-2});
+  right: 0;
+  z-index: $z-dropdown;
+  min-width: 15rem;
+  padding: $space-2;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-lg;
+  background-color: $color-background-raised;
+  box-shadow: $shadow-lg;
+  transform-origin: top right;
+  animation: account-in $duration-fast $ease-out;
+}
+
+.account__who {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: $space-3;
+  margin-bottom: $space-1;
+  border-bottom: $border-width solid $color-border-default;
+  font-size: 0.875rem;
+
+  strong {
+    font-weight: $weight-semibold;
+  }
+
+  span {
+    overflow: hidden;
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+    text-overflow: ellipsis;
+  }
+}
+
+.account__item {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  width: 100%;
+  padding: $space-3;
+  border: 0;
+  border-radius: $radius-md;
+  background: none;
+  color: $color-text-primary;
+  font: inherit;
+  font-size: 0.9375rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  @include transition((background-color, color));
+  @include focus-ring;
+
+  &:hover {
+    background-color: $color-background-canvas;
+  }
+
+  &--exit {
+    margin-top: $space-1;
+    color: $color-brand-primary;
+  }
+}
+
+@keyframes account-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(-4px);
+  }
+}
+
+@include reduced-motion {
+  .account__menu {
+    animation: none;
+  }
+}

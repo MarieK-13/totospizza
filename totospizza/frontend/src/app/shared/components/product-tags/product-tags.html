@@ -1,0 +1,56 @@
+@if (modo() === 'compacto') {
+  @if (grupos().contiene.length > 0) {
+    <p class="aviso" [attr.title]="'Contiene ' + resumenContiene()">
+      <lucide-icon [img]="AlertIcon" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      <span class="sr-only">Contiene </span>{{ resumenContiene() }}
+    </p>
+  }
+  @if (grupos().libres.length + grupos().otras.length > 0) {
+    <ul class="chips">
+      @for (e of grupos().libres; track e.id) {
+        <li class="chip chip--libre">{{ e.nombre }}</li>
+      }
+      @for (e of grupos().otras; track e.id) {
+        <li class="chip">{{ e.nombre }}</li>
+      }
+    </ul>
+  }
+} @else if (!vacio()) {
+  <div class="ficha">
+    @if (grupos().contiene.length > 0) {
+      <section class="bloque bloque--alerta" aria-labelledby="alergenos-titulo">
+        <h3 id="alergenos-titulo" class="bloque__titulo">
+          <lucide-icon [img]="AlertIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+          Alérgenos
+        </h3>
+        <ul class="chips">
+          @for (e of grupos().contiene; track e.id) {
+            <li class="chip chip--alerta">{{ e.nombre }}</li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (grupos().libres.length > 0) {
+      <section class="bloque" aria-labelledby="libres-titulo">
+        <h3 id="libres-titulo" class="bloque__titulo">
+          <lucide-icon [img]="SafeIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+          Libre de
+        </h3>
+        <ul class="chips">
+          @for (e of grupos().libres; track e.id) {
+            <li class="chip chip--libre">{{ e.nombre }}</li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (grupos().otras.length > 0) {
+      <ul class="chips">
+        @for (e of grupos().otras; track e.id) {
+          <li class="chip">{{ e.nombre }}</li>
+        }
+      </ul>
+    }
+  </div>
+}

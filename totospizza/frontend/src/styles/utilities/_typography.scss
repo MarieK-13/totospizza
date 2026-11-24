@@ -1,0 +1,45 @@
+@use '../tokens/variables' as *;
+@use '../mixins' as *;
+
+// Clases de la escala tipográfica
+.text-h1        { @include text('h1'); }
+.text-h2        { @include text('h2'); }
+.text-h3        { @include text('h3'); }
+.text-subtitulo { @include text('subtitulo'); }
+.text-cuerpo    { @include text('cuerpo'); }
+.text-cuerpo-sm { @include text('cuerpo-sm'); }
+.text-precio    { @include text('precio'); }
+.text-boton     { @include text('boton'); }
+.text-etiqueta  { @include text('etiqueta'); }
+.text-dato      { @include text('dato'); }
+.text-dato-sm   { @include text('dato-sm'); }
+.text-acento    { @include text('acento'); }
+
+// Color de texto
+.text-primary   { color: $color-text-primary; }
+.text-secondary { color: $color-text-secondary; }
+.text-inverse   { color: $color-text-inverse; }
+.text-brand     { color: $color-brand-primary; }
+.text-success   { color: $color-success; }
+.text-error     { color: $color-error; }
+
+// Alineación
+.text-left   { text-align: left; }
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+
+// Recortes
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line-clamp-2 { @include line-clamp(2); }
+.line-clamp-3 { @include line-clamp(3); }
+
+// Familias
+.font-serif  { font-family: $font-titulos; font-weight: $weight-regular; } 
+.font-sans   { font-family: $font-cuerpo; }
+.font-datos  { font-family: $font-datos; font-weight: $weight-semibold; }
+.font-acento { font-family: $font-acento; font-weight: $weight-bold; }

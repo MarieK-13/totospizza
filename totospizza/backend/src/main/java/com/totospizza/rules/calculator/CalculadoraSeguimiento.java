@@ -17,14 +17,7 @@ import com.totospizza.model.enums.TipoEntrega;
 
 /**
  * Arma el seguimiento que ve el cliente: 4 etapas y el reloj de cuenta regresiva.
- * <ol>
- *   <li>Pedido confirmado</li>
- *   <li>En preparación (cocina y horno)</li>
- *   <li>En camino (delivery) o Listo para recoger (recojo)</li>
- *   <li>Entregado</li>
- * </ol>
- * Un pedido cancelado o no recogido no marca ninguna etapa.
- */
+ **/
 public final class CalculadoraSeguimiento {
 
     private CalculadoraSeguimiento() {

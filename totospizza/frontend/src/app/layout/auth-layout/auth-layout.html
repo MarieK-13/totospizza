@@ -1,0 +1,18 @@
+<a class="skip-link" href="#formulario">Saltar al formulario</a>
+<div class="auth">
+  <aside class="auth__brand" aria-hidden="true">
+    <img src="images/logo-totosm.png" alt="" class="auth__brand-logo" />
+    <p class="auth__brand-quote">Pizza artesanal, sobremesas largas y la calidez de una casa italiana.</p>
+  </aside>
+
+  <main id="formulario" class="auth__main" tabindex="-1">
+    <a routerLink="/" class="auth__back">
+      <lucide-icon [img]="BackIcon" [size]="16" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+      Volver al inicio
+    </a>
+
+    <div class="auth__panel">
+      <router-outlet />
+    </div>
+  </main>
+</div>

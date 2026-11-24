@@ -10,13 +10,9 @@ import com.totospizza.model.entity.sucursal.HorarioSucursal;
 import com.totospizza.model.entity.sucursal.Sucursal;
 
 /**
- * Decide si una sucursal atiende en un momento dado. Una sucursal sin horarios utilizables
- * está cerrada: vender sin horario configurado sería aceptar pedidos que nadie prepara. Por eso
- * el alta de una sucursal activa exige al menos un día abierto (ver {@link #tieneHorarioUtil}).
- *
- * <p>Un horario que cruza la medianoche (por ejemplo 18:00 a 02:00) pertenece al día en que
- * empieza: el viernes cubre desde las 18:00 del viernes hasta las 02:00 del sábado.
- */
+ * Decide si una sucursal atiende en un momento dado.
+ **/
+
 public final class HorarioPolicy {
 
     private HorarioPolicy() {

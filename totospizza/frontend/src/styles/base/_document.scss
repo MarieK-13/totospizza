@@ -1,0 +1,85 @@
+@use '../tokens/variables' as *;
+@use '../mixins' as *;
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(#{$header-height} + #{$space-4});
+
+  @include reduced-motion {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  min-height: 100vh;
+  background-color: $color-background-canvas;
+  color: $color-text-primary;
+  @include text('cuerpo');
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  @include transition((color, opacity));
+  @include focus-ring;
+}
+
+button,
+input,
+select,
+textarea,
+[tabindex]:not([tabindex='-1']) {
+  @include focus-ring;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+::selection {
+  background-color: $color-amarillo-queso;
+  color: $color-cafe-tostado;
+}
+
+::placeholder {
+  color: $color-text-secondary;
+  opacity: 0.8;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: $color-arena transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $color-arena;
+  border-radius: $radius-pill;
+}
+
+lucide-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+@include reduced-motion {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -68,10 +68,6 @@ import com.totospizza.service.pedido.PedidoService;
 import com.totospizza.service.sucursal.SucursalService;
 import com.totospizza.util.FechaUtil;
 
-/**
- * Lecturas en transacción de solo lectura. {@code checkout} y las cancelaciones no tienen
- * transacción propia: coordinan varias transacciones cortas y una llamada externa a la pasarela.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -100,8 +96,6 @@ public class PedidoServiceImpl implements PedidoService {
     private final TransactionTemplate transaccion;
     private final Clock clock;
 
-    // ---- compra ----
-
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public CheckoutResponse checkout(Long usuarioId, CheckoutRequest request) {
@@ -115,7 +109,7 @@ public class PedidoServiceImpl implements PedidoService {
             if (PAGO_RECHAZADO.equals(e.getCodigo())) {
                 cancelarPorFalloDePago(pedidoId, usuarioId);
             }
-            throw e; // PAGO_PENDIENTE_CONFIRMACION y otros: el pedido sigue; lo resuelve la conciliación o la expiración
+            throw e; 
         }
         return transaccion.execute(estado -> cerrarCheckout(usuarioId, pedidoId, pago));
     }
@@ -158,7 +152,7 @@ public class PedidoServiceImpl implements PedidoService {
 
         pedidoRepository.save(pedido);
         pedidoEstadoService.registrarCreacion(pedido);
-        inventarioService.reservarStockWeb(pedido); // al final: limpia el contexto de persistencia
+        inventarioService.reservarStockWeb(pedido);
         return pedido.getId();
     }
 
@@ -186,7 +180,6 @@ public class PedidoServiceImpl implements PedidoService {
         return cobertura;
     }
 
-    /** Copia lo que el cliente compró: nombre y precios quedan fijos aunque el catálogo cambie después. */
     private DetallePedido detalle(Pedido pedido, ItemCarrito item) {
         DetallePedido detalle = new DetallePedido();
         detalle.setPedido(pedido);
@@ -213,7 +206,6 @@ public class PedidoServiceImpl implements PedidoService {
         return adicional;
     }
 
-    /** Tamaño y masa, lo que el pizzero necesita ver en el ticket. */
     private static String descripcionDeCocina(ItemCarrito item) {
         String texto = Stream.of(
                         item.getTamano() == null ? null : item.getTamano().getNombre(),
@@ -223,11 +215,6 @@ public class PedidoServiceImpl implements PedidoService {
         return texto.isEmpty() ? null : texto;
     }
 
-    /**
-     * Compensación: con el pago rechazado el pedido se cancela y las masas vuelven al stock web. Solo se
-     * llama ante un rechazo confirmado; si el resultado es incierto no se cancela, porque el cobro pudo
-     * haberse hecho. No tapa el error original; si falla, {@code expirarPendientesDePago} lo recoge luego.
-     */
     private void cancelarPorFalloDePago(Long pedidoId, Long usuarioId) {
         try {
             transaccion.executeWithoutResult(estado ->
@@ -245,8 +232,6 @@ public class PedidoServiceImpl implements PedidoService {
         return new CheckoutResponse(pedido.getId(), pedido.getNumero(), pedido.getEstado(), pago.estado(),
                 pedido.getTotal(), pedido.getMinutosEstimados());
     }
-
-    // ---- consulta del cliente ----
 
     @Override
     public PageResponse<PedidoResumenResponse> misPedidos(Long usuarioId, Pageable pageable) {
@@ -271,8 +256,6 @@ public class PedidoServiceImpl implements PedidoService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Pedido", numero));
     }
 
-    // ---- cancelación ----
-
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public PedidoResponse cancelar(Long usuarioId, String numero, CancelarPedidoRequest request) {
@@ -293,7 +276,6 @@ public class PedidoServiceImpl implements PedidoService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Pedido", pedidoId))));
     }
 
-    /** El pedido ya está cancelado; si el reembolso falla se avisa a los administradores para resolverlo a mano. */
     private void reembolsarOAvisar(Long pedidoId, String motivo) {
         try {
             pagoService.reembolsarCancelacion(pedidoId, motivo);
@@ -304,8 +286,6 @@ public class PedidoServiceImpl implements PedidoService {
                     "No se pudo reembolsar automáticamente el pedido cancelado con id " + pedidoId + "."));
         }
     }
-
-    // ---- administración ----
 
     @Override
     public PageResponse<PedidoResumenResponse> buscar(Long sucursalId, EstadoPedido estado, LocalDate desde,

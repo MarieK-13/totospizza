@@ -5,8 +5,7 @@ import java.math.BigDecimal;
 import com.totospizza.model.enums.MetodoPago;
 
 /**
- * Datos que se envían a la pasarela. Nunca incluye número de tarjeta ni CVV: el frontend los
- * tokeniza directamente con la pasarela y solo nos entrega el token.
+ * Datos que se envían a la pasarela. 
  */
 public record SolicitudCobro(
         String referencia,

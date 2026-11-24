@@ -1,0 +1,140 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.zona {
+  background-color: $color-background-canvas;
+}
+
+.checker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-6;
+  max-width: 34rem;
+  margin-inline: auto;
+
+  &__btn {
+    gap: $space-2;
+  }
+
+  &__result {
+    width: 100%;
+    min-height: 1px;
+  }
+}
+
+.result {
+  padding: $space-6;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-lg;
+  background-color: $color-background-raised;
+  box-shadow: $shadow-sm;
+  text-align: center;
+
+  &--ok {
+    border-color: rgba($color-verde-albahaca, 0.4);
+  }
+
+  &--no,
+  &--error {
+    border-color: rgba($color-rojo-tomate, 0.35);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: $font-titulos;
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  &__text {
+    margin: $space-2 0 $space-5;
+    color: $color-text-secondary;
+    line-height: 1.5;
+  }
+
+  &__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    gap: $space-4;
+    margin: 0 0 $space-6;
+
+    dt {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
+      color: $color-text-secondary;
+      font-size: 0.8125rem;
+    }
+
+    dd {
+      margin: $space-1 0 0;
+      font-family: $font-datos;
+      font-size: 1.125rem;
+      font-weight: $weight-semibold;
+    }
+  }
+}
+
+.zonas {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+
+  &__title {
+    margin: 0 0 $space-5;
+    font-family: $font-titulos;
+    font-size: 1.75rem;
+    font-weight: 400;
+    text-align: center;
+  }
+
+  &__grid {
+    display: grid;
+    gap: $space-5;
+
+    @include up(md) {
+      grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    }
+  }
+
+  &__card {
+    padding: $space-5;
+    border: $border-width solid $color-border-default;
+    border-radius: $radius-lg;
+    background-color: $color-background-raised;
+    overflow-x: auto;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    th,
+    td {
+      padding: $space-2 $space-2 $space-2 0;
+      border-bottom: $border-width solid $color-border-default;
+      text-align: left;
+      font-weight: $weight-regular;
+    }
+
+    thead th {
+      color: $color-text-secondary;
+      font-size: 0.75rem;
+      font-weight: $weight-semibold;
+    }
+
+    tbody th {
+      font-weight: $weight-semibold;
+    }
+
+    tr:last-child > * {
+      border-bottom: 0;
+    }
+  }
+
+  &__local {
+    margin: 0 0 $space-3;
+    font-size: 1rem;
+    font-weight: $weight-bold;
+  }
+}

@@ -7,7 +7,6 @@ import com.totospizza.model.entity.pedido.DetallePedido;
 
 /**
  * Cuenta cuántas masas consume un pedido para descontar el "stock web exclusivo".
- * Cada pizza usa una masa; bebidas, salsas y otros productos sin tamaño no usan ninguna.
  */
 public final class CalculadoraMasas {
 

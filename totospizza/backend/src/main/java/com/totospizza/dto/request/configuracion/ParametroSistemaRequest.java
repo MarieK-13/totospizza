@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 /**
- * Nuevo valor de un parámetro del sistema (la clave va en la URL).
+ * Nuevo valor de un parámetro del sistema 
  */
 public record ParametroSistemaRequest(
         @NotBlank @Size(max = 250) String valor

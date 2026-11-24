@@ -1,0 +1,179 @@
+@if (producto(); as p) {
+  <div class="wrap pagina">
+    <nav class="migas" aria-label="Ruta">
+      <a routerLink="/menu" class="migas__enlace">
+        <lucide-icon [img]="BackIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        Menú
+      </a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/menu" [queryParams]="{ categoria: p.categoria.slug }" class="migas__enlace">{{ p.categoria.nombre }}</a>
+    </nav>
+
+    <div class="ficha">
+      <div class="escenario">
+        @if (imagen(); as src) {
+          <img class="escenario__foto" [src]="src" [alt]="p.nombre" />
+        } @else {
+          <span class="escenario__vacio"><lucide-icon [img]="PizzaIcon" [size]="96" [strokeWidth]="0.8" aria-hidden="true"></lucide-icon></span>
+        }
+        @if (p.destacado) {
+          <span class="escenario__sello">Favorito de la casa</span>
+        }
+        <button type="button" class="escenario__info" (click)="infoAbierta.set(true)">
+          <lucide-icon [img]="InfoIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+          Ingredientes y alérgenos
+        </button>
+      </div>
+
+      <div class="ficha__info">
+        <header class="cabecera">
+          <div class="cabecera__chips">
+            <span class="chip chip--marca">{{ p.categoria.nombre }}</span>
+            @if (tieneCalificacion()) {
+              <span class="chip" [attr.aria-label]="'Valoración ' + calificacion() + ' de 5, ' + p.totalResenas + ' reseñas'">
+                <lucide-icon class="chip__estrella" [img]="StarIcon" [size]="14" [strokeWidth]="0" fill="currentColor" aria-hidden="true"></lucide-icon>
+                <strong>{{ calificacion() }}</strong> · {{ p.totalResenas }}
+              </span>
+            }
+            @for (e of insignias(); track e.id) {
+              <span class="chip">{{ e.nombre }}</span>
+            }
+          </div>
+
+          <h1 class="cabecera__titulo">{{ p.nombre }}</h1>
+          <p class="cabecera__desc">{{ p.descripcion }}</p>
+
+          <p class="precio" aria-live="polite">
+            <span class="precio__valor">{{ unitario() === null ? formatear(p.precioBase) : formatear(unitario()) }}</span>
+            <span class="precio__nota">{{ p.requiereTamano ? 'por pizza, según lo que elijas' : 'por unidad' }}</span>
+          </p>
+        </header>
+
+        <form id="compra" class="compra" (submit)="agregar($event)">
+          @if (p.requiereTamano) {
+            <div class="paso" role="radiogroup" aria-labelledby="tamano-titulo">
+              <p id="tamano-titulo" class="paso__titulo"><span class="paso__num">1</span> Elige el tamaño</p>
+              <div class="tamanos">
+                @for (precio of p.precios; track precio.tamanoId) {
+                  <label class="tamano" [class.is-activa]="tamanoId() === precio.tamanoId">
+                    <input type="radio" name="tamano" class="sr-only" [value]="precio.tamanoId" [checked]="tamanoId() === precio.tamanoId" (change)="elegirTamano(precio.tamanoId)" />
+                    <span class="tamano__nombre">{{ precio.tamanoNombre }}</span>
+                    <span class="tamano__precio">{{ formatear(precio.precio) }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+
+            <div class="paso" role="radiogroup" aria-labelledby="masa-titulo">
+              <p id="masa-titulo" class="paso__titulo"><span class="paso__num">2</span> Elige la masa</p>
+              <div class="masas">
+                @for (masa of p.tiposMasa; track masa.id) {
+                  <label class="pastilla" [class.is-activa]="tipoMasaId() === masa.id">
+                    <input type="radio" name="masa" class="sr-only" [value]="masa.id" [checked]="tipoMasaId() === masa.id" (change)="elegirMasa(masa.id)" />
+                    {{ masa.nombre }}
+                    @if (masa.recargo > 0) {
+                      <small>+ {{ formatear(masa.recargo) }}</small>
+                    }
+                  </label>
+                }
+              </div>
+            </div>
+
+            @if (gruposAdicionales().length > 0) {
+              <section class="paso" aria-labelledby="adicionales-titulo">
+                <h2 id="adicionales-titulo" class="paso__titulo"><span class="paso__num">3</span> Agrega extras <small>opcional</small></h2>
+                <ul class="adicionales">
+                  @for (grupo of gruposAdicionales(); track grupo.titulo) {
+                    @for (ing of grupo.items; track ing.id) {
+                      <li class="adicional" [class.is-activo]="cantidadExtra(ing) > 0">
+                        <span class="adicional__nombre">{{ ing.nombre }}</span>
+                        <span class="adicional__precio">+ {{ formatear(ing.precioExtra) }}</span>
+                        <span class="contador">
+                          <button type="button" class="contador__boton" [disabled]="cantidadExtra(ing) === 0" (click)="cambiarExtra(ing, -1)" [attr.aria-label]="'Quitar ' + ing.nombre">
+                            <lucide-icon [img]="MinusIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                          </button>
+                          <output class="contador__valor" [attr.aria-label]="ing.nombre + ': ' + cantidadExtra(ing)">{{ cantidadExtra(ing) }}</output>
+                          <button type="button" class="contador__boton" [disabled]="!puedeSumarExtra(ing)" (click)="cambiarExtra(ing, 1)" [attr.aria-label]="'Agregar ' + ing.nombre">
+                            <lucide-icon [img]="PlusIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                          </button>
+                        </span>
+                      </li>
+                    }
+                  }
+                </ul>
+              </section>
+            }
+          }
+
+          <div class="paso">
+            <label class="paso__titulo" for="notas">Notas para la cocina <small>opcional</small></label>
+            <textarea id="notas" class="notas" rows="2" maxlength="250" placeholder="Ej. sin aceitunas, bien cocida" [value]="notas()" (input)="alEscribirNotas($event)"></textarea>
+          </div>
+
+          @if (!puedeComprar()) {
+            <p class="aviso">Solo las cuentas de cliente pueden hacer pedidos.</p>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="barra" role="region" aria-label="Tu pedido">
+    <div class="barra__contenido">
+      <div class="contador contador--grande" role="group" aria-label="Cantidad">
+        <button type="button" class="contador__boton" [disabled]="cantidad() <= 1" (click)="cambiarCantidad(-1)" aria-label="Una menos">
+          <lucide-icon [img]="MinusIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+        </button>
+        <output class="contador__valor" aria-live="polite">{{ cantidad() }}</output>
+        <button type="button" class="contador__boton" [disabled]="cantidad() >= CANTIDAD_MAXIMA" (click)="cambiarCantidad(1)" aria-label="Una más">
+          <lucide-icon [img]="PlusIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+        </button>
+      </div>
+
+      <button type="submit" form="compra" class="barra__boton barra__boton--suave" [disabled]="enviando() || !puedeComprar() || !opcionesCompletas()" [attr.aria-busy]="enviando()">
+        @if (agregado()) {
+          <lucide-icon [img]="CheckIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+          Agregado
+        } @else {
+          Agregar
+        }
+      </button>
+
+      <button type="button" class="barra__boton barra__boton--fuerte" [disabled]="enviando() || !puedeComprar() || !opcionesCompletas()" (click)="comprarAhora()">
+        <span>Comprar<span class="barra__ahora"> ahora</span></span>
+        @if (total() !== null) {
+          <span class="barra__total">{{ formatear(total()) }}</span>
+        }
+      </button>
+    </div>
+  </div>
+
+  <app-product-info-dialog [producto]="infoAbierta() ? ficha() : null" [conEnlace]="false" (cerrado)="infoAbierta.set(false)" />
+  <app-entrega-dialog [accion]="accionEntrega()" (confirmado)="alConfirmarEntrega()" (cerrado)="accionEntrega.set(null)" />
+} @else if (recurso.isLoading()) {
+  <div class="wrap pagina" aria-busy="true">
+    <div class="ficha">
+      <div class="escenario esqueleto"></div>
+      <div class="ficha__info">
+        <div class="esqueleto esqueleto--linea esqueleto--corta"></div>
+        <div class="esqueleto esqueleto--linea esqueleto--titulo"></div>
+        <div class="esqueleto esqueleto--linea"></div>
+        <div class="esqueleto esqueleto--linea"></div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="wrap pagina estado" role="alert">
+    <lucide-icon class="estado__icono" [img]="PizzaIcon" [size]="48" [strokeWidth]="1" aria-hidden="true"></lucide-icon>
+    <h1 class="estado__titulo">{{ noEncontrado() ? 'Este producto no está disponible' : 'No pudimos cargar el producto' }}</h1>
+    <p class="estado__texto">
+      {{ noEncontrado() ? 'Puede que ya no esté en el menú o que se haya agotado por hoy.' : 'Revisa tu conexión e intenta de nuevo.' }}
+    </p>
+    <div class="estado__acciones">
+      <a routerLink="/menu" class="btn btn--primary">Ver el menú</a>
+      @if (falloCarga()) {
+        <button type="button" class="btn btn--secondary" (click)="recurso.reload()">Reintentar</button>
+      }
+    </div>
+  </div>
+}

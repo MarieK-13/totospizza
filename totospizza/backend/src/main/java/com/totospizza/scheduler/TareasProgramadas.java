@@ -12,14 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.totospizza.service.pago.PagoService;
 import com.totospizza.service.pedido.PedidoEstadoService;
 
-/**
- * Tareas periódicas que cierran los cabos sueltos del flujo de pedidos y pagos. Cada una atrapa su
- * propio error para que un fallo no cancele las siguientes ejecuciones. Los intervalos salen de
- * {@code app.jobs.*} y todo se apaga con {@code app.jobs.habilitados=false}.
- *
- * <p>Con más de una instancia del backend cada tarea correría en todas; antes de escalar hay que
- * agregar un bloqueo distribuido (por ejemplo ShedLock).
- */
+
 @Slf4j
 @Component
 @RequiredArgsConstructor

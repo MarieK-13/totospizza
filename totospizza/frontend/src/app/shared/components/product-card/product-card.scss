@@ -1,0 +1,229 @@
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-md;
+  background-color: $color-background-raised;
+  @include transition((box-shadow, border-color), $duration-base);
+
+  &:hover,
+  &:focus-within {
+    border-color: transparent;
+    box-shadow: $shadow-lg;
+  }
+
+  &__media {
+    position: relative;
+    display: block;
+    flex: none;
+    aspect-ratio: 1 / 0.92;
+    overflow: hidden;
+    background-color: $color-beige-horno;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform $duration-slow $ease-out;
+    }
+  }
+
+  &:hover &__media img {
+    transform: scale(1.03);
+  }
+
+  &__placeholder {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: rgba($color-brand-primary, 0.45);
+  }
+
+  &__badge {
+    position: absolute;
+    top: $space-3;
+    left: $space-3;
+    padding: 0.25rem 0.625rem;
+    border-radius: $radius-sm;
+    background-color: $color-amarillo-queso;
+    color: $color-cafe-tostado;
+    font-size: 0.75rem;
+    font-weight: $weight-bold;
+  }
+
+  &__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    padding: $space-4;
+  }
+
+  &__title {
+    margin: 0 0 $space-2;
+    font-family: $font-cuerpo;
+    font-size: 1.0625rem;
+    font-weight: $weight-bold;
+    line-height: 1.25;
+  }
+
+  // Toda la tarjeta es clicable: el enlace del título cubre el área
+  &__link {
+    color: inherit;
+    text-decoration: none;
+    @include focus-ring;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+  }
+
+  &__desc {
+    display: -webkit-box;
+    margin: 0 0 $space-3;
+    overflow: hidden;
+    color: $color-text-primary;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    opacity: 0.85;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  // Botón "i": por encima del enlace que cubre la tarjeta
+  &__info {
+    position: absolute;
+    top: $space-3;
+    right: $space-3;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 50%;
+    background-color: rgba($color-background-raised, 0.95);
+    color: $color-text-primary;
+    box-shadow: $shadow-sm;
+    cursor: pointer;
+    @include transition((background-color, color));
+    @include focus-ring;
+
+    &:hover {
+      background-color: $color-brand-primary;
+      color: $color-text-inverse;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: $space-3;
+    margin-top: auto;
+    padding-top: $space-2;
+  }
+
+  &__price {
+    margin: 0;
+    font-family: $font-datos;
+    font-size: 1.25rem;
+    font-weight: $weight-bold;
+    line-height: 1.1;
+
+    small {
+      display: block;
+      margin-bottom: 0.125rem;
+      color: $color-text-secondary;
+      font-family: $font-cuerpo;
+      font-size: 0.75rem;
+      font-weight: $weight-regular;
+    }
+  }
+
+  // Botón "+" cuadrado y rojo, por encima del enlace que cubre la tarjeta
+  &__add {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    border-radius: $radius-sm;
+    background-color: $color-brand-primary;
+    color: $color-text-inverse;
+    cursor: pointer;
+    @include transition((background-color, transform));
+    @include focus-ring;
+
+    &:hover:not(:disabled) {
+      background-color: $color-rojo-intenso;
+      transform: scale(1.06);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    &:disabled {
+      cursor: progress;
+      opacity: 0.8;
+    }
+
+    &.is-ok {
+      background-color: $color-verde-albahaca;
+    }
+  }
+
+  &__spin {
+    animation: girar 0.8s linear infinite;
+  }
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ── Vista de lista: foto a un lado, datos al otro ───────────────────────────
+:host(.es-lista) .card {
+  @include up(sm) {
+    flex-direction: row;
+  }
+
+  .card__media {
+    @include up(sm) {
+      width: 11rem;
+      aspect-ratio: auto;
+    }
+  }
+}
+
+@include reduced-motion {
+  .card,
+  .card__media img,
+  .card__add {
+    transition: none;
+  }
+
+  .card__spin {
+    animation-duration: 2s;
+  }
+}

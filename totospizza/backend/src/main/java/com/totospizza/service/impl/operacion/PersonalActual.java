@@ -10,7 +10,6 @@ import com.totospizza.model.entity.pedido.Pedido;
 import com.totospizza.model.entity.seguridad.Empleado;
 import com.totospizza.repository.seguridad.EmpleadoRepository;
 
-/** Resuelve el perfil de personal (y por tanto la sucursal) del usuario que opera cocina, mostrador o reparto. */
 @Component
 @RequiredArgsConstructor
 class PersonalActual {
@@ -23,7 +22,6 @@ class PersonalActual {
                         "Tu usuario no tiene un perfil de personal asignado"));
     }
 
-    /** El personal solo ve y opera pedidos de su propia sucursal; para el resto el pedido "no existe". */
     void exigirMismaSucursal(Empleado empleado, Pedido pedido) {
         if (!pedido.getSucursal().getId().equals(empleado.getSucursal().getId())) {
             throw new RecursoNoEncontradoException("Pedido", pedido.getId());

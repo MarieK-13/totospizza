@@ -169,7 +169,6 @@ public class PedidoEstadoServiceImpl implements PedidoEstadoService {
         entregaRepository.save(entrega);
     }
 
-    /** Garantía TOTO: el delivery llegó después de la hora estimada más la tolerancia. */
     private boolean llegoTarde(Pedido pedido, Instant entregadoEn) {
         if (pedido.getTipoEntrega() != TipoEntrega.DELIVERY || pedido.getConfirmadoEn() == null
                 || pedido.getMinutosEstimados() == null) {

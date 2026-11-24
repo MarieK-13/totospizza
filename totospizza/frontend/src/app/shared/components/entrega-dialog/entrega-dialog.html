@@ -1,0 +1,121 @@
+<dialog #dialogo class="entrega" aria-labelledby="entrega-titulo" (click)="alPulsar($event)" (cancel)="alCancelar($event)">
+  <header class="entrega__cabecera">
+    <h2 id="entrega-titulo" class="entrega__titulo">Dirección de entrega</h2>
+    <button type="button" class="entrega__cerrar" (click)="cerrar()" aria-label="Cerrar">
+      <lucide-icon [img]="CloseIcon" [size]="20" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+    </button>
+  </header>
+
+  <div class="segmento" role="radiogroup" aria-label="Tipo de entrega">
+    <button type="button" role="radio" class="segmento__opcion" [class.is-activa]="tipo() === 'DELIVERY'" [attr.aria-checked]="tipo() === 'DELIVERY'" (click)="elegirTipo('DELIVERY')">
+      Delivery
+    </button>
+    <button type="button" role="radio" class="segmento__opcion" [class.is-activa]="tipo() === 'RECOJO'" [attr.aria-checked]="tipo() === 'RECOJO'" (click)="elegirTipo('RECOJO')">
+      Recojo en tienda
+    </button>
+  </div>
+
+  <div class="entrega__cuerpo">
+    @if (tipo() === 'DELIVERY') {
+      <button type="button" class="ubicar" (click)="ubicar()" [disabled]="buscando()">
+        <lucide-icon [class.gira]="buscando()" [img]="buscando() ? LoadingIcon : LocateIcon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        {{ buscando() ? 'Buscando tu ubicación…' : cobertura() ? 'Volver a ubicarme' : 'Usar mi ubicación' }}
+      </button>
+
+      <div aria-live="polite">
+        @switch (consulta().tipo) {
+          @case ('resultado') {
+            @let c = cobertura()!;
+            @if (c.dentroCobertura) {
+              <div class="resultado resultado--ok">
+                <p class="resultado__titulo">Sí llegamos a tu zona</p>
+                <dl class="datos">
+                  @if (c.sucursalNombre) {
+                    <div class="datos__item">
+                      <dt><lucide-icon [img]="PinIcon" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon> Sale de</dt>
+                      <dd>{{ c.sucursalNombre }}</dd>
+                    </div>
+                  }
+                  @if (c.costoEnvio !== null) {
+                    <div class="datos__item">
+                      <dt><lucide-icon [img]="WalletIcon" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon> Envío</dt>
+                      <dd>{{ c.costoEnvio === 0 ? 'Gratis' : soles(c.costoEnvio) }}</dd>
+                    </div>
+                  }
+                  @if (c.minutosEstimados !== null) {
+                    <div class="datos__item">
+                      <dt><lucide-icon [img]="ClockIcon" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon> Tiempo</dt>
+                      <dd>{{ c.minutosEstimados }} min aprox.</dd>
+                    </div>
+                  }
+                </dl>
+              </div>
+
+              <div class="campos">
+                <div class="campo">
+                  <label class="campo__etiqueta" for="entrega-direccion">Calle y número</label>
+                  <input id="entrega-direccion" class="campo__input" [class.is-error]="errorDireccion()" type="text" autocomplete="street-address" placeholder="Ej. Av. San Martín 450"
+                    [maxlength]="MAX_DIRECCION" [value]="direccion()" (input)="escribir('direccion', $event)" [attr.aria-invalid]="!!errorDireccion()" aria-describedby="error-direccion" />
+                  <p id="error-direccion" class="campo__error">{{ errorDireccion() }}</p>
+                </div>
+                <div class="campo">
+                  <label class="campo__etiqueta" for="entrega-distrito">Distrito</label>
+                  <input id="entrega-distrito" class="campo__input" [class.is-error]="errorDistrito()" type="text" autocomplete="address-level2" placeholder="Ej. Ica"
+                    [maxlength]="MAX_DISTRITO" [value]="distrito()" (input)="escribir('distrito', $event)" [attr.aria-invalid]="!!errorDistrito()" aria-describedby="error-distrito" />
+                  <p id="error-distrito" class="campo__error">{{ errorDistrito() }}</p>
+                </div>
+                <div class="campo campo--ancho">
+                  <label class="campo__etiqueta" for="entrega-referencia">Referencia <small>opcional</small></label>
+                  <input id="entrega-referencia" class="campo__input" type="text" placeholder="Ej. frente al parque, casa verde"
+                    [maxlength]="MAX_REFERENCIA" [value]="referencia()" (input)="escribir('referencia', $event)" />
+                </div>
+              </div>
+            } @else {
+              <div class="resultado resultado--no">
+                <p class="resultado__titulo">Todavía no llegamos a tu zona</p>
+                <p class="resultado__texto">{{ c.mensaje }}</p>
+                <button type="button" class="enlace" (click)="elegirTipo('RECOJO')">Recoger en un local</button>
+              </div>
+            }
+          }
+          @case ('error') {
+            <div class="resultado resultado--no" role="alert">
+              <p class="resultado__titulo">No pudimos ubicarte</p>
+              <p class="resultado__texto">{{ $any(consulta()).mensaje }}</p>
+            </div>
+          }
+          @default {
+            <div class="vacio">
+              <lucide-icon class="vacio__icono" [img]="EmptyIcon" [size]="32" [strokeWidth]="1.4" aria-hidden="true"></lucide-icon>
+              <p class="vacio__texto">Te diremos al instante si llegamos, cuánto cuesta el envío y en cuánto tiempo.</p>
+            </div>
+          }
+        }
+      </div>
+    } @else {
+      <ul class="locales" role="radiogroup" aria-label="Local para recoger">
+        @for (local of locales(); track local.id) {
+          <li>
+            <button type="button" role="radio" class="local" [class.is-activo]="localId() === local.id" [attr.aria-checked]="localId() === local.id" [disabled]="!local.abiertoAhora" (click)="elegirLocal(local)">
+              <span class="local__icono"><lucide-icon [img]="StoreIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon></span>
+              <span class="local__texto">
+                <span class="local__nombre">{{ local.nombre }}</span>
+                <span class="local__direccion">{{ local.direccion.direccion }}, {{ local.direccion.distrito }}</span>
+              </span>
+              <span class="estado-local" [class.is-cerrado]="!local.abiertoAhora">{{ local.abiertoAhora ? 'Abierto' : 'Cerrado' }}</span>
+            </button>
+          </li>
+        } @empty {
+          <li class="vacio">
+            <p class="vacio__texto">No hay locales disponibles por ahora.</p>
+          </li>
+        }
+      </ul>
+      <p class="campo__error">{{ errorLocal() }}</p>
+    }
+  </div>
+
+  <footer class="entrega__pie">
+    <button type="button" class="confirmar" [disabled]="!puedeConfirmar()" (click)="confirmar()">{{ textoBoton() }}</button>
+  </footer>
+</dialog>

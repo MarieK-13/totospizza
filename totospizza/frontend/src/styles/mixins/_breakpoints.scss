@@ -1,0 +1,18 @@
+@use 'sass:map';
+@use '../tokens/variables' as *;
+
+@mixin up($name) {
+  $width: map.get($breakpoints, $name);
+
+  @media (min-width: $width) {
+    @content;
+  }
+}
+
+@mixin down($name) {
+  $width: map.get($breakpoints, $name);
+
+  @media (max-width: ($width - 0.02px)) {
+    @content;
+  }
+}

@@ -1,0 +1,46 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+// Estilos compartidos por los formularios de acceso (aviso de error, enlaces, mensajes).
+@mixin alerta {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border: $border-width solid rgba($color-error, 0.35);
+  border-radius: $radius-md;
+  background-color: rgba($color-error, 0.06);
+  color: $color-error;
+  font-size: 0.875rem;
+  line-height: 1.4;
+
+  lucide-icon {
+    flex: none;
+    margin-top: 0.0625rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+@mixin enlace {
+  color: $color-brand-primary;
+  font-weight: $weight-semibold;
+  @include focus-ring;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+@mixin boton-enviar($ancho: 18rem) {
+  width: min(100%, $ancho);
+  height: $control-height-md;
+  margin: $space-3 auto 0;
+  padding-block: 0;
+  border-radius: $radius-pill;
+  font-size: 0.9375rem;
+  font-weight: $weight-semibold;
+}

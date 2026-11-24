@@ -1,18 +1,7 @@
-// 1. Tokens Cromáticos - Toto's Pizza
-$color-rojo-tomate:   #D32F2F; // Primario y error
-$color-verde-albahaca:#2F6B3E; // Secundario y éxito
-$color-amarillo-queso:#FFD54F; // Acento
-$color-crema-masa:    #FDFBF7; // Fondo base
-$color-beige-horno:   #EDE0CE; // Fondo alterno / botones suaves
-$color-arena:         #DFCDB9; // Solo bordes y divisores
-$color-cafe-tostado:  #231812; // Texto principal y sidebar
-$color-marron-suave:  #7A6A5E; // Texto secundario
-$color-blanco:        #FFFFFF;
 
-// 2. Tipografías
-$font-titulos: 'DM Serif Display', serif;
-$font-cuerpo:  'Montserrat', sans-serif;
-
-// 3. Contenedor y espaciado
-$container-max: 1240px;
-$header-height: 76px;
+@forward 'colors';
+@forward 'typography';
+@forward 'spacing';
+@forward 'elevation';
+@forward 'motion';
+@forward 'icons';

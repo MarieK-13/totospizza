@@ -1,170 +1,133 @@
-import { Component, computed, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { LucideAngularModule, ArrowRight, Plus, Check } from 'lucide-angular';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Check, LucideAngularModule, Plus, Sparkles } from 'lucide-angular';
+import { ToastService } from '../../../../core/services/toast.service';
 
-interface ComboOpcion {
-  nombre: string;
-  extraPrecio?: number;
+type Insignia = 'Nuevo' | 'Poco pedido';
+
+interface Opcion {
+  readonly nombre: string;
+  readonly detalle?: string;
+  readonly imagen?: string;
+  readonly extra?: number;
+  readonly insignia?: Insignia;
 }
 
-interface ComboPideAhora {
-  id: string;
-  titulo: string;
-  subtitulo: string;
-  precioBase: number;
-  imagen: string;
-  opciones: ComboOpcion[];
+interface Combo {
+  readonly id: string;
+  readonly nombre: string;
+  readonly resumen: string;
+  readonly pregunta: string;
+  readonly precioBase: number;
+  readonly imagen: string;
+  readonly opciones: readonly Opcion[];
 }
 
+/**
+ * Armador de combos: la imagen es el producto principal y el cliente elige UNA
+ * opción para completarlo. Las opciones menos vendidas o nuevas se destacan
+ * con una insignia para que el cliente siempre descubra algo distinto.
+ */
 @Component({
   selector: 'app-order-now',
-  standalone: true,
-  imports: [RouterLink, LucideAngularModule],
+  imports: [LucideAngularModule],
   templateUrl: './order-now.html',
   styleUrl: './order-now.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderNow {
-  readonly ArrowRightIcon = ArrowRight;
-  readonly PlusIcon = Plus;
-  readonly CheckIcon = Check;
+  private readonly toast = inject(ToastService);
 
-  readonly combos: ComboPideAhora[] = [
-    // Página 1 (las 3 tarjetas exactas de tu prototipo)
+  protected readonly CheckIcon = Check;
+  protected readonly PlusIcon = Plus;
+  protected readonly SparkIcon = Sparkles;
+
+  protected readonly combos: readonly Combo[] = [
     {
       id: 'pack-pepperoni',
-      titulo: 'Pack Pepperoni & CO',
-      subtitulo: 'Selecciona tu bebida favorita para completar el combo:',
+      nombre: 'Pack Pepperoni & Co',
+      resumen: 'Pizza pepperoni artesanal mediana + 1 bebida a tu elección.',
+      pregunta: 'Elige tu bebida',
       precioBase: 32.9,
-      imagen: 'images/combo-pack-pepperoni.jpg',
+      imagen: 'images/pepperoni.jpg',
       opciones: [
-        { nombre: 'Inca Kola 500ml' },
-        { nombre: 'Coca-Cola 500ml' },
-        { nombre: 'Limonada de fruto rojos (¡Artesanal de la casa!)', extraPrecio: 2.0 },
-        { nombre: 'Limonada de menta', extraPrecio: 1.5 },
+        { nombre: 'Inca Kola 500 ml' },
+        { nombre: 'Coca-Cola 500 ml', imagen: 'images/cocacola.jpg' },
+        { nombre: 'Limonada de frutos rojos', detalle: 'Artesanal de la casa', extra: 2, insignia: 'Nuevo' },
+        { nombre: 'Limonada de menta', extra: 1.5, insignia: 'Poco pedido' },
         { nombre: 'Agua 500 ml' },
       ],
     },
     {
       id: 'match-perfecto',
-      titulo: 'Match Perfecto: Bebida & Piqueo',
-      subtitulo: 'Elige el acompañante ideal para hacerle match a tu bebida:',
-      precioBase: 16.0,
+      nombre: 'Match Perfecto',
+      resumen: 'Bebida de la casa + 1 piqueo para compartir.',
+      pregunta: 'Elige tu piqueo',
+      precioBase: 16,
       imagen: 'images/combo-bebida-piqueo.jpg',
       opciones: [
-        { nombre: 'Baston de masa con Mozzarella' },
-        { nombre: 'Tequeños veganos con Huacamole', extraPrecio: 2.0 },
-        { nombre: 'Cinnamon Roll' },
-        { nombre: 'Pan al ajo' },
-        { nombre: 'Alitas de pollo en Sala BBQ de la Casa', extraPrecio: 4.0 },
+        { nombre: 'Pan de ajo', imagen: 'images/antojo-pan-ajo.png' },
+        { nombre: 'Tequeños', detalle: 'Con guacamole', imagen: 'images/antojo-tequenos.png', extra: 2, insignia: 'Poco pedido' },
+        { nombre: 'Croquetas', imagen: 'images/antojo-croquetas.png', insignia: 'Nuevo' },
+        { nombre: 'Alitas BBQ', detalle: 'Salsa de la casa', imagen: 'images/antojo-alitas.png', extra: 4 },
+        { nombre: 'Onion rings', imagen: 'images/antojo-onion-rings.png', insignia: 'Poco pedido' },
       ],
     },
     {
       id: 'antojo-compartido',
-      titulo: 'Antojo Compartido',
-      subtitulo:
-        'Incluye para compartir: 1 porcion de alitas BBQ de la casa + 1 porcion de Papas Nativas',
+      nombre: 'Antojo Compartido',
+      resumen: 'Alitas BBQ + papas nativas, más la pizza que tú elijas.',
+      pregunta: 'Elige tu pizza',
       precioBase: 34.9,
-      imagen: 'images/combo-antojo-compartido.jpg',
+      imagen: 'images/margherita.jpg',
       opciones: [
-        { nombre: 'Pizza Pepperoni Tradicional' },
-        { nombre: 'Pizza Margarita con Queso' },
-        { nombre: 'Pizza Suprema Artesanal (¡La infaltable!)', extraPrecio: 3.0 },
-        { nombre: 'Pizza de Champiñones y extra queso', extraPrecio: 2.0 },
-        { nombre: 'Pizza Artesanal Margarita' },
-      ],
-    },
-
-    // Página 2 (combos adicionales para que el carrusel funcione)
-    {
-      id: 'duo-artesanal',
-      titulo: 'Dúo Artesanal Nocturno',
-      subtitulo: 'Elige tu entrada favorita para empezar la noche:',
-      precioBase: 46.9,
-      imagen: 'images/combo-antojo-compartido.jpg',
-      opciones: [
-        { nombre: 'Pan al ajo especial con mozzarella' },
-        { nombre: 'Bastones de masa madre con pesto' },
-        { nombre: 'Alitas BBQ de la casa (6 und.)', extraPrecio: 3.0 },
-        { nombre: 'Ensalada fresca caprese' },
-        { nombre: 'Nudos de ajo y parmesano' },
-      ],
-    },
-    {
-      id: 'tarde-dulce',
-      titulo: 'Tarde Dulce & Café',
-      subtitulo: 'Selecciona tu bebida caliente o fría para acompañar:',
-      precioBase: 18.5,
-      imagen: 'images/combo-bebida-piqueo.jpg',
-      opciones: [
-        { nombre: 'Americano pasado de altura' },
-        { nombre: 'Cappuccino cremoso', extraPrecio: 1.5 },
-        { nombre: 'Limonada de frutos rojos' },
-        { nombre: 'Infusión de hierbaluisa y menta' },
-        { nombre: 'Chocolate caliente artesanal', extraPrecio: 2.0 },
+        { nombre: 'Margherita Verace', imagen: 'images/margherita.jpg' },
+        { nombre: 'La Verde', detalle: 'Pesto y ricotta', imagen: 'images/verde.jpg', insignia: 'Nuevo' },
+        { nombre: 'Andina', detalle: 'Rocoto y huacatay', imagen: 'images/andina.jpg', extra: 3, insignia: 'Nuevo' },
+        { nombre: 'Portobello', imagen: 'images/portobello.jpg', extra: 2, insignia: 'Poco pedido' },
+        { nombre: 'Cuatro Quesos', imagen: 'images/ternera.jpg' },
       ],
     },
     {
       id: 'banquete-toto',
-      titulo: 'Banquete Familiar TOTO',
-      subtitulo: 'Elige la segunda pizza artesanal de tu banquete:',
+      nombre: 'Banquete Familiar',
+      resumen: 'Dos pizzas grandes: la Carnívora TOTO y otra a tu elección.',
+      pregunta: 'Elige tu segunda pizza',
       precioBase: 64.9,
-      imagen: 'images/combo-pack-pepperoni.jpg',
+      imagen: 'images/carnivora.jpg',
       opciones: [
-        { nombre: 'La Burrata con pesto genovés', extraPrecio: 4.0 },
-        { nombre: 'Diavola Picante con miel de ají' },
-        { nombre: 'Prosciutto e Rúcula', extraPrecio: 4.0 },
-        { nombre: 'Cuatro Quesos al horno de piedra' },
-        { nombre: 'Portobello y ajo confitado' },
+        { nombre: 'La Burrata', imagen: 'images/burrata.jpg', extra: 4 },
+        { nombre: 'Diavola Picante', imagen: 'images/diavola.jpg', insignia: 'Poco pedido' },
+        { nombre: 'Prosciutto e Rúcula', imagen: 'images/prosciutto.jpg', extra: 4, insignia: 'Poco pedido' },
+        { nombre: 'Andina', imagen: 'images/andina.jpg', insignia: 'Nuevo' },
       ],
     },
   ];
 
-  readonly paginaActual = signal(0);
-  readonly totalPaginas = computed(() => Math.ceil(this.combos.length / 3));
-  readonly paginasIndices = computed(() =>
-    Array.from({ length: this.totalPaginas() }, (_, i) => i)
-  );
+  protected readonly comboActual = signal(0);
+  private readonly elecciones = signal<Readonly<Record<string, number>>>({});
 
-  readonly combosVisibles = computed(() => {
-    const inicio = this.paginaActual() * 3;
-    return this.combos.slice(inicio, inicio + 3);
+  protected readonly combo = computed(() => this.combos[this.comboActual()]);
+  protected readonly indiceElegido = computed<number | null>(() => this.elecciones()[this.combo().id] ?? null);
+  protected readonly opcionElegida = computed(() => {
+    const i = this.indiceElegido();
+    return i === null ? null : this.combo().opciones[i];
   });
+  protected readonly total = computed(() => this.combo().precioBase + (this.opcionElegida()?.extra ?? 0));
 
-  // Guarda qué opción eligió el usuario por cada combo
-  readonly selecciones = signal<Record<string, number>>({});
-  // Feedback visual temporal al agregar al carrito
-  readonly recienAgregado = signal<Record<string, boolean>>({});
-
-  seleccionarOpcion(comboId: string, indiceOpcion: number): void {
-    this.selecciones.update((prev) => ({
-      ...prev,
-      [comboId]: indiceOpcion,
-    }));
+  protected elegirCombo(indice: number): void {
+    this.comboActual.set(indice);
   }
 
-  estaSeleccionada(comboId: string, indiceOpcion: number): boolean {
-    return this.selecciones()[comboId] === indiceOpcion;
+  protected elegirOpcion(indice: number): void {
+    this.elecciones.update((prev) => ({ ...prev, [this.combo().id]: indice }));
   }
 
-  calcularPrecio(combo: ComboPideAhora): string {
-    const idx = this.selecciones()[combo.id];
-    const extra = idx !== undefined ? combo.opciones[idx]?.extraPrecio ?? 0 : 0;
-    return (combo.precioBase + extra).toFixed(2);
-  }
-
-  agregarCombo(combo: ComboPideAhora): void {
-    // Si aún no marcó opción, selecciona automáticamente la primera
-    if (this.selecciones()[combo.id] === undefined) {
-      this.seleccionarOpcion(combo.id, 0);
+  protected agregar(): void {
+    const opcion = this.opcionElegida();
+    if (!opcion) {
+      this.toast.warning('Falta un paso', `${this.combo().pregunta} para completar tu combo.`);
+      return;
     }
-
-    this.recienAgregado.update((prev) => ({ ...prev, [combo.id]: true }));
-    setTimeout(() => {
-      this.recienAgregado.update((prev) => ({ ...prev, [combo.id]: false }));
-    }, 1400);
-  }
-
-  irAPagina(indice: number): void {
-    this.paginaActual.set(indice);
+    this.toast.success('Combo agregado', `${this.combo().nombre} + ${opcion.nombre} · S/ ${this.total().toFixed(2)}`);
   }
 }

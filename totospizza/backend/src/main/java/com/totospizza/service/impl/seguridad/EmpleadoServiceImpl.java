@@ -170,7 +170,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         }
     }
 
-    /** {@code actual} es el usuario que se está editando; null en un alta. */
     private void validarCorreoLibre(String correo, Usuario actual) {
         boolean cambia = actual == null || !correo.equalsIgnoreCase(actual.getCorreo());
         if (cambia && usuarioRepository.existsByCorreo(correo)) {

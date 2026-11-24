@@ -1,0 +1,132 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+@use '../../pastilla' as *;
+
+:host {
+  display: block;
+  --field-height: 2.625rem;
+  --field-radius: 0.75rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  &__grid {
+    display: grid;
+    gap: $space-4;
+    align-items: start;
+
+    @include up(sm) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+.submit {
+  width: min(100%, 16rem);
+  height: $control-height-md;
+  margin: $space-3 auto 0;
+  padding-block: 0;
+  border-radius: $radius-pill;
+  font-size: 0.9375rem;
+}
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border: $border-width solid rgba($color-error, 0.35);
+  border-radius: $radius-md;
+  background-color: rgba($color-error, 0.06);
+  color: $color-error;
+  font-size: 0.875rem;
+  line-height: 1.4;
+
+  lucide-icon {
+    flex: none;
+    margin-top: 0.0625rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.link {
+  color: $color-brand-primary;
+  font-weight: $weight-semibold;
+  @include focus-ring;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.switch {
+  margin: $space-5 0 0;
+  color: $color-text-secondary;
+  font-size: 0.9375rem;
+  text-align: center;
+}
+
+// Prefijo del teléfono: bandera de Perú dibujada con CSS + código
+.prefijo {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: $space-2;
+  padding-right: $space-3;
+  margin-right: $space-2;
+  border-right: $border-width solid $color-border-default;
+  color: $color-text-secondary;
+  font-size: 0.875rem;
+  font-weight: $weight-medium;
+}
+
+.bandera {
+  width: 1.375rem;
+  height: 0.9375rem;
+  border-radius: 0.125rem;
+  background: linear-gradient(90deg, $color-brand-primary 33.3%, $color-blanco 33.3% 66.6%, $color-brand-primary 66.6%);
+  box-shadow: 0 0 0 1px rgba($color-cafe-tostado, 0.15);
+}
+
+// ── Sobre la foto ────────────────────────────────────────────────────────────
+.volver {
+  @include pastilla;
+  position: absolute;
+  top: $space-5;
+  left: $space-5;
+
+  lucide-icon {
+    transition: transform $duration-base $ease-out;
+  }
+
+  &:hover lucide-icon {
+    transform: translateX(-3px);
+  }
+}
+
+.pie {
+  align-self: stretch;
+  text-align: left;
+
+  &__titulo {
+    margin: 0 0 $space-2;
+    font-family: $font-titulos;
+    font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+    line-height: 1.15;
+  }
+
+  &__texto {
+    max-width: 24rem;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    opacity: 0.92;
+  }
+}

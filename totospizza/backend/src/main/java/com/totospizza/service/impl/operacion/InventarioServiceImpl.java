@@ -186,7 +186,6 @@ public class InventarioServiceImpl implements InventarioService {
         movimientoRepository.save(movimiento);
     }
 
-    /** Avisa solo al cruzar el mínimo, no en cada venta posterior, para no llenar de alertas al administrador. */
     private void alertarSiCruzoMinimo(BigDecimal anterior, InventarioIngrediente actual) {
         boolean cruzo = anterior.compareTo(actual.getStockMinimo()) > 0
                 && actual.getStockActual().compareTo(actual.getStockMinimo()) <= 0;

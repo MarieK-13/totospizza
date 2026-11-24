@@ -1,0 +1,177 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+$footer-bg: #3d322a; // Café cálido del prototipo
+$footer-text: rgba($color-crema-masa, 0.78);
+$footer-line: rgba($color-crema-masa, 0.16);
+
+:host {
+  display: block;
+}
+
+.footer {
+  background-color: $footer-bg;
+  color: $footer-text;
+  font-family: $font-cuerpo;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+
+  a:not(.btn) {
+    color: inherit;
+    @include transition((color));
+    @include focus-ring($color-brand-accent);
+
+    &:hover {
+      color: $color-text-inverse;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__inner {
+    @include container;
+    padding-block: $space-8 $space-5;
+  }
+
+  &__top {
+    display: grid;
+    gap: $space-7;
+
+    @include up(lg) {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr);
+      gap: $space-10;
+    }
+  }
+
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-4;
+  }
+
+  // El logo tiene fondo crema: se muestra sobre una pastilla crema
+  &__logo {
+    display: inline-flex;
+    padding: $space-2 $space-4;
+    border-radius: $radius-md;
+    background-color: $color-crema-masa;
+
+    img {
+      width: auto;
+      height: 2.5rem;
+    }
+  }
+
+  &__about {
+    max-width: 24rem;
+    margin: 0;
+  }
+
+  &__social {
+    display: flex;
+    gap: $space-2;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: $control-height-md;
+      height: $control-height-md;
+      border: $border-width solid $footer-line;
+      border-radius: $radius-pill;
+
+      &:hover {
+        border-color: $color-brand-accent;
+        color: $color-brand-accent;
+      }
+    }
+  }
+
+  &__complaints {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    padding: $space-2 $space-4;
+    border: $border-width solid $footer-line;
+    border-radius: $radius-sm;
+    font-weight: $weight-semibold;
+
+    &:hover {
+      border-color: $color-text-inverse;
+    }
+  }
+
+  &__columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-6 $space-5;
+
+    @include up(md) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  &__col li + li {
+    margin-top: $space-3;
+  }
+
+  &__heading {
+    margin: 0 0 $space-4;
+    color: $color-brand-accent;
+    font-family: $font-cuerpo;
+    font-size: 0.75rem;
+    font-weight: $weight-semibold;
+    line-height: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  &__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+    margin-top: $space-8;
+    padding-top: $space-5;
+    border-top: $border-width solid $footer-line;
+    font-size: 0.8125rem;
+
+    @include up(md) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  &__copy {
+    margin: 0;
+  }
+
+  &__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-5;
+  }
+
+  &__payments {
+    display: flex;
+    gap: $space-2;
+
+    li {
+      padding: 0.125rem $space-2;
+      border: $border-width solid $footer-line;
+      border-radius: $radius-sm;
+      font-family: $font-datos;
+      font-size: 0.75rem;
+      font-weight: $weight-semibold;
+      letter-spacing: 0.04em;
+      color: $color-text-inverse;
+    }
+  }
+}
+

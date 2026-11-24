@@ -1,420 +1,325 @@
 @use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
 
-$color-mostaza-promo: #FFD54F;
+:host {
+  display: block;
+  padding: $space-4 $container-gutter 0;
+}
 
-.hero-wrapper {
+.hero {
   max-width: $container-max;
-  margin: 24px auto 0;
-  padding: 0 24px;
-}
+  margin-inline: auto;
 
-.hero-card {
-  position: relative;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 12px 32px rgba($color-cafe-tostado, 0.08);
-  border: 1px solid rgba($color-arena, 0.85);
-}
-
-.hero-slide {
-  display: grid;
-  grid-template-columns: 44% 56%;
-  min-height: 430px;
-  animation: fadeSlide 0.35s ease;
-
-  &__content {
-    padding: 46px 42px 42px 58px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  &__frame {
+    position: relative;
+    height: clamp(30rem, 46vw, 40rem);
+    overflow: hidden;
+    border-radius: $radius-xl;
+    background-color: $color-cafe-tostado;
+    box-shadow: $shadow-lg;
   }
 
+  &__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: $radius-pill;
+    background-color: rgba($color-background-raised, 0.92);
+    color: $color-text-primary;
+    box-shadow: $shadow-md;
+    cursor: pointer;
+    transform: translateY(-50%);
+    @include transition((background-color, transform), $duration-fast);
+    @include focus-ring;
+
+    &:hover {
+      background-color: $color-background-raised;
+      transform: translateY(-50%) scale(1.08);
+    }
+
+    &--prev {
+      left: $space-4;
+    }
+
+    &--next {
+      right: $space-4;
+    }
+
+    // En móvil las flechas estorban al texto: se usan los puntos
+    @include down(md) {
+      display: none;
+    }
+  }
+
+  &__dots {
+    position: absolute;
+    bottom: $space-5;
+    left: 50%;
+    z-index: 3;
+    display: flex;
+    gap: $space-2;
+    transform: translateX(-50%);
+
+    @include up(lg) {
+      // Con el panel de beneficios encima, los puntos suben un poco
+      bottom: 4.5rem;
+    }
+  }
+}
+
+// Punto con barra de progreso del autoplay
+.dot {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: $radius-pill;
+  background-color: rgba($color-background-raised, 0.55);
+  cursor: pointer;
+  @include transition((width, background-color), $duration-base);
+  @include focus-ring($color-background-raised);
+
+  &.is-active {
+    width: 2.5rem;
+  }
+
+  &__fill {
+    position: absolute;
+    inset: 0;
+    background-color: $color-brand-accent;
+    transform-origin: left;
+    animation: fill linear forwards;
+
+    &.is-paused {
+      animation-play-state: paused;
+    }
+  }
+}
+
+// ---- Diapositiva: la imagen es el banner; el texto vive a la izquierda sobre un degradado del color de la promo
+.slide {
+  --promo: #{$color-brand-primary};
+  --on-promo: #{$color-text-inverse};
+
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  @include transition((opacity, visibility), 600ms);
+
+  &.is-active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &--verde {
+    --promo: #{$color-brand-secondary};
+  }
+
+  &--blanco {
+    --promo: #{$color-crema-masa};
+    --on-promo: #{$color-text-primary};
+  }
+
+  &__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 70% center;
+    transform: scale(1.06);
+    transition: transform 7s linear;
+  }
+
+  &.is-active &__image {
+    transform: scale(1);
+  }
+
+  &__shade {
+    position: absolute;
+    inset: 0;
+    // Móvil: oscurece de abajo hacia arriba. Escritorio: de izquierda a derecha.
+    background: linear-gradient(0deg, var(--promo) 8%, color-mix(in srgb, var(--promo) 70%, transparent) 55%, transparent 100%);
+
+    @include up(lg) {
+      background: linear-gradient(
+        90deg,
+        var(--promo) 0%,
+        var(--promo) 30%,
+        color-mix(in srgb, var(--promo) 72%, transparent) 48%,
+        transparent 72%
+      );
+    }
+  }
+
+  &__content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-4;
+    width: 100%;
+    max-width: 38rem;
+    margin-top: auto;
+    padding: $space-6 $space-5 5rem;
+    color: var(--on-promo);
+
+    @include up(lg) {
+      margin-top: 0;
+      padding: $space-8 $space-9;
+    }
+
+    // Entrada escalonada del texto al activarse
+    > * {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+
+  &.is-active &__content > * {
+    animation: rise 600ms $ease-out forwards;
+  }
+
+  &.is-active &__content > :nth-child(2) { animation-delay: 80ms; }
+  &.is-active &__content > :nth-child(3) { animation-delay: 160ms; }
+  &.is-active &__content > :nth-child(4) { animation-delay: 240ms; }
+  &.is-active &__content > :nth-child(5) { animation-delay: 320ms; }
+  &.is-active &__content > :nth-child(6) { animation-delay: 400ms; }
+
   &__badge {
-    align-self: flex-start;
-    font-family: $font-cuerpo;
-    font-size: 11px;
-    font-weight: 800;
+    padding: $space-1 $space-3;
+    border-radius: $radius-pill;
+    background-color: $color-brand-accent;
+    color: $color-cafe-tostado;
+    font-family: $font-datos;
+    font-size: 0.75rem;
+    font-weight: $weight-semibold;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 6px 14px;
-    border-radius: 999px;
-    margin-bottom: 18px;
   }
 
   &__title {
+    margin: 0;
     font-family: $font-titulos;
-    font-size: clamp(28px, 3.2vw, 42px);
-    line-height: 1.12;
+    font-size: clamp(2.25rem, 3.9vw, 3.75rem);
     font-weight: 400;
-    margin: 0 0 14px;
+    line-height: 1.02;
   }
 
   &__desc {
-    font-family: $font-cuerpo;
-    font-size: 14.5px;
-    line-height: 1.55;
-    margin: 0 0 22px;
-    max-width: 420px;
+    max-width: 30rem;
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.6rem;
+    opacity: 0.92;
   }
 
   &__prices {
     display: flex;
     align-items: baseline;
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: $space-3;
+    margin: 0;
+  }
 
-    .price-old {
-      font-family: $font-cuerpo;
-      font-size: 16px;
-      font-weight: 500;
-      text-decoration: line-through;
-    }
+  &__old {
+    font-size: 1.125rem;
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
 
-    .price-current {
-      font-family: $font-titulos;
-      font-size: clamp(32px, 3.4vw, 42px);
-      line-height: 1;
-    }
+  &__now {
+    font-family: $font-acento;
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    font-weight: 700;
+    line-height: 1;
   }
 
   &__actions {
     display: flex;
-    align-items: center;
-    gap: 12px;
     flex-wrap: wrap;
-    margin-bottom: 18px;
+    gap: $space-3;
+  }
+
+  // Botón principal con contraste según el fondo de la promo
+  &__cta {
+    background-color: var(--on-promo);
+    color: var(--promo);
+
+    &:hover {
+      background-color: $color-brand-accent;
+      color: $color-cafe-tostado;
+    }
+  }
+
+  &--blanco &__cta {
+    background-color: $color-brand-primary;
+    color: $color-text-inverse;
+
+    &:hover {
+      background-color: $color-rojo-intenso;
+      color: $color-text-inverse;
+    }
+  }
+
+  &__ghost {
+    border-color: color-mix(in srgb, var(--on-promo) 70%, transparent);
+    color: var(--on-promo);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--on-promo) 16%, transparent);
+    }
   }
 
   &__legal {
-    font-family: $font-cuerpo;
-    font-size: 11px;
-    line-height: 1.4;
-  }
-
-  &__media {
-    position: relative;
-    height: 100%;
-    min-height: 430px;
-    overflow: hidden;
-  }
-
-  &__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  // ==========================================
-  // TEMA 1: ROJO TOMATE (Promo Familiar)
-  // ==========================================
-  &--rojo {
-    background-color: $color-rojo-tomate;
-    color: $color-blanco;
-
-    .hero-slide__badge {
-      background-color: $color-mostaza-promo;
-      color: $color-cafe-tostado;
-    }
-
-    .hero-slide__desc {
-      color: rgba($color-blanco, 0.92);
-    }
-
-    .price-old {
-      color: rgba($color-blanco, 0.65);
-    }
-
-    .price-current {
-      color: $color-mostaza-promo;
-    }
-
-    .btn-hero--primary {
-      background-color: $color-mostaza-promo;
-      color: $color-cafe-tostado;
-
-      &:hover {
-        background-color: lighten($color-mostaza-promo, 5%);
-      }
-    }
-
-    .btn-hero--secondary {
-      background-color: rgba($color-blanco, 0.14);
-      border: 1px solid rgba($color-blanco, 0.55);
-      color: $color-blanco;
-
-      &:hover {
-        background-color: rgba($color-blanco, 0.25);
-      }
-    }
-
-    .hero-slide__legal {
-      color: rgba($color-blanco, 0.72);
-    }
-  }
-
-  // ==========================================
-  // TEMA 2: BLANCO / CREMA (Combo)
-  // ==========================================
-  &--blanco {
-    background-color: $color-blanco;
-    color: $color-cafe-tostado;
-
-    .hero-slide__badge {
-      background-color: $color-rojo-tomate;
-      color: $color-blanco;
-    }
-
-    .hero-slide__desc {
-      color: $color-marron-suave;
-    }
-
-    .price-old {
-      color: rgba($color-marron-suave, 0.65);
-    }
-
-    .price-current {
-      color: $color-rojo-tomate;
-    }
-
-    .btn-hero--primary {
-      background-color: $color-rojo-tomate;
-      color: $color-blanco;
-
-      &:hover {
-        background-color: #b72525;
-      }
-    }
-
-    .btn-hero--secondary {
-      background-color: $color-blanco;
-      border: 1px solid $color-arena;
-      color: $color-cafe-tostado;
-
-      &:hover {
-        background-color: $color-crema-masa;
-      }
-    }
-
-    .hero-slide__legal {
-      color: rgba($color-marron-suave, 0.75);
-    }
-  }
-
-  // ==========================================
-  // TEMA 3: VERDE ALBAHACA (Oferta Veggie)
-  // ==========================================
-  &--verde {
-    background-color: $color-verde-albahaca;
-    color: $color-blanco;
-
-    .hero-slide__badge {
-      background-color: $color-mostaza-promo;
-      color: $color-cafe-tostado;
-    }
-
-    .hero-slide__desc {
-      color: rgba($color-blanco, 0.92);
-    }
-
-    .price-old {
-      color: rgba($color-blanco, 0.65);
-    }
-
-    .price-current {
-      color: $color-mostaza-promo;
-    }
-
-    .btn-hero--primary {
-      background-color: $color-mostaza-promo;
-      color: $color-cafe-tostado;
-
-      &:hover {
-        background-color: lighten($color-mostaza-promo, 5%);
-      }
-    }
-
-    .btn-hero--secondary {
-      background-color: rgba($color-blanco, 0.14);
-      border: 1px solid rgba($color-blanco, 0.55);
-      color: $color-blanco;
-
-      &:hover {
-        background-color: rgba($color-blanco, 0.25);
-      }
-    }
-
-    .hero-slide__legal {
-      color: rgba($color-blanco, 0.72);
-    }
+    font-size: 0.75rem;
+    line-height: 1rem;
+    opacity: 0.75;
   }
 }
 
-// Botones CTA
-.btn-hero {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: 999px;
-  font-family: $font-cuerpo;
-  font-size: 13.5px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: transform 0.18s ease, background-color 0.18s ease;
-
-  &:hover {
-    transform: translateY(-1px);
-  }
-}
-
-// Sello circular "Hecho AL MOMENTO"
-.craft-seal {
-  position: absolute;
-  bottom: 24px;
-  left: 24px;
-  width: 92px;
-  height: 92px;
-  border-radius: 50%;
-  background-color: $color-blanco;
-  color: $color-cafe-tostado;
-  box-shadow: 0 8px 22px rgba($color-cafe-tostado, 0.18);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 8px;
-
-  &__main {
-    font-family: $font-titulos;
-    font-size: 20px;
-    line-height: 1.05;
-  }
-
-  &__sub {
-    font-family: $font-cuerpo;
-    font-size: 8.5px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    margin-top: 2px;
-  }
-}
-
-// Flechas laterales circulares
-.hero-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 0;
-  background-color: rgba($color-blanco, 0.92);
-  color: $color-cafe-tostado;
-  box-shadow: 0 4px 14px rgba($color-cafe-tostado, 0.16);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-  transition: transform 0.18s ease, background-color 0.18s ease;
-
-  &:hover {
-    background-color: $color-blanco;
-    transform: translateY(-50%) scale(1.06);
-  }
-
-  &--prev {
-    left: 16px;
-  }
-
-  &--next {
-    right: 16px;
-  }
-}
-
-// Indicadores inferiores (dots)
-.hero-dots {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  z-index: 2;
-
-  &__item {
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    border: 0;
-    padding: 0;
-    background-color: rgba($color-blanco, 0.55);
-    box-shadow: 0 1px 4px rgba($color-cafe-tostado, 0.25);
-    cursor: pointer;
-    transition: width 0.25s ease, background-color 0.25s ease;
-
-    &.is-active {
-      width: 24px;
-      background-color: $color-mostaza-promo;
-    }
-  }
-}
-
-@keyframes fadeSlide {
-  from {
-    opacity: 0.55;
-  }
+@keyframes rise {
   to {
     opacity: 1;
+    transform: none;
   }
 }
 
-// Responsivo
-@media (max-width: 920px) {
-  .hero-slide {
-    grid-template-columns: 1fr;
-
-    &__content {
-      padding: 36px 28px 44px;
-      order: 2;
-    }
-
-    &__media {
-      min-height: 260px;
-      order: 1;
-    }
+@keyframes fill {
+  from {
+    transform: scaleX(0);
   }
-
-  .hero-arrow {
-    top: 130px;
+  to {
+    transform: scaleX(1);
   }
 }
 
-@media (max-width: 520px) {
-  .hero-wrapper {
-    padding: 0 14px;
-    margin-top: 14px;
+@include reduced-motion {
+  .slide__image,
+  .slide.is-active .slide__image {
+    transform: none;
+    transition: none;
   }
 
-  .hero-slide__content {
-    padding: 28px 20px 42px;
+  .slide__content > * {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
   }
 
-  .craft-seal {
-    width: 76px;
-    height: 76px;
-    bottom: 14px;
-    left: 14px;
-
-    &__main {
-      font-size: 16px;
-    }
-
-    &__sub {
-      font-size: 7.5px;
-    }
+  .dot__fill {
+    animation: none;
+    transform: scaleX(1);
   }
 }

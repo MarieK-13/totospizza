@@ -1,0 +1,16 @@
+
+// Duraciones
+$duration-fast:  150ms;
+$duration-base:  250ms;
+$duration-slow:  400ms;
+
+// Curvas
+$ease-standard: cubic-bezier(0.4, 0, 0.2, 1);   // Slow In / Slow Out
+$ease-out:      cubic-bezier(0, 0, 0.2, 1);     // Elementos que entran
+$ease-in:       cubic-bezier(0.4, 0, 1, 1);     // Elementos que salen
+$ease-elastic:  cubic-bezier(0.34, 1.56, 0.64, 1); // Elastic Pop (favoritos, stepper)
+
+// Valores de interacción
+$press-scale:       0.98;
+$card-image-zoom:   1.05;
+$icon-hover-rotate: 5deg;

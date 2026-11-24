@@ -7,8 +7,7 @@ import lombok.RequiredArgsConstructor;
 import com.totospizza.repository.pedido.PedidoRepository;
 
 /**
- * Número visible del pedido (PZ-2847). Sale de la secuencia {@code seq_numero_pedido}, así que
- * es único aunque lleguen pedidos al mismo tiempo.
+ * Número visible del pedido (PZ-2847).
  */
 @Component
 @RequiredArgsConstructor

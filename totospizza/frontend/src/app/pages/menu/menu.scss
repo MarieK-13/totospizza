@@ -1,0 +1,377 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+// ── Categorías: texto en negrita con subrayado rojo en la activa ────────────
+.barra {
+  position: sticky;
+  top: 4.25rem;
+  z-index: $z-dropdown;
+  border-bottom: $border-width solid $color-border-default;
+  background-color: rgba($color-background-raised, 0.97);
+  backdrop-filter: blur(8px);
+}
+
+.tabs {
+  display: flex;
+  gap: $space-6;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  @include up(md) {
+    gap: $space-7;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.tab {
+  position: relative;
+  flex: none;
+  padding: $space-4 0;
+  border: 0;
+  background: none;
+  color: $color-text-primary;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: $weight-bold;
+  cursor: pointer;
+  @include transition(color);
+  @include focus-ring;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background-color: $color-brand-primary;
+    transform: scaleX(0);
+    transition: transform $duration-base $ease-out;
+  }
+
+  &:hover {
+    color: $color-brand-primary;
+  }
+
+  &.is-activa {
+    color: $color-brand-primary;
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+}
+
+// ── Resultados y herramientas ────────────────────────────────────────────────
+.resultados {
+  padding-block: $space-5 $space-10;
+}
+
+.herramientas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  margin-bottom: $space-4;
+
+  &__conteo {
+    margin: 0;
+    font-family: $font-cuerpo;
+    font-size: 1.25rem;
+    font-weight: $weight-bold;
+  }
+
+  &__acciones {
+    display: flex;
+    align-items: center;
+    gap: $space-4;
+  }
+}
+
+.icono-boton {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: $color-text-primary;
+  cursor: pointer;
+  @include transition(background-color);
+  @include focus-ring;
+
+  &:hover {
+    background-color: $color-beige-horno;
+  }
+}
+
+.buscador {
+  position: relative;
+  display: block;
+  width: min(100%, 15rem);
+
+  &__icono {
+    position: absolute;
+    top: 50%;
+    left: $space-3;
+    color: $color-text-secondary;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  &__campo {
+    width: 100%;
+    height: 2.5rem;
+    padding-inline: 2.25rem 2.25rem;
+    border: $border-width solid $color-border-default;
+    border-radius: $radius-sm;
+    background-color: $color-background-raised;
+    color: $color-text-primary;
+    font: inherit;
+    font-size: 0.9375rem;
+    @include transition((border-color, box-shadow));
+
+    &:focus-visible {
+      outline: none;
+      border-color: $color-brand-primary;
+      box-shadow: 0 0 0 3px rgba($color-brand-primary, 0.18);
+    }
+  }
+
+  &__cerrar {
+    position: absolute;
+    top: 50%;
+    right: $space-2;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: $color-text-secondary;
+    cursor: pointer;
+    transform: translateY(-50%);
+    @include focus-ring;
+
+    &:hover {
+      background-color: $color-beige-horno;
+    }
+  }
+}
+
+.vista {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+
+  &__texto {
+    display: none;
+    font-size: 0.9375rem;
+
+    @include up(sm) {
+      display: inline;
+    }
+  }
+
+  &__boton {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: $radius-sm;
+    background: none;
+    color: $color-text-secondary;
+    cursor: pointer;
+    @include transition((background-color, color));
+    @include focus-ring;
+
+    &:hover {
+      color: $color-brand-primary;
+    }
+
+    &.is-activa {
+      background-color: $color-brand-primary;
+      color: $color-text-inverse;
+    }
+  }
+}
+
+.orden {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: 0.9375rem;
+
+  &__select {
+    appearance: none;
+    padding: $space-2 1.5rem $space-2 0;
+    border: 0;
+    background: none;
+    color: $color-text-primary;
+    font: inherit;
+    font-weight: $weight-medium;
+    cursor: pointer;
+    @include focus-ring;
+  }
+
+  &__flecha {
+    position: absolute;
+    right: 0;
+    pointer-events: none;
+  }
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-5;
+}
+
+.filtro {
+  height: 2.25rem;
+  padding-inline: $space-4;
+  border: $border-width solid transparent;
+  border-radius: $radius-pill;
+  background-color: $color-crema-claro;
+  color: $color-text-primary;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: $weight-medium;
+  cursor: pointer;
+  @include transition((background-color, color, border-color));
+  @include focus-ring;
+
+  &:hover {
+    border-color: $color-arena;
+  }
+
+  &.is-activo {
+    border-color: $color-brand-primary;
+    background-color: $tint-rojo-8;
+    color: $color-brand-primary;
+  }
+}
+
+.limpiar {
+  padding: 0 $space-2;
+  border: 0;
+  background: none;
+  color: $color-brand-primary;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: $weight-semibold;
+  cursor: pointer;
+  @include focus-ring;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+// ── Cuadrícula ───────────────────────────────────────────────────────────────
+.grilla {
+  display: grid;
+  gap: $space-3;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transition: opacity $duration-base;
+
+  @include up(md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: $space-4;
+  }
+
+  @include up(lg) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  @include up(xl) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  // Lista: una columna con foto al costado (en móvil sigue siendo una columna de tarjetas)
+  &.es-lista {
+    grid-template-columns: minmax(0, 1fr);
+
+    @include up(lg) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  &.is-cargando {
+    opacity: 0.55;
+  }
+}
+
+.esqueleto {
+  aspect-ratio: 3 / 4;
+  border-radius: $radius-md;
+  background: linear-gradient(100deg, $color-beige-horno 30%, rgba($color-blanco, 0.7) 50%, $color-beige-horno 70%) 0 0 / 200% 100%;
+  animation: brillo 1.4s linear infinite;
+}
+
+@keyframes brillo {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.aviso-corte {
+  margin: $space-6 0 0;
+  color: $color-text-secondary;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.estado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-9 $space-5;
+  text-align: center;
+
+  &__icono {
+    color: $color-text-secondary;
+  }
+
+  &__titulo {
+    margin: $space-2 0 0;
+    font-family: $font-titulos;
+    font-size: 1.5rem;
+  }
+
+  &__texto {
+    margin: 0 0 $space-4;
+    color: $color-text-secondary;
+  }
+}
+
+@include reduced-motion {
+  .esqueleto {
+    animation: none;
+  }
+
+  .grilla,
+  .tab::after {
+    transition: none;
+  }
+}

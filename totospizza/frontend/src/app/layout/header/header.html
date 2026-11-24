@@ -1,0 +1,129 @@
+<header class="site-header">
+  <div class="bar">
+    <a routerLink="/" class="bar__logo" aria-label="Toto's Pizza, ir al inicio">
+      <img src="images/logo-totosd-sin-fondo.png" alt="" class="bar__logo-wide" />
+      <img src="images/logo-totosm-sin-fondo.png" alt="" class="bar__logo-compact" />
+    </a>
+
+    <nav class="bar__nav" aria-label="Navegación principal">
+      @for (item of nav; track item.route) {
+        <a
+          class="nav-link"
+          [routerLink]="item.route"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: !!item.exact }"
+          >{{ item.label }}</a
+        >
+      }
+    </nav>
+
+    <div class="bar__actions">
+
+      @if (auth.estaAutenticado()) {
+        <div class="account">
+          <button
+            type="button"
+            class="user user--button"
+            (click)="toggleAccount()"
+            [attr.aria-expanded]="accountOpen()"
+            aria-haspopup="menu"
+            aria-controls="menu-cuenta"
+          >
+            <lucide-icon [img]="UserIcon" [size]="22" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+            <span class="user__text">
+              <small>Hola,</small>
+              <strong>{{ auth.nombreCorto() }}</strong>
+            </span>
+            <lucide-icon class="user__chevron" [class.is-open]="accountOpen()" [img]="ChevronIcon" [size]="14" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+          </button>
+
+          @if (accountOpen()) {
+            <div id="menu-cuenta" class="account__menu" role="menu">
+              <div class="account__who">
+                <strong>{{ nombreCompleto() }}</strong>
+                <span>{{ auth.usuario()?.correo }}</span>
+              </div>
+              @if (auth.esCliente()) {
+                <a role="menuitem" class="account__item" routerLink="/perfil" (click)="closeAccount()">Mi perfil</a>
+                <a role="menuitem" class="account__item" routerLink="/mis-pedidos" (click)="closeAccount()">Mis pedidos</a>
+              } @else {
+                <a role="menuitem" class="account__item" [routerLink]="auth.rutaInicio()" (click)="closeAccount()">Ir a mi panel</a>
+              }
+              <button role="menuitem" type="button" class="account__item account__item--exit" (click)="cerrarSesion()">
+                <lucide-icon [img]="LogoutIcon" [size]="16" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+                Cerrar sesión
+              </button>
+            </div>
+          }
+        </div>
+      } @else if (!enLogin()) {
+        <a routerLink="/login" class="user" aria-label="Iniciar sesión">
+          <lucide-icon [img]="UserIcon" [size]="22" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+          <span class="user__text">
+            <small>Hola,</small>
+            <strong>inicia sesión</strong>
+          </span>
+        </a>
+      }
+
+      <a routerLink="/carrito" class="cart" [attr.aria-label]="'Carrito, ' + cartCount() + ' productos, ' + cartLabel()">
+        <lucide-icon [img]="BagIcon" [size]="22" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+        <span class="cart__amount">{{ cartLabel() }}</span>
+        @if (cartCount() > 0) {
+          <span class="cart__badge" aria-hidden="true">{{ cartCount() }}</span>
+        }
+      </a>
+
+      <button
+        type="button"
+        class="action action--toggle"
+        (click)="toggleMenu()"
+        [attr.aria-expanded]="menuOpen()"
+        aria-controls="menu-movil"
+        aria-label="Abrir menú"
+      >
+        <lucide-icon [img]="MenuIcon" [size]="22" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (menuOpen()) {
+    <div id="menu-movil" class="sheet" role="dialog" aria-modal="true" aria-label="Menú">
+      <div class="sheet__top">
+        <span class="sheet__brand">Toto's Pizza</span>
+        <button type="button" class="sheet__close" (click)="closeMenu()" aria-label="Cerrar menú">
+          <lucide-icon [img]="CloseIcon" [size]="22" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+        </button>
+      </div>
+
+      <nav class="sheet__nav" aria-label="Navegación móvil">
+        @for (item of nav; track item.route; let i = $index) {
+          <a
+            class="sheet__link"
+            [style.animation-delay.ms]="80 + i * 70"
+            [routerLink]="item.route"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: !!item.exact }"
+            (click)="closeMenu()"
+            >{{ item.label }}</a
+          >
+        }
+      </nav>
+
+      <div class="sheet__foot">
+        <a [routerLink]="cta.route" class="btn btn--primary btn--lg btn--block" (click)="closeMenu()">{{ cta.label }}</a>
+        @if (auth.estaAutenticado()) {
+          <a
+            [routerLink]="auth.esCliente() ? '/perfil' : auth.rutaInicio()"
+            class="btn btn--light btn--lg btn--block"
+            (click)="closeMenu()"
+            >{{ auth.esCliente() ? 'Mi cuenta' : 'Ir a mi panel' }}</a
+          >
+          <button type="button" class="btn btn--ghost btn--lg btn--block" (click)="cerrarSesion()">Cerrar sesión</button>
+        } @else if (!enLogin()) {
+          <a routerLink="/login" class="btn btn--light btn--lg btn--block" (click)="closeMenu()">Iniciar sesión</a>
+        }
+      </div>
+    </div>
+  }
+</header>

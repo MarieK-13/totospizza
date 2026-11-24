@@ -1,0 +1,184 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.stage {
+  display: grid;
+  flex: 1;
+
+  @include up(lg) {
+    place-items: center;
+    padding: $space-6;
+    background-color: $color-beige-horno;
+  }
+}
+
+.auth {
+  display: grid;
+  background-color: $color-background-canvas;
+
+  // Escritorio: tarjeta centrada y compacta en lugar de pantalla completa
+  @include up(lg) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    width: min(100%, 70rem);
+    min-height: min(44rem, calc(100dvh - 4.25rem - #{$space-6 * 2}));
+    overflow: hidden;
+    border-radius: 1.5rem;
+    box-shadow: $shadow-xl;
+  }
+
+  // La foto del registro ocupa menos que el formulario
+  &--foto {
+    @include up(lg) {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+    }
+  }
+
+  &--arte-izquierda &__form {
+    @include up(lg) {
+      order: 2;
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    padding: $space-6 $container-gutter $space-8;
+    outline: none;
+
+    @include up(lg) {
+      justify-content: center;
+      min-height: 0;
+      padding: $space-7 $space-8;
+    }
+  }
+
+  &__inner {
+    width: 100%;
+    max-width: 42rem;
+    margin-inline: auto;
+
+    @include up(lg) {
+      max-width: 34rem;
+    }
+  }
+
+  &__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: $space-4;
+    padding-bottom: $space-4;
+    margin-bottom: $space-6;
+    border-bottom: 2px solid $color-brand-primary;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: $font-titulos;
+    font-size: clamp(1.875rem, 4.2vw, 3rem);
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  &__logo {
+    flex: none;
+    @include focus-ring;
+
+    img {
+      display: block;
+      width: auto;
+      height: clamp(3.25rem, 6vw, 4.75rem);
+    }
+  }
+}
+
+// ── Panel de arte (solo escritorio) ──────────────────────────────────────────
+.arte {
+  position: relative;
+  display: none;
+  overflow: hidden;
+  isolation: isolate;
+  color: $color-text-inverse;
+
+  @include up(lg) {
+    display: block;
+  }
+
+  &--ilustracion {
+    background-color: $color-brand-primary;
+  }
+
+  &__imagen {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &--foto &__imagen {
+    object-position: 36% 70%;
+  }
+
+  &--foto::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgba($color-cafe-tostado, 0.05) 30%, rgba($color-cafe-tostado, 0.78) 100%);
+  }
+
+  // Garabatos de línea blanca, como las ilustraciones del diseño
+  &__garabato {
+    position: absolute;
+    z-index: -1;
+    color: rgba($color-blanco, 0.32);
+
+    :host ::ng-deep svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    &--g1 { top: 3%;  left: 8%;   width: 6.5rem; height: 6.5rem; transform: rotate(-12deg); }
+    &--g2 { top: 6%;  left: 46%;  width: 3.5rem; height: 3.5rem; transform: rotate(30deg); }
+    &--g3 { top: 1%;  right: 4%;  width: 7rem;   height: 7rem;   transform: rotate(18deg); }
+    &--g4 { top: 30%; left: 2%;   width: 5rem;   height: 5rem;   transform: rotate(-20deg); }
+    &--g5 { top: 34%; right: 4%;  width: 5.5rem; height: 5.5rem; transform: rotate(14deg); }
+    &--g6 { bottom: 24%; left: 3%;  width: 5.5rem; height: 5.5rem; transform: rotate(10deg); }
+    &--g7 { bottom: 20%; right: 5%; width: 4.5rem; height: 4.5rem; transform: rotate(-30deg); }
+    &--g8 { bottom: 2%;  right: 3%; width: 6.5rem; height: 6.5rem; transform: rotate(8deg); }
+  }
+
+  // Plato circular con la foto de la pizza
+  &__plato {
+    position: absolute;
+    top: 46%;
+    left: 50%;
+    z-index: -1;
+    width: min(74%, 34rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: url('/images/hero-combo.jpg') 52% 100% / 220% auto no-repeat;
+    box-shadow: 0 1.5rem 3rem rgba($color-cafe-tostado, 0.35), 0 0 0 0.5rem rgba($color-blanco, 0.14);
+    transform: translate(-50%, -50%);
+  }
+
+  &__contenido {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $space-5;
+    padding: $space-6 $space-6 $space-7;
+  }
+}

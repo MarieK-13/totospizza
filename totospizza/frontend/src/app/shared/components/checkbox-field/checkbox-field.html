@@ -1,0 +1,25 @@
+<div class="check" [class.is-invalid]="showError" [class.is-disabled]="disabled()">
+  <label class="check__label" [attr.for]="id">
+    <input
+      class="check__input"
+      type="checkbox"
+      [id]="id"
+      [checked]="checked()"
+      [disabled]="disabled()"
+      [attr.aria-invalid]="showError"
+      [attr.aria-describedby]="id + '-msg'"
+      (change)="alternar($event)"
+      (blur)="onTouched()"
+    />
+    <span class="check__box" aria-hidden="true">
+      <lucide-icon [img]="CheckIcon" [size]="14" [strokeWidth]="3"></lucide-icon>
+    </span>
+    <span class="check__text"><ng-content /></span>
+  </label>
+
+  <div [id]="id + '-msg'">
+    @if (showError) {
+      <p class="check__error" role="alert">{{ errorMessage }}</p>
+    }
+  </div>
+</div>

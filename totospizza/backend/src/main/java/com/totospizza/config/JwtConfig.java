@@ -16,7 +16,6 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
-/** Firma y verificación de los tokens de acceso con HMAC-SHA256 y un secreto compartido. */
 @Configuration
 public class JwtConfig {
 

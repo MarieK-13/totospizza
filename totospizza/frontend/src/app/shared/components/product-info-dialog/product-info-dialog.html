@@ -1,0 +1,70 @@
+<dialog #dialogo class="info" aria-labelledby="info-titulo" (click)="alPulsar($event)" (cancel)="alCancelar($event)">
+  @if (producto(); as p) {
+    <header class="info__cabecera">
+      <div>
+        <p class="info__sobre">
+          <lucide-icon [img]="InfoIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+          Información adicional
+        </p>
+        <h2 id="info-titulo" class="info__titulo">{{ p.nombre }}</h2>
+      </div>
+      <button type="button" class="info__cerrar" (click)="cerrar()" aria-label="Cerrar">
+        <lucide-icon [img]="CloseIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+      </button>
+    </header>
+
+    <div class="info__cuerpo">
+      <section class="dato">
+        <span class="dato__icono"><lucide-icon [img]="DescIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon></span>
+        <div>
+          <h3 class="dato__titulo">Descripción</h3>
+          <p class="dato__texto">{{ p.descripcion }}</p>
+        </div>
+      </section>
+
+      @if (p.ingredientes) {
+        <section class="dato">
+          <span class="dato__icono"><lucide-icon [img]="IngredientesIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon></span>
+          <div>
+            <h3 class="dato__titulo">Ingredientes</h3>
+            <p class="dato__texto">{{ p.ingredientes }}</p>
+          </div>
+        </section>
+      }
+
+      @if (contiene()) {
+        <section class="dato dato--alerta">
+          <span class="dato__icono"><lucide-icon [img]="AlertIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon></span>
+          <div>
+            <h3 class="dato__titulo">Contiene alérgenos</h3>
+            <p class="dato__texto">{{ contiene() }}</p>
+          </div>
+        </section>
+      }
+
+      @if (libres()) {
+        <section class="dato dato--libre">
+          <span class="dato__icono"><lucide-icon [img]="SafeIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon></span>
+          <div>
+            <h3 class="dato__titulo">Libre de</h3>
+            <p class="dato__texto">{{ libres() }}</p>
+          </div>
+        </section>
+      }
+
+      @if (!contiene() && !libres()) {
+        <p class="info__vacio">Este producto no tiene información de alérgenos registrada. Si tienes una alergia, consúltanos antes de pedir.</p>
+      } @else {
+        <p class="info__nota">Si tienes una alergia severa, consúltanos antes de pedir: podría haber trazas por producción compartida.</p>
+      }
+    </div>
+
+    <footer class="info__pie">
+      @if (conEnlace()) {
+        <a class="info__accion" [routerLink]="['/menu', p.slug]" (click)="cerrar()">Ver detalle y pedir · desde {{ precio() }}</a>
+      } @else {
+        <button type="button" class="info__accion" (click)="cerrar()">Entendido</button>
+      }
+    </footer>
+  }
+</dialog>

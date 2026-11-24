@@ -1,0 +1,136 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+@use '../../pastilla' as *;
+
+:host {
+  display: block;
+  // Campos de esta pantalla: más altos y con esquinas suaves, como en el diseño
+  --field-height: 3rem;
+  --field-radius: 0.875rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+  }
+}
+
+.submit {
+  width: min(100%, 18rem);
+  height: $control-height-md;
+  margin: $space-3 auto 0;
+  padding-block: 0;
+  border-radius: $radius-pill;
+  font-size: 0.9375rem;
+  font-weight: $weight-semibold;
+}
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border: $border-width solid rgba($color-error, 0.35);
+  border-radius: $radius-md;
+  background-color: rgba($color-error, 0.06);
+  color: $color-error;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  animation: alert-in $duration-base $ease-out;
+
+  lucide-icon {
+    flex: none;
+    margin-top: 0.0625rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+@keyframes alert-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.link {
+  color: $color-brand-primary;
+  font-size: 0.875rem;
+  font-weight: $weight-semibold;
+  @include focus-ring;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.switch {
+  margin: $space-6 0 0;
+  color: $color-text-secondary;
+  font-size: 0.9375rem;
+  text-align: center;
+
+  .link {
+    font-size: inherit;
+  }
+
+  // En escritorio la invitación a registrarse ya está en el panel rojo
+  @include up(lg) {
+    display: none;
+  }
+}
+
+// ── Sobre el panel de arte ───────────────────────────────────────────────────
+.cta {
+  @include pastilla;
+
+  lucide-icon {
+    transition: transform $duration-base $ease-out;
+  }
+
+  &:hover lucide-icon {
+    transform: translateX(3px);
+  }
+}
+
+.lema {
+  display: flex;
+  align-items: center;
+  gap: $space-5;
+  margin: 0;
+  color: $color-text-inverse;
+  font-size: 0.9375rem;
+  font-weight: $weight-medium;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content: '';
+    width: 2rem;
+    height: 1px;
+    background-color: rgba($color-blanco, 0.8);
+  }
+}
+
+@include reduced-motion {
+  .alert {
+    animation: none;
+  }
+
+  .cta,
+  .cta lucide-icon {
+    transition: none;
+  }
+}

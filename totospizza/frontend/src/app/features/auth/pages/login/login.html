@@ -1,0 +1,50 @@
+<app-auth-shell titulo="¡Bienvenido de vuelta!" posicionArte="derecha" variante="ilustracion" [imagenArte]="arte">
+  <form class="form" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    @if (error(); as mensaje) {
+      <div class="alert" role="alert">
+        <lucide-icon [img]="AlertIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <p>{{ mensaje }}</p>
+      </div>
+    }
+
+    <app-text-field
+      label="Email"
+      type="email"
+      placeholder="Ingresa tu email"
+      autocomplete="email"
+      [icon]="MailIcon"
+      [required]="true"
+      formControlName="correo"
+    />
+
+    <app-text-field
+      label="Contraseña"
+      type="password"
+      placeholder="Ingresa tu contraseña"
+      autocomplete="current-password"
+      [icon]="LockIcon"
+      [required]="true"
+      formControlName="contrasena"
+    />
+
+    <div class="form__row">
+      <app-checkbox-field formControlName="recordarme">Recordarme</app-checkbox-field>
+      <a routerLink="/olvide-contrasena" class="link">¿Olvidaste tu contraseña?</a>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--lg submit" [disabled]="enviando()" [attr.aria-busy]="enviando()">
+      {{ enviando() ? 'Ingresando…' : 'Ingresar' }}
+    </button>
+  </form>
+
+  <p class="switch">¿Aún no tienes cuenta? <a routerLink="/registro" class="link">Regístrate</a></p>
+
+  <!-- Sobre el panel de arte -->
+  <ng-container ngProjectAs="[arte]">
+    <a routerLink="/registro" class="cta">
+      Regístrate
+      <lucide-icon [img]="ArrowIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+    </a>
+    <p class="lema">El sabor que te hace volver</p>
+  </ng-container>
+</app-auth-shell>

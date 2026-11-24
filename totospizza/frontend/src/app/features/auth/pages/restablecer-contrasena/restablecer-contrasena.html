@@ -1,0 +1,36 @@
+<app-auth-shell titulo="Crea una contraseña nueva" posicionArte="derecha" variante="ilustracion" [imagenArte]="arte">
+  <form class="form" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    @if (error(); as mensaje) {
+      <div class="alert" role="alert">
+        <lucide-icon [img]="AlertIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <p>
+          {{ mensaje }}
+          @if (tokenVencido()) {
+            <a routerLink="/olvide-contrasena" class="link">Pide un enlace nuevo</a>
+          }
+        </p>
+      </div>
+    }
+
+    @if (pideToken) {
+      <app-text-field label="Código del enlace" placeholder="Pega aquí el código recibido" autocomplete="off" hint="Lo encuentras al final del enlace del correo (token=…)." [required]="true" formControlName="token" />
+    }
+
+    <div>
+      <app-text-field label="Contraseña nueva" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" [icon]="LockIcon" [required]="true" formControlName="nuevaContrasena" />
+      <app-password-strength [valor]="contrasena()" />
+    </div>
+
+    <app-text-field label="Confirmar contraseña" type="password" placeholder="Repite tu contraseña" autocomplete="new-password" [icon]="LockIcon" [required]="true" formControlName="confirmarContrasena" />
+
+    <button type="submit" class="btn btn--primary btn--lg submit" [disabled]="enviando()" [attr.aria-busy]="enviando()">
+      {{ enviando() ? 'Guardando…' : 'Guardar contraseña' }}
+    </button>
+  </form>
+
+  <p class="switch"><a routerLink="/login" class="link">← Volver a iniciar sesión</a></p>
+
+  <ng-container ngProjectAs="[arte]">
+    <p class="lema">El sabor que te hace volver</p>
+  </ng-container>
+</app-auth-shell>

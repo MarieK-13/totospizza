@@ -1,0 +1,36 @@
+<app-auth-shell titulo="Recupera tu contraseña" posicionArte="derecha" variante="ilustracion" [imagenArte]="arte">
+  @if (enviadoA(); as correo) {
+    <section class="enviado" aria-live="polite">
+      <span class="enviado__icono"><lucide-icon [img]="SentIcon" [size]="28" [strokeWidth]="1.6" aria-hidden="true"></lucide-icon></span>
+      <h2 class="enviado__titulo">Revisa tu correo</h2>
+      <p class="texto">
+        Si <strong>{{ correo }}</strong> tiene una cuenta, te enviamos un enlace para crear una contraseña nueva. Vence en 1 hora.
+      </p>
+      <p class="texto texto--suave">¿No llega? Revisa la carpeta de spam o <button type="button" class="enlace-boton" (click)="corregirCorreo()">prueba con otro correo</button>.</p>
+      <a routerLink="/login" class="btn btn--primary btn--lg submit">Volver a iniciar sesión</a>
+    </section>
+  } @else {
+    <form class="form" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <p class="texto">Escribe el correo de tu cuenta y te enviaremos un enlace para crear una contraseña nueva.</p>
+
+      @if (error(); as mensaje) {
+        <div class="alert" role="alert">
+          <lucide-icon [img]="AlertIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+          <p>{{ mensaje }}</p>
+        </div>
+      }
+
+      <app-text-field label="Email" type="email" placeholder="Ingresa tu email" autocomplete="email" [icon]="MailIcon" [required]="true" formControlName="correo" />
+
+      <button type="submit" class="btn btn--primary btn--lg submit" [disabled]="enviando()" [attr.aria-busy]="enviando()">
+        {{ enviando() ? 'Enviando…' : 'Enviar enlace' }}
+      </button>
+    </form>
+
+    <p class="switch"><a routerLink="/login" class="link">← Volver a iniciar sesión</a></p>
+  }
+
+  <ng-container ngProjectAs="[arte]">
+    <p class="lema">El sabor que te hace volver</p>
+  </ng-container>
+</app-auth-shell>

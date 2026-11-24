@@ -1,0 +1,40 @@
+<header class="portada">
+  <div class="wrap">
+    <p class="kicker">Información legal</p>
+    <h1 class="portada__titulo">{{ titulo() }}</h1>
+    <p class="portada__resumen">{{ resumen() }}</p>
+    <p class="portada__fecha">Última actualización: {{ actualizado() }}</p>
+  </div>
+</header>
+
+<div class="wrap cuerpo">
+  <nav class="indice" aria-label="Contenido del documento">
+    <p class="indice__titulo">En este documento</p>
+    <ol class="indice__lista">
+      @for (seccion of secciones(); track seccion.id) {
+        <li><a [href]="'#' + seccion.id" (click)="irA(seccion.id, $event)">{{ seccion.titulo }}</a></li>
+      }
+    </ol>
+    @if (relacionado(); as otro) {
+      <a [routerLink]="otro.ruta" class="indice__otro">{{ otro.etiqueta }}</a>
+    }
+  </nav>
+
+  <article class="texto">
+    @for (seccion of secciones(); track seccion.id; let i = $index) {
+      <section class="seccion" [id]="seccion.id" tabindex="-1" [attr.aria-labelledby]="seccion.id + '-t'">
+        <h2 class="seccion__titulo" [id]="seccion.id + '-t'"><span class="seccion__n">{{ i + 1 }}.</span> {{ seccion.titulo }}</h2>
+        @for (parrafo of seccion.parrafos; track $index) {
+          <p>{{ parrafo }}</p>
+        }
+        @if (seccion.items; as items) {
+          <ul>
+            @for (item of items; track $index) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        }
+      </section>
+    }
+  </article>
+</div>

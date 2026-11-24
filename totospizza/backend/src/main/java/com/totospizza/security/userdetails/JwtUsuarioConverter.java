@@ -13,11 +13,6 @@ import org.springframework.stereotype.Component;
 import com.totospizza.model.enums.Rol;
 import com.totospizza.security.jwt.JwtServiceImpl;
 
-/**
- * Convierte un token ya verificado en la identidad de la petición: el principal es un
- * {@link UsuarioAutenticado} y el rol se vuelve la autoridad {@code ROLE_<ROL>} que usa
- * {@code hasRole(...)}.
- */
 @Component
 public class JwtUsuarioConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 

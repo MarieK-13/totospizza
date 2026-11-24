@@ -1,0 +1,39 @@
+<a class="skip-link" href="#formulario">Saltar al formulario</a>
+
+<app-site-header />
+
+<div class="stage">
+<div class="auth" [class.auth--arte-izquierda]="posicionArte() === 'izquierda'" [class.auth--foto]="variante() === 'foto'">
+  <main id="formulario" class="auth__form" tabindex="-1">
+    <div class="auth__inner">
+      <header class="auth__head">
+        <h1 class="auth__title">{{ titulo() }}</h1>
+        <a routerLink="/" class="auth__logo" aria-label="Toto's Pizza, ir al inicio">
+          <img src="images/logo-totosm-sin-fondo.png" alt="" width="227" height="241" />
+        </a>
+      </header>
+
+      <ng-content />
+    </div>
+  </main>
+
+  <aside class="arte" [class.arte--foto]="variante() === 'foto'" [class.arte--ilustracion]="variante() === 'ilustracion'">
+    @if (imagenArte(); as imagen) {
+      <img class="arte__imagen" [src]="imagen" alt="" />
+    } @else if (variante() === 'foto') {
+      <img class="arte__imagen" src="images/hero-combo.jpg" alt="" />
+    } @else {
+      @for (garabato of garabatos; track $index) {
+        <span [class]="'arte__garabato arte__garabato--' + garabato.clase" aria-hidden="true">
+          <lucide-icon [img]="garabato.icono" [size]="96" [strokeWidth]="0.75"></lucide-icon>
+        </span>
+      }
+      <div class="arte__plato" aria-hidden="true"></div>
+    }
+
+    <div class="arte__contenido">
+      <ng-content select="[arte]" />
+    </div>
+  </aside>
+</div>
+</div>

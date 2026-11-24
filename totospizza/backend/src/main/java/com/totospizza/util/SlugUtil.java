@@ -19,7 +19,6 @@ public final class SlugUtil {
         return base.isEmpty() ? "producto" : base;
     }
 
-    /** Devuelve un slug que no existe todavía, agregando -2, -3... si hace falta. */
     public static String unico(String texto, Predicate<String> existe) {
         String base = slugify(texto);
         String candidato = base;

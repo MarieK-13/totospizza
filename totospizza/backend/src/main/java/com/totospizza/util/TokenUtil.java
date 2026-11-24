@@ -7,10 +7,6 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HexFormat;
 
-/**
- * Tokens opacos (refresh y recuperación de contraseña). Al cliente se le entrega el token;
- * en la base de datos solo se guarda su hash SHA-256, así un volcado de la tabla no sirve.
- */
 public final class TokenUtil {
 
     private static final SecureRandom RANDOM = new SecureRandom();

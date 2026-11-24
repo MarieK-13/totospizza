@@ -2,10 +2,6 @@ package com.totospizza.constant;
 
 import java.math.BigDecimal;
 
-/**
- * Claves de la tabla {@code parametros_sistema} y su valor por defecto. Si el administrador
- * no ha configurado una clave, el sistema usa el valor por defecto y sigue funcionando.
- */
 public final class ParametroClaves {
 
     private ParametroClaves() {

@@ -1,0 +1,13 @@
+@use '../../../styles/tokens/variables' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background-color: $color-background-canvas;
+}
+
+.main {
+  flex: 1;
+  outline: none;
+}

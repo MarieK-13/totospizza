@@ -120,8 +120,6 @@ public class CarritoServiceImpl implements CarritoService {
         return respuesta(carrito);
     }
 
-    // ---- armado de la línea ----
-
     private ItemCarrito construirItem(Long usuarioId, AgregarProductoRequest request) {
         int origenes = (request.productoId() != null ? 1 : 0)
                 + (request.pizzaPersonalizadaId() != null ? 1 : 0)
@@ -214,7 +212,6 @@ public class CarritoServiceImpl implements CarritoService {
         });
     }
 
-    /** Pizzas personalizadas, promociones y productos sin tamaño no admiten tamaño, masa ni adicionales. */
     private static void exigirSinOpciones(AgregarProductoRequest request) {
         boolean conOpciones = request.tamanoId() != null || request.tipoMasaId() != null
                 || (request.adicionales() != null && !request.adicionales().isEmpty());
@@ -222,8 +219,6 @@ public class CarritoServiceImpl implements CarritoService {
             throw new ReglaNegocioException("OPCIONES_NO_APLICAN", "Este producto no admite tamaño, masa ni adicionales");
         }
     }
-
-    // ---- apoyo ----
 
     private Carrito carritoActivo(Long usuarioId) {
         return carritoRepository.findByUsuarioIdAndEstado(usuarioId, EstadoCarrito.ACTIVO).orElseGet(() -> {
@@ -234,7 +229,6 @@ public class CarritoServiceImpl implements CarritoService {
         });
     }
 
-    /** Marca actividad para que el carrito no se considere abandonado mientras el cliente lo usa. */
     private void tocar(Carrito carrito) {
         carrito.setActualizadoEn(Instant.now(clock));
     }
@@ -249,7 +243,6 @@ public class CarritoServiceImpl implements CarritoService {
         return carritoMapper.toResponse(carrito, montos);
     }
 
-    /** Misma configuración y sin adicionales: se suma la cantidad en vez de repetir la línea. */
     private static boolean mismaLinea(ItemCarrito a, ItemCarrito b) {
         return a.getAdicionales().isEmpty() && b.getAdicionales().isEmpty()
                 && Objects.equals(id(a.getProducto()), id(b.getProducto()))

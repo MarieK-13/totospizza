@@ -1,1 +1,105 @@
-<p>nosotros works!</p>
+<!-- 1. Portada: el titular y un collage con un único foco -->
+<section class="portada">
+  <div class="wrap portada__grid">
+    <div class="portada__texto">
+      <span class="kicker">Nosotros</span>
+      <h1 class="portada__titulo">Pizza hecha sin prisa, en el corazón de Ica</h1>
+      <p class="portada__lead">
+        Cocinamos como nos gusta comer: masa que descansa, ingredientes frescos y un horno de piedra que nunca se apaga.
+        Ven a la mesa o pídela a casa, llega igual de buena.
+      </p>
+      <div class="portada__acciones">
+        <button type="button" class="btn btn--primary" (click)="armarPedido()">Armar mi pedido</button>
+        <a routerLink="/locales" class="btn btn--secondary">Ver locales</a>
+      </div>
+    </div>
+
+    <div class="collage" aria-hidden="true">
+      <img class="collage__principal" src="images/ig-1.jpg" alt="" width="564" height="500" />
+      <img class="collage__secundaria collage__secundaria--arriba" src="images/ig-2.jpg" alt="" width="282" height="250" />
+      <img class="collage__secundaria collage__secundaria--abajo" src="images/ig-3.jpg" alt="" width="282" height="250" />
+      <span class="collage__sello">
+        <strong>450°</strong>
+        horno de piedra
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Datos: cuatro cifras iguales en una sola franja -->
+<section class="datos-franja" aria-label="Toto's en cifras">
+  <div class="wrap">
+    <dl class="datos">
+      @for (dato of datos(); track dato.detalle) {
+        <div class="datos__item">
+          <dt class="datos__valor">{{ dato.valor }}<span>{{ dato.unidad }}</span></dt>
+          <dd class="datos__detalle">{{ dato.detalle }}</dd>
+        </div>
+      }
+    </dl>
+  </div>
+</section>
+
+<!-- 3. Recorrido: es una secuencia real, la línea roja une las etapas -->
+<section class="band recorrido" aria-labelledby="recorrido-titulo">
+  <div class="wrap">
+    <header class="section-head section-head--center">
+      <span class="kicker">Cómo la hacemos</span>
+      <h2 class="section-head__title" id="recorrido-titulo">Del tomate a tu mesa</h2>
+      <p class="section-head__lead">Cuatro etapas, siempre en el mismo orden y sin atajos.</p>
+    </header>
+
+    <ol class="linea">
+      @for (etapa of etapas; track etapa.titulo; let i = $index) {
+        <li class="etapa" [class.etapa--invertida]="i % 2 === 1">
+          <span class="etapa__nodo" aria-hidden="true">
+            <lucide-icon [img]="etapa.icono" [size]="20" [strokeWidth]="1.6"></lucide-icon>
+          </span>
+          <figure class="etapa__foto">
+            <img [src]="etapa.imagen" [alt]="etapa.alt" loading="lazy" />
+          </figure>
+          <div class="etapa__texto">
+            <span class="etapa__paso">Paso {{ i + 1 }}</span>
+            <h3 class="etapa__titulo">{{ etapa.titulo }}</h3>
+            <p class="etapa__dato">{{ etapa.dato }}</p>
+            <p>{{ etapa.texto }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+  </div>
+</section>
+
+<!-- 4. Cierre: los locales como un grupo y un único llamado a la acción -->
+<section class="band cierre" aria-labelledby="cierre-titulo">
+  <div class="wrap">
+    <div class="cierre__panel">
+      <div class="cierre__texto">
+        <h2 class="cierre__titulo" id="cierre-titulo">Tu mesa te espera</h2>
+        <p>Elige el local más cercano o pide a domicilio. La masa de hoy ya está lista.</p>
+        <div class="cierre__acciones">
+          <button type="button" class="btn btn--light" (click)="armarPedido()">Armar mi pedido</button>
+          <a routerLink="/zona-de-reparto" class="cierre__enlace">
+            ¿Llegamos a tu casa?
+            <lucide-icon [img]="ArrowIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+          </a>
+        </div>
+      </div>
+
+      <ul class="cierre__locales">
+        @for (local of locales(); track local.id) {
+          <li>
+            <a routerLink="/locales" class="local">
+              <lucide-icon [img]="PinIcon" [size]="18" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+              <span class="local__texto">
+                <span class="local__nombre">{{ local.nombre }}</span>
+                <span class="local__zona">{{ local.direccion.direccion }}</span>
+              </span>
+              <span class="local__estado" [class.is-open]="local.abiertoAhora">{{ local.abiertoAhora ? 'Abierto' : 'Cerrado' }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</section>

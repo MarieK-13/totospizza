@@ -1,0 +1,41 @@
+
+$color-rojo-tomate:    #D32F2F;
+$color-verde-albahaca: #2F6B3E;
+$color-amarillo-queso: #FFD54F;
+$color-crema-masa:     #FDFBF7;
+$color-crema-claro:    #F8F2E9;
+$color-beige-horno:    #EDE0CE;
+$color-arena:          #DFCDB9;
+$color-cafe-tostado:   #231812;
+$color-marron-suave:   #7A6A5E;
+$color-blanco:         #FFFFFF;
+
+$color-rojo-intenso:   #C62828;
+$color-rojo-profundo:  #B71C1C;
+
+$color-brand-primary:   $color-rojo-tomate;
+$color-brand-secondary: $color-verde-albahaca;
+$color-brand-accent:    $color-amarillo-queso;
+
+$color-background-canvas: $color-crema-masa;
+$color-background-alt:    $color-beige-horno;
+$color-background-raised: $color-blanco;
+
+$color-border-default: $color-arena;
+$color-border-strong:  $color-cafe-tostado;
+
+$color-text-primary:   $color-cafe-tostado;
+$color-text-secondary: $color-marron-suave;
+$color-text-inverse:   $color-blanco;
+
+$color-success: $color-verde-albahaca;
+$color-error:   $color-rojo-tomate;
+$color-warning: $color-amarillo-queso;
+
+$tint-rojo-8:      rgba(211, 47, 47, 0.08);
+$tint-verde-10:    rgba(47, 107, 62, 0.1);
+$tint-amarillo-24: rgba(255, 213, 79, 0.24);
+$tint-cafe-10:     rgba(35, 24, 18, 0.1);
+$tint-cafe-20:     rgba(35, 24, 18, 0.2);
+$overlay-scrim:    rgba(35, 24, 18, 0.5);
+

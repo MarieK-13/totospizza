@@ -1,0 +1,66 @@
+<div class="field" [class.is-invalid]="showError" [class.is-focused]="focused()" [class.is-disabled]="disabled()">
+  <label class="field__label" [attr.for]="id">
+    {{ label() }}
+    @if (required()) {
+      <span class="field__required" aria-hidden="true">*</span>
+    }
+  </label>
+
+  <div class="field__control">
+    @if (icon(); as fieldIcon) {
+      <lucide-icon class="field__icon" [img]="fieldIcon" [size]="18" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+    }
+
+    <ng-content select="[prefijo]" />
+
+    <input
+      class="field__input"
+      [id]="id"
+      [type]="inputType()"
+      [value]="value()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [attr.autocomplete]="autocomplete()"
+      [attr.max]="max()"
+      [attr.min]="min()"
+      [attr.maxlength]="maxlength()"
+      [attr.inputmode]="inputmode()"
+      [attr.aria-invalid]="showError"
+      [attr.aria-describedby]="id + '-msg'"
+      (input)="handleInput($event)"
+      (focus)="focused.set(true)"
+      (blur)="handleBlur()"
+    />
+
+    @if (type() === 'password') {
+      <button
+        type="button"
+        class="field__toggle"
+        (click)="revealed.set(!revealed())"
+        [attr.aria-label]="revealed() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+        [attr.aria-pressed]="revealed()"
+      >
+        <lucide-icon [img]="revealed() ? EyeOffIcon : EyeIcon" [size]="18" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+      </button>
+    }
+  </div>
+
+  <div [id]="id + '-msg'">
+    @if (showError) {
+      <p class="field__error" role="alert">{{ errorMessage }}</p>
+    } @else if (hint()) {
+      <p class="field__hint">{{ hint() }}</p>
+    }
+  </div>
+
+  @if (showRules) {
+    <ul class="rules" aria-label="Requisitos de la contraseña">
+      @for (rule of rules(); track rule.id) {
+        <li class="rules__item" [class]="'rules__item rules__item--' + ruleState(rule)">
+          <lucide-icon [img]="ruleState(rule) === 'ok' ? CheckIcon : CrossIcon" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+          {{ rule.label }}
+        </li>
+      }
+    </ul>
+  }
+</div>

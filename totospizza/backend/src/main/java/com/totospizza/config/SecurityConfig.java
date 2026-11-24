@@ -21,10 +21,6 @@ import com.totospizza.security.handler.RestAccessDeniedHandler;
 import com.totospizza.security.handler.RestAuthenticationEntryPoint;
 import com.totospizza.security.userdetails.JwtUsuarioConverter;
 
-/**
- * API sin estado: cada petición lleva su token, no hay sesión ni CSRF. La regla fina por rol está
- * en {@code @PreAuthorize} de cada controller; aquí solo se separa lo público de lo autenticado.
- */
 @Configuration
 @EnableMethodSecurity
 @EnableConfigurationProperties({JwtProperties.class, CorsProperties.class})

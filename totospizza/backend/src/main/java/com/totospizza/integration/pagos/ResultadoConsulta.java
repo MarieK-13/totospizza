@@ -1,8 +1,7 @@
 package com.totospizza.integration.pagos;
 
 /**
- * Estado de un cobro según la pasarela, consultado por la referencia del intento. Sirve para
- * conciliar cobros cuya respuesta se perdió.
+ * Estado de un cobro según la pasarela.
  */
 public record ResultadoConsulta(
         Estado estado,
@@ -15,9 +14,7 @@ public record ResultadoConsulta(
     public enum Estado {
         APROBADO,
         RECHAZADO,
-        /** La pasarela aún lo está procesando. */
         PENDIENTE,
-        /** La pasarela nunca recibió ese intento: no se cobró nada. */
         NO_ENCONTRADO
     }
 }

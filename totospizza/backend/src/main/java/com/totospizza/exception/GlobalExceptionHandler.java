@@ -24,11 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import com.totospizza.dto.common.ApiError;
 import com.totospizza.dto.common.CampoError;
 
-/**
- * Traduce toda excepción a un {@link ApiError} con un código estable que el frontend usa para
- * decidir qué mostrar. Los errores previstos del negocio llevan su propio estado y código; lo
- * imprevisto responde 500 con un mensaje genérico y el detalle solo queda en el log.
- */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {

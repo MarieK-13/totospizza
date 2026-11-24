@@ -16,11 +16,6 @@ import com.totospizza.model.enums.TipoIngrediente;
 import com.totospizza.repository.catalogo.IngredienteRepository;
 import com.totospizza.repository.catalogo.TipoMasaRepository;
 
-/**
- * Arma el detalle de un producto con lo que el cliente puede elegir: masas y adicionales.
- * Solo los productos con tamaño (las pizzas) ofrecen masas y adicionales.
- * Lo comparten el menú público y la administración para que ambos muestren lo mismo.
- */
 @Component
 @RequiredArgsConstructor
 class CatalogoDetalleAssembler {

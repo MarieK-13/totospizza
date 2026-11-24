@@ -16,10 +16,7 @@ import lombok.RequiredArgsConstructor;
 import com.totospizza.config.JwtProperties;
 import com.totospizza.model.entity.seguridad.Usuario;
 
-/**
- * Token de acceso de vida corta con el id, el correo y el rol. El rol viaja en el token, así que
- * un cambio de rol o una baja se nota cuando vence (por defecto 15 minutos) o al renovar la sesión.
- */
+
 @Service
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {

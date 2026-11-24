@@ -1,0 +1,111 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+@use '../../formulario' as *;
+
+:host {
+  display: block;
+  --field-height: 3rem;
+  --field-radius: 0.875rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+}
+
+.texto {
+  margin: 0;
+  color: $color-text-secondary;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+
+  strong {
+    color: $color-text-primary;
+    word-break: break-all;
+  }
+
+  &--suave {
+    font-size: 0.875rem;
+  }
+}
+
+.submit {
+  @include boton-enviar;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alert {
+  @include alerta;
+}
+
+.link,
+.enlace-boton {
+  @include enlace;
+}
+
+.enlace-boton {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: $weight-semibold;
+  cursor: pointer;
+}
+
+.switch {
+  margin: $space-6 0 0;
+  text-align: center;
+  font-size: 0.9375rem;
+}
+
+.enviado {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  align-items: flex-start;
+
+  &__icono {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background-color: $tint-rojo-8;
+    color: $color-brand-primary;
+  }
+
+  &__titulo {
+    margin: 0;
+    font-family: $font-titulos;
+    font-size: 1.75rem;
+    font-weight: 400;
+  }
+
+  .submit {
+    align-self: center;
+  }
+}
+
+.lema {
+  display: flex;
+  align-items: center;
+  gap: $space-5;
+  margin: 0;
+  color: $color-text-inverse;
+  font-size: 0.9375rem;
+  font-weight: $weight-medium;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content: '';
+    width: 2rem;
+    height: 1px;
+    background-color: rgba($color-blanco, 0.8);
+  }
+}
+

@@ -1,0 +1,49 @@
+
+// 1. Espaciado.
+$space-1:  0.25rem;
+$space-2:  0.5rem;
+$space-3:  0.75rem;
+$space-4:  1rem;
+$space-5:  1.5rem;
+$space-6:  2rem;
+$space-7:  2.5rem;
+$space-8:  3rem;
+$space-9:  4rem;
+$space-10: 5rem;
+$space-11: 6rem;
+
+// 2. Radios
+$radius-sm:   0.5rem;  // botones, inputs, checkboxes
+$radius-md:   0.75rem; // tarjetas e imágenes de producto
+$radius-lg:   1rem;    // modales y paneles
+$radius-xl:   1.5rem;  // banners y hero
+$radius-pill: 999px;   // chips, badges, steppers
+
+// 3. Controles
+$control-height-lg: 3.5rem; // CTAs de checkout
+$control-height-md: 2.75rem; // modales y tarjetas
+$control-height-sm: 2rem;   // tablas y steppers
+$control-padding-x: 1.5rem;
+$control-padding-y: 0.75rem;
+$border-width:       1px;
+$border-width-focus: 2px;
+
+// 4. Layout
+$container-max: 1600px;
+$container-gutter: clamp(1rem, 4vw, 3.5rem);
+$header-height: 76px;
+
+// 5. Breakpoints
+$breakpoints: (
+  'sm': 480px,
+  'md': 768px,
+  'lg': 1024px,
+  'xl': 1240px,
+);
+
+// 6. Capas
+$z-header:   100;
+$z-dropdown: 200;
+$z-backdrop: 300;
+$z-modal:    310;
+$z-toast:    400;

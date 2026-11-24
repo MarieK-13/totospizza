@@ -1,0 +1,203 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+$sidebar-width: 16rem;
+$sidebar-line: rgba($color-crema-masa, 0.12);
+
+:host {
+  display: contents;
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: $z-backdrop;
+  background-color: $overlay-scrim;
+  backdrop-filter: blur($backdrop-blur);
+  opacity: 0;
+  pointer-events: none;
+  @include transition((opacity), $duration-base);
+
+  @include up(lg) {
+    display: none;
+  }
+}
+
+:host(.is-open) .scrim {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: $z-modal;
+  display: flex;
+  flex-direction: column;
+  width: $sidebar-width;
+  background-color: $color-cafe-tostado;
+  color: rgba($color-crema-masa, 0.78);
+  transform: translateX(-100%);
+  @include transition((transform), $duration-base, $ease-out);
+
+  @include up(lg) {
+    transform: none;
+    z-index: auto;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+    padding-inline: $space-5;
+    border-bottom: $border-width solid $sidebar-line;
+  }
+
+  &__brand {
+    border-radius: $radius-sm;
+    color: $color-text-inverse;
+    @include focus-ring($color-brand-accent);
+  }
+
+  &__brand-name {
+    font-family: $font-titulos;
+    font-size: 1.5rem;
+    line-height: 1.875rem;
+  }
+
+  &__close,
+  &__logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: $control-height-sm + 0.5rem;
+    height: $control-height-sm + 0.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: $radius-sm;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    @include transition((background-color, color));
+    @include focus-ring($color-brand-accent);
+
+    &:hover {
+      background-color: rgba($color-crema-masa, 0.1);
+      color: $color-text-inverse;
+    }
+  }
+
+  &__close {
+    @include up(lg) {
+      display: none;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: $space-1;
+    padding: $space-4 $space-3;
+    overflow-y: auto;
+  }
+
+  &__section {
+    margin: $space-4 0 $space-1 $space-3;
+    color: rgba($color-crema-masa, 0.45);
+    font-size: 0.6875rem;
+    font-weight: $weight-semibold;
+    letter-spacing: 0.12em;
+    line-height: 1rem;
+    text-transform: uppercase;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  &__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    height: $control-height-md;
+    padding-inline: $space-3;
+    border-radius: $radius-sm;
+    font-size: 0.875rem;
+    font-weight: $weight-semibold;
+    @include transition((background-color, color));
+    @include focus-ring($color-brand-accent);
+
+    &:hover {
+      background-color: rgba($color-crema-masa, 0.08);
+      color: $color-text-inverse;
+    }
+
+    &.is-active {
+      background-color: rgba($color-crema-masa, 0.12);
+      color: $color-text-inverse;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0.625rem auto 0.625rem -0.75rem;
+        width: 3px;
+        border-radius: $radius-pill;
+        background-color: $color-brand-accent;
+      }
+    }
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-4 $space-5;
+    border-top: $border-width solid $sidebar-line;
+  }
+
+  &__avatar {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: $radius-pill;
+    background-color: $color-brand-accent;
+    color: $color-cafe-tostado;
+    font-family: $font-datos;
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__user-text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+
+    strong {
+      overflow: hidden;
+      color: $color-text-inverse;
+      font-weight: $weight-semibold;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+:host(.is-open) .sidebar {
+  transform: none;
+}
+
+@include reduced-motion {
+  .sidebar,
+  .scrim {
+    transition: none;
+  }
+}

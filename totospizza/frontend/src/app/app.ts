@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Header } from './shared/header/header';
-import { Footer } from './shared/footer/footer';
-
+import { ToastContainer } from './shared/components/toast-container/toast-container';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet , Header, Footer],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  imports: [RouterOutlet, ToastContainer],
+  template: `
+    <router-outlet />
+    <app-toast-container />
+  `,
 })
 export class App {}

@@ -1,294 +1,235 @@
 @use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
 
-$color-estrella: #F5B324;
-
-.recommended-section {
-  background-color: $color-crema-masa;
-  padding: 56px 0 48px;
-
-  &__container {
-    max-width: $container-max;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
+:host {
+  display: block;
 }
 
-// Encabezado
-.recommended-header {
+.controls {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  margin-bottom: 32px;
-
-  &__title {
-    font-family: $font-titulos;
-    font-size: clamp(30px, 3.6vw, 42px);
-    font-weight: 400;
-    line-height: 1.12;
-    color: $color-cafe-tostado;
-    margin: 6px 0 10px;
-  }
-
-  &__subtitle {
-    font-family: $font-cuerpo;
-    font-size: 14px;
-    line-height: 1.55;
-    color: $color-marron-suave;
-    max-width: 470px;
-    margin: 0;
-  }
+  align-items: center;
+  gap: $space-2;
 }
 
-.eyebrow {
+.arrow {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-family: $font-cuerpo;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: $color-verde-albahaca;
+  justify-content: center;
+  width: $control-height-md;
+  height: $control-height-md;
+  padding: 0;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-pill;
+  background-color: $color-background-raised;
+  color: $color-text-primary;
+  cursor: pointer;
+  @include transition((background-color, border-color, color, opacity));
+  @include focus-ring;
 
-  &__dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: $color-rojo-tomate;
+  &:hover:not(:disabled) {
+    border-color: $color-brand-primary;
+    background-color: $color-brand-primary;
+    color: $color-text-inverse;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
   }
 }
 
-.btn-outline-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 22px;
-  border-radius: 999px;
-  border: 1px solid $color-cafe-tostado;
-  background-color: $color-blanco;
-  color: $color-cafe-tostado;
-  font-family: $font-cuerpo;
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
-
-  &:hover {
-    background-color: $color-cafe-tostado;
-    color: $color-blanco;
-    transform: translateY(-1px);
-  }
-}
-
-// Grid de Tarjetas
-.pizzas-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  animation: fadeCards 0.3s ease;
-}
-
-.pizza-card {
-  background-color: $color-blanco;
-  border: 1px solid rgba($color-arena, 0.8);
-  border-radius: 18px;
-  overflow: hidden;
+// Carrusel por desplazamiento con "imán" en cada tarjeta
+.track {
   display: flex;
+  gap: $space-5;
+  margin-inline: calc(-1 * #{$space-2});
+  padding: $space-2 $space-2 $space-5;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: $space-2;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-cafe-tostado;
+    outline-offset: 2px;
+    border-radius: $radius-lg;
+  }
+}
+
+.card {
+  display: flex;
+  flex: 0 0 min(17.5rem, 80%);
   flex-direction: column;
-  box-shadow: 0 6px 20px rgba($color-cafe-tostado, 0.04);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  overflow: hidden;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-lg;
+  background-color: $color-background-raised;
+  box-shadow: $shadow-sm;
+  scroll-snap-align: start;
+  @include transition((box-shadow, transform), $duration-base);
 
   &:hover {
+    box-shadow: $shadow-lg;
     transform: translateY(-4px);
-    box-shadow: 0 12px 26px rgba($color-cafe-tostado, 0.09);
   }
 
   &__media {
     position: relative;
-    height: 215px;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
-    background-color: $color-beige-horno;
+    background-color: $color-background-alt;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 500ms $ease-out;
+    }
   }
 
-  &__img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.35s ease;
-
-    .pizza-card:hover & {
-      transform: scale(1.05);
-    }
+  &:hover &__media img {
+    transform: scale($card-image-zoom);
   }
 
   &__badge {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    background-color: $color-crema-masa;
-    color: $color-verde-albahaca;
-    font-family: $font-cuerpo;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    padding: 5px 11px;
-    border-radius: 999px;
-    box-shadow: 0 2px 8px rgba($color-cafe-tostado, 0.12);
+    top: $space-3;
+    left: $space-3;
+    padding: $space-1 $space-3;
+    border-radius: $radius-pill;
+    background-color: rgba($color-background-raised, 0.95);
+    color: $color-brand-secondary;
+    font-family: $font-datos;
+    font-size: 0.6875rem;
+    font-weight: $weight-semibold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
-  &__body {
-    padding: 18px 20px 20px;
+  &__meta {
     display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-
-  &__title {
-    font-family: $font-titulos;
-    font-size: 21px;
-    font-weight: 400;
-    line-height: 1.2;
-    color: $color-cafe-tostado;
-    margin: 0 0 6px;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-2;
   }
 
   &__rating {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
-    margin-bottom: 10px;
+    gap: $space-1;
+    margin: 0;
+    font-family: $font-datos;
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
+  }
 
-    .stars {
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-    }
+  &__star {
+    color: #f5a000;
+    font-size: 1rem;
+    line-height: 1;
+  }
 
-    .star-icon {
-      color: $color-estrella;
-      fill: $color-estrella;
-    }
+  &__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: $space-2;
+    padding: $space-4 $space-4 $space-4;
+  }
 
-    .rating-value {
-      font-family: $font-cuerpo;
-      font-size: 11.5px;
-      font-weight: 700;
-      color: $color-cafe-tostado;
-    }
+  &__category {
+    margin: 0;
+    color: $color-brand-secondary;
+    font-size: 0.6875rem;
+    font-weight: $weight-bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: $font-titulos;
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: 1.875rem;
   }
 
   &__desc {
-    font-family: $font-cuerpo;
-    font-size: 12.5px;
-    line-height: 1.48;
-    color: $color-marron-suave;
-    margin: 0 0 18px;
     flex: 1;
+    margin: 0;
+    color: $color-text-secondary;
+    font-size: 0.875rem;
+    line-height: 1.375rem;
   }
 
-  &__footer {
+  &__tags {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: auto;
-  }
-}
-
-.price-box {
-  display: flex;
-  flex-direction: column;
-
-  &__label {
-    font-family: $font-cuerpo;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    color: $color-marron-suave;
-    margin-bottom: 2px;
-  }
-
-  &__amount {
-    font-family: $font-cuerpo;
-    font-size: 18px;
-    font-weight: 800;
-    color: $color-cafe-tostado;
-    line-height: 1;
-  }
-}
-
-.btn-add-circle {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 0;
-  background-color: $color-rojo-tomate;
-  color: $color-blanco;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba($color-rojo-tomate, 0.25);
-  transition: transform 0.18s ease, background-color 0.18s ease;
-
-  &:hover {
-    background-color: #b72525;
-    transform: scale(1.08);
-  }
-}
-
-// Dots de paginación inferior
-.carousel-dots {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-top: 28px;
-
-  &__dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 999px;
-    border: 0;
+    flex-wrap: wrap;
+    gap: $space-1;
+    margin: $space-2 0 0;
     padding: 0;
-    background-color: $color-arena;
-    cursor: pointer;
-    transition: width 0.25s ease, background-color 0.25s ease;
+    list-style: none;
+  }
 
-    &.is-active {
-      width: 28px;
-      background-color: $color-rojo-tomate;
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: $space-3;
+    padding-top: $space-4;
+    border-top: $border-width solid $color-border-default;
+  }
+
+  &__price {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    font-family: $font-datos;
+    font-size: 1.25rem;
+    font-weight: $weight-semibold;
+    line-height: 1.5rem;
+
+    small {
+      color: $color-text-secondary;
+      font-family: $font-cuerpo;
+      font-size: 0.6875rem;
+      font-weight: $weight-semibold;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
   }
 }
 
-@keyframes fadeCards {
-  from {
-    opacity: 0.55;
-    transform: translateY(4px);
+// Etiquetas: alérgeno (ámbar), dieta (verde), picante (rojo)
+.tag {
+  padding: 0.125rem $space-2;
+  border-radius: $radius-pill;
+  font-size: 0.6875rem;
+  font-weight: $weight-semibold;
+  line-height: 1.125rem;
+
+  &--alergeno {
+    background-color: $tint-amarillo-24;
+    color: #6f5500;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  &--dieta {
+    background-color: $tint-verde-10;
+    color: $color-brand-secondary;
+  }
+
+  &--picante {
+    background-color: $tint-rojo-8;
+    color: $color-brand-primary;
   }
 }
 
-// Responsivo
-@media (max-width: 1024px) {
-  .pizzas-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 720px) {
-  .recommended-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-@media (max-width: 520px) {
-  .pizzas-grid {
-    grid-template-columns: 1fr;
+@include reduced-motion {
+  .card:hover {
+    transform: none;
   }
 }

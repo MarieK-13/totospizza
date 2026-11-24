@@ -1,0 +1,53 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+@use '../../formulario' as *;
+
+:host {
+  display: block;
+  --field-height: 3rem;
+  --field-radius: 0.875rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+}
+
+.submit {
+  @include boton-enviar;
+}
+
+.alert {
+  @include alerta;
+}
+
+.link {
+  @include enlace;
+}
+
+.switch {
+  margin: $space-6 0 0;
+  text-align: center;
+  font-size: 0.9375rem;
+}
+
+.lema {
+  display: flex;
+  align-items: center;
+  gap: $space-5;
+  margin: 0;
+  color: $color-text-inverse;
+  font-size: 0.9375rem;
+  font-weight: $weight-medium;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content: '';
+    width: 2rem;
+    height: 1px;
+    background-color: rgba($color-blanco, 0.8);
+  }
+}

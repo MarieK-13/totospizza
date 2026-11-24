@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Dirección con referencia, distrito y coordenadas. Todas las columnas admiten nulo porque se reutiliza en entidades donde la dirección es opcional.
+ * Dirección con referencia, distrito y coordenadas.
  */
 @Embeddable
 @Getter

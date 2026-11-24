@@ -1,146 +1,79 @@
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LucideAngularModule, ArrowRight, Plus, Star } from 'lucide-angular';
+import { ArrowRight, ChevronLeft, ChevronRight, LucideAngularModule, Plus } from 'lucide-angular';
+import { ToastService } from '../../../../core/services/toast.service';
 
-interface PizzaRecomendada {
-  nombre: string;
-  etiqueta: string;
-  rating: string;
-  detalle: string;
-  precio: string;
-  imagen: string;
+type Categoria = 'Clásicas' | 'Especiales' | 'Vegetarianas' | 'Picantes';
+type TipoTag = 'alergeno' | 'dieta' | 'picante';
+
+/** Etiquetas que existen en el backend (tabla etiquetas). */
+interface Tag {
+  readonly label: string;
+  readonly tipo: TipoTag;
 }
+
+interface Pizza {
+  readonly nombre: string;
+  readonly etiqueta: string;
+  readonly categoria: Categoria;
+  readonly rating: number;
+  readonly detalle: string;
+  readonly precio: number;
+  readonly imagen: string;
+  readonly tags: readonly Tag[];
+}
+
+const GLUTEN: Tag = { label: 'Contiene Gluten', tipo: 'alergeno' };
+const LACTEOS: Tag = { label: 'Contiene Lácteos', tipo: 'alergeno' };
+const FRUTOS_SECOS: Tag = { label: 'Contiene Frutos Secos', tipo: 'alergeno' };
+const VEGETARIANA: Tag = { label: 'Vegetariana', tipo: 'dieta' };
+const PICANTE: Tag = { label: 'Picante', tipo: 'picante' };
 
 @Component({
   selector: 'app-menu-preview',
-  standalone: true,
   imports: [RouterLink, LucideAngularModule],
   templateUrl: './menu-preview.html',
   styleUrl: './menu-preview.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuPreview {
-  readonly ArrowRightIcon = ArrowRight;
-  readonly PlusIcon = Plus;
-  readonly StarIcon = Star;
-  readonly estrellas = [1, 2, 3, 4, 5];
+  private readonly toast = inject(ToastService);
 
-  // 12 pizzas distribuidas en 3 páginas de 4 tarjetas para el carrusel
-  readonly productos: PizzaRecomendada[] = [
-    // Página 1 (las 4 exactas de tu prototipo)
-    {
-      nombre: 'La Burrata',
-      etiqueta: 'FAVORITA',
-      rating: '4.9',
-      detalle: 'Pomodoro, burrata cremosa, pesto y tomates confitados.',
-      precio: '42.90',
-      imagen: 'images/burrata.jpg',
-    },
-    {
-      nombre: 'Diavola Picante',
-      etiqueta: 'PICANTITA',
-      rating: '4.9',
-      detalle: 'Salame italiano, mozzarella, ají limo y miel picante.',
-      precio: '39.90',
-      imagen: 'images/diavola.jpg',
-    },
-    {
-      nombre: 'Prosciutto e Rúcula',
-      etiqueta: 'PREMIUM',
-      rating: '4.9',
-      detalle: 'Prosciutto, rúcula, parmesano y aceite de oliva.',
-      precio: '44.90',
-      imagen: 'images/prosciutto.jpg',
-    },
-    {
-      nombre: 'Portobello',
-      etiqueta: 'VEGGIE',
-      rating: '4.9',
-      detalle: 'Hongos, mozzarella, ajo confitado y tomillo fresco.',
-      precio: '37.90',
-      imagen: 'images/portobello.jpg',
-    },
+  protected readonly ArrowRightIcon = ArrowRight;
+  protected readonly PlusIcon = Plus;
+  protected readonly PrevIcon = ChevronLeft;
+  protected readonly NextIcon = ChevronRight;
 
-    // Página 2
-    {
-      nombre: 'Margherita Verace',
-      etiqueta: 'CLÁSICA',
-      rating: '4.9',
-      detalle: 'Salsa San Marzano, fior di latte, albahaca fresca y oliva.',
-      precio: '32.90',
-      imagen: 'images/burrata.jpg',
-    },
-    {
-      nombre: 'Cuatro Quesos',
-      etiqueta: 'CREMOSA',
-      rating: '4.8',
-      detalle: 'Mozzarella, gorgonzola dulce, parmesano reggiano y provolone.',
-      precio: '41.90',
-      imagen: 'images/prosciutto.jpg',
-    },
-    {
-      nombre: 'Pepperoni Artesanal',
-      etiqueta: 'TOP VENTAS',
-      rating: '4.9',
-      detalle: 'Doble pepperoni crocante, mozzarella fundida y orégano de campo.',
-      precio: '38.90',
-      imagen: 'images/diavola.jpg',
-    },
-    {
-      nombre: 'Hawaiana al Horno',
-      etiqueta: 'DULCE & SALADA',
-      rating: '4.8',
-      detalle: 'Piña caramelizada al horno de piedra, jamón artesanal y queso.',
-      precio: '36.90',
-      imagen: 'images/portobello.jpg',
-    },
-
-    // Página 3
-    {
-      nombre: 'Tartufata',
-      etiqueta: 'DE AUTOR',
-      rating: '5.0',
-      detalle: 'Crema de trufa negra, champiñones salteados y lascas de parmesano.',
-      precio: '46.90',
-      imagen: 'images/portobello.jpg',
-    },
-    {
-      nombre: 'Mediterránea',
-      etiqueta: 'VEGGIE',
-      rating: '4.8',
-      detalle: 'Alcachofas, aceitunas botija, pimientos asados y queso feta.',
-      precio: '38.90',
-      imagen: 'images/pizza-burrata.jpg',
-    },
-    {
-      nombre: 'Carnívora TOTO',
-      etiqueta: 'INTENSA',
-      rating: '4.9',
-      detalle: 'Salchicha italiana, tocino ahumado, pepperoni y cebolla morada.',
-      precio: '45.90',
-      imagen: 'images/pizza-diavola.jpg',
-    },
-    {
-      nombre: 'Pera & Gorgonzola',
-      etiqueta: 'GOURMET',
-      rating: '4.9',
-      detalle: 'Peras asadas, queso azul, nueces tostadas y reducción balsámica.',
-      precio: '43.90',
-      imagen: 'images/pizza-prosciutto.jpg',
-    },
+  protected readonly pizzas: readonly Pizza[] = [
+    { nombre: 'La Burrata', etiqueta: 'Favorita', categoria: 'Especiales', rating: 4.9, detalle: 'Pomodoro, burrata cremosa, pesto y tomates confitados.', precio: 42.9, imagen: 'images/burrata.jpg', tags: [GLUTEN, LACTEOS, FRUTOS_SECOS, VEGETARIANA] },
+    { nombre: 'Diavola Picante', etiqueta: 'Picantita', categoria: 'Picantes', rating: 4.9, detalle: 'Salame italiano, mozzarella, ají limo y miel picante.', precio: 39.9, imagen: 'images/diavola.jpg', tags: [GLUTEN, LACTEOS, PICANTE] },
+    { nombre: 'Prosciutto e Rúcula', etiqueta: 'Premium', categoria: 'Especiales', rating: 4.9, detalle: 'Prosciutto, rúcula, parmesano y aceite de oliva.', precio: 44.9, imagen: 'images/prosciutto.jpg', tags: [GLUTEN, LACTEOS] },
+    { nombre: 'Portobello', etiqueta: 'Veggie', categoria: 'Vegetarianas', rating: 4.9, detalle: 'Hongos, mozzarella, ajo confitado y tomillo fresco.', precio: 37.9, imagen: 'images/portobello.jpg', tags: [GLUTEN, LACTEOS, VEGETARIANA] },
+    { nombre: 'Margherita Verace', etiqueta: 'Clásica', categoria: 'Clásicas', rating: 4.9, detalle: 'Salsa San Marzano, fior di latte, albahaca fresca y oliva.', precio: 32.9, imagen: 'images/margherita.jpg', tags: [GLUTEN, LACTEOS, VEGETARIANA] },
+    { nombre: 'Cuatro Quesos', etiqueta: 'Cremosa', categoria: 'Clásicas', rating: 4.8, detalle: 'Mozzarella, gorgonzola dulce, parmesano y provolone.', precio: 41.9, imagen: 'images/ternera.jpg', tags: [GLUTEN, LACTEOS, VEGETARIANA] },
+    { nombre: 'Pepperoni Artesanal', etiqueta: 'Top ventas', categoria: 'Clásicas', rating: 4.9, detalle: 'Doble pepperoni crocante, mozzarella fundida y orégano.', precio: 38.9, imagen: 'images/pepperoni.jpg', tags: [GLUTEN, LACTEOS] },
+    { nombre: 'Andina', etiqueta: 'Sabor peruano', categoria: 'Picantes', rating: 4.8, detalle: 'Chorizo artesanal, rocoto, cebolla encurtida, choclo y huacatay.', precio: 42.9, imagen: 'images/andina.jpg', tags: [GLUTEN, LACTEOS, PICANTE] },
+    { nombre: 'La Verde', etiqueta: 'Veggie', categoria: 'Vegetarianas', rating: 4.8, detalle: 'Pesto de albahaca, zucchini, alcachofa, aceituna y ricotta.', precio: 38.9, imagen: 'images/verde.jpg', tags: [GLUTEN, LACTEOS, FRUTOS_SECOS, VEGETARIANA] },
+    { nombre: 'Carnívora TOTO', etiqueta: 'Intensa', categoria: 'Especiales', rating: 4.9, detalle: 'Salchicha italiana, tocino ahumado, pepperoni y cebolla morada.', precio: 45.9, imagen: 'images/carnivora.jpg', tags: [GLUTEN, LACTEOS] },
   ];
 
-  readonly paginaActual = signal(0);
-  readonly totalPaginas = computed(() => Math.ceil(this.productos.length / 4));
-  readonly paginasIndices = computed(() =>
-    Array.from({ length: this.totalPaginas() }, (_, i) => i)
-  );
+  private readonly track = viewChild.required<ElementRef<HTMLElement>>('track');
+  protected readonly canPrev = signal(false);
+  protected readonly canNext = signal(true);
 
-  readonly productosVisibles = computed(() => {
-    const inicio = this.paginaActual() * 4;
-    return this.productos.slice(inicio, inicio + 4);
-  });
+  protected onScroll(): void {
+    const el = this.track().nativeElement;
+    this.canPrev.set(el.scrollLeft > 4);
+    this.canNext.set(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  }
 
-  irAPagina(indice: number): void {
-    this.paginaActual.set(indice);
+  /** Avanza o retrocede una "página" de tarjetas visibles. */
+  protected mover(direccion: 1 | -1): void {
+    const el = this.track().nativeElement;
+    el.scrollBy({ left: direccion * el.clientWidth * 0.9, behavior: 'smooth' });
+  }
+
+  protected agregar(pizza: Pizza): void {
+    this.toast.success('Agregada a tu pedido', `${pizza.nombre} · S/ ${pizza.precio.toFixed(2)}`);
   }
 }

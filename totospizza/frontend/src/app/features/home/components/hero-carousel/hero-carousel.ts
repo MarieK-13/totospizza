@@ -1,38 +1,44 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LucideAngularModule, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-angular';
+import { ArrowRight, ChevronLeft, ChevronRight, LucideAngularModule } from 'lucide-angular';
+
+/** Mismos tres colores de fondo que el backend (ColorPromocion). */
+type TemaPromo = 'rojo' | 'verde' | 'blanco';
 
 interface HeroSlide {
-  tema: 'rojo' | 'blanco' | 'verde';
-  etiqueta: string;
-  titulo: string;
-  descripcion: string;
-  precioAnterior: string;
-  precioActual: string;
-  ctaTexto: string;
-  ctaRuta: string;
-  notaLegal: string;
-  imagen: string;
-  imagenAlt: string;
-  mostrarSello?: boolean;
+  readonly tema: TemaPromo;
+  readonly etiqueta: string;
+  readonly titulo: string;
+  readonly descripcion: string;
+  readonly precioAnterior: string;
+  readonly precioActual: string;
+  readonly ctaTexto: string;
+  readonly ctaRuta: string;
+  readonly notaLegal: string;
+  readonly imagen: string;
+  readonly imagenAlt: string;
 }
 
+const INTERVALO_MS = 6500;
+
+/** Carrusel de promociones: imagen de banner a todo el ancho y el contenido a la izquierda. */
 @Component({
   selector: 'app-hero-carousel',
-  standalone: true,
   imports: [RouterLink, LucideAngularModule],
   templateUrl: './hero-carousel.html',
   styleUrl: './hero-carousel.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeroCarousel implements OnInit, OnDestroy {
-  readonly ChevronLeftIcon = ChevronLeft;
-  readonly ChevronRightIcon = ChevronRight;
-  readonly ArrowRightIcon = ArrowRight;
+  protected readonly ChevronLeftIcon = ChevronLeft;
+  protected readonly ChevronRightIcon = ChevronRight;
+  protected readonly ArrowRightIcon = ArrowRight;
+  protected readonly intervaloMs = INTERVALO_MS;
 
-  readonly slides: HeroSlide[] = [
+  protected readonly slides: readonly HeroSlide[] = [
     {
       tema: 'rojo',
-      etiqueta: 'PROMO FAMILIAR',
+      etiqueta: 'Promo familiar',
       titulo: 'La noche sabe mejor en familia',
       descripcion:
         '2 pizzas grandes + palitos al ajo + gaseosa de 1.5 L. Masa artesanal, horno de piedra y mucho queso.',
@@ -43,14 +49,12 @@ export class HeroCarousel implements OnInit, OnDestroy {
       notaLegal: '*Válido de lunes a jueves. Personaliza tus pizzas sin costo adicional.',
       imagen: 'images/hero-promo-familiar.jpg',
       imagenAlt: 'Familia compartiendo dos pizzas artesanales y palitos al ajo',
-      mostrarSello: true,
     },
     {
       tema: 'blanco',
-      etiqueta: 'COMBO',
+      etiqueta: 'Combo',
       titulo: 'Pizza + palitos + gaseosa',
-      descripcion:
-        'La cena rápida para dos con masa artesanal y sabor casero.',
+      descripcion: 'La cena rápida para dos con masa artesanal y sabor casero.',
       precioAnterior: 'S/ 49.90',
       precioActual: 'S/ 39.90',
       ctaTexto: 'Ver combo',
@@ -61,10 +65,9 @@ export class HeroCarousel implements OnInit, OnDestroy {
     },
     {
       tema: 'verde',
-      etiqueta: 'OFERTA',
+      etiqueta: 'Oferta',
       titulo: 'Pizza veggie + ensalada',
-      descripcion:
-        'Una opción fresca y artesanal para compartir con ingredientes de temporada.',
+      descripcion: 'Una opción fresca y artesanal para compartir con ingredientes de temporada.',
       precioAnterior: 'S/ 59.90',
       precioActual: 'S/ 49.90',
       ctaTexto: 'Ver oferta',
@@ -75,32 +78,46 @@ export class HeroCarousel implements OnInit, OnDestroy {
     },
   ];
 
-  readonly actual = signal(0);
+  protected readonly actual = signal(0);
+  /** Cambia en cada avance para reiniciar la barra de progreso. */
+  protected readonly ciclo = signal(0);
+  protected readonly pausado = signal(false);
+
   private timer?: ReturnType<typeof setInterval>;
 
   ngOnInit(): void {
-    this.iniciarAutoplay();
+    this.iniciar();
   }
 
   ngOnDestroy(): void {
     clearInterval(this.timer);
   }
 
-  iniciarAutoplay(): void {
+  protected siguiente(): void {
+    this.ir((this.actual() + 1) % this.slides.length);
+  }
+
+  protected anterior(): void {
+    this.ir((this.actual() - 1 + this.slides.length) % this.slides.length);
+  }
+
+  protected ir(indice: number): void {
+    this.actual.set(indice);
+    this.ciclo.update((n) => n + 1);
+    this.iniciar();
+  }
+
+  protected pausar(valor: boolean): void {
+    this.pausado.set(valor);
+    if (valor) {
+      clearInterval(this.timer);
+    } else {
+      this.iniciar();
+    }
+  }
+
+  private iniciar(): void {
     clearInterval(this.timer);
-    this.timer = setInterval(() => this.siguiente(), 6000);
-  }
-
-  siguiente(): void {
-    this.actual.update((i) => (i + 1) % this.slides.length);
-  }
-
-  anterior(): void {
-    this.actual.update((i) => (i - 1 + this.slides.length) % this.slides.length);
-  }
-
-  ir(i: number): void {
-    this.actual.set(i);
-    this.iniciarAutoplay();
+    this.timer = setInterval(() => this.siguiente(), INTERVALO_MS);
   }
 }

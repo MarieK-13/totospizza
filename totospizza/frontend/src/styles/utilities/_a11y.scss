@@ -1,0 +1,24 @@
+@use '../tokens/variables' as *;
+@use '../mixins' as *;
+
+.sr-only {
+  @include visually-hidden;
+}
+
+.skip-link {
+  position: fixed;
+  top: $space-2;
+  left: $space-2;
+  z-index: $z-toast;
+  padding: $space-2 $space-4;
+  border-radius: $radius-sm;
+  background-color: $color-cafe-tostado;
+  color: $color-text-inverse;
+  @include text('boton');
+  transform: translateY(-200%);
+  @include transition((transform));
+
+  &:focus {
+    transform: translateY(0);
+  }
+}

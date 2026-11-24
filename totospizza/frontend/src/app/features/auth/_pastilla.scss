@@ -1,0 +1,28 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+// Píldora crema, la misma del botón del carrito. Se usa sobre el panel de arte.
+@mixin pastilla {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-3;
+  height: $control-height-md;
+  padding-inline: $space-6;
+  border: 0;
+  border-radius: $radius-pill;
+  background-color: #f9eedb;
+  color: $color-text-primary;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: $weight-semibold;
+  text-decoration: none;
+  cursor: pointer;
+  @include transition((background-color, color));
+  @include focus-ring($color-blanco);
+
+  &:hover {
+    background-color: #f4e3c6;
+    color: $color-brand-primary;
+  }
+}

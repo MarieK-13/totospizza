@@ -1,0 +1,194 @@
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+.info {
+  width: min(100% - #{$space-8}, 28rem);
+  max-height: calc(100dvh - #{$space-8});
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: $radius-xl;
+  background-color: $color-background-raised;
+  color: $color-text-primary;
+  box-shadow: $shadow-xl;
+
+  &::backdrop {
+    background-color: rgba($color-cafe-tostado, 0.55);
+    backdrop-filter: blur(2px);
+  }
+
+  &[open] {
+    display: flex;
+    flex-direction: column;
+    animation: aparecer 0.22s $ease-out;
+  }
+
+  &__cabecera {
+    display: flex;
+    flex: none;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $space-4;
+    padding: $space-5 $space-5 $space-5 $space-6;
+    background: linear-gradient(135deg, $color-rojo-tomate, $color-rojo-intenso);
+    color: $color-text-inverse;
+  }
+
+  &__sobre {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    margin: 0 0 $space-1;
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
+    opacity: 0.85;
+  }
+
+  &__titulo {
+    margin: 0;
+    font-family: $font-cuerpo;
+    font-size: 1.375rem;
+    font-weight: $weight-bold;
+    line-height: 1.2;
+  }
+
+  &__cerrar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background-color: rgba($color-blanco, 0.18);
+    color: inherit;
+    cursor: pointer;
+    @include transition((background-color));
+    @include focus-ring;
+
+    &:hover {
+      background-color: rgba($color-blanco, 0.3);
+    }
+  }
+
+  &__cuerpo {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    padding: $space-5;
+    overflow-y: auto;
+  }
+
+  &__nota,
+  &__vacio {
+    margin: $space-1 $space-2 0;
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  &__pie {
+    flex: none;
+    padding: $space-4 $space-5 $space-5;
+    border-top: $border-width solid $color-border-default;
+  }
+
+  &__accion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: $control-height-lg;
+    border: 0;
+    border-radius: $radius-pill;
+    background-color: $color-rojo-tomate;
+    color: $color-text-inverse;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: $weight-bold;
+    text-decoration: none;
+    cursor: pointer;
+    @include transition((background-color));
+    @include focus-ring;
+
+    &:hover {
+      background-color: $color-rojo-intenso;
+    }
+  }
+}
+
+.dato {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-4;
+  border-radius: $radius-lg;
+  background-color: $color-beige-horno;
+
+  &__icono {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background-color: rgba($color-rojo-tomate, 0.12);
+    color: $color-rojo-tomate;
+  }
+
+  &__titulo {
+    margin: 0 0 0.125rem;
+    color: $color-text-secondary;
+    font-family: $font-cuerpo;
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__texto {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: $weight-medium;
+    line-height: 1.5;
+  }
+
+  &--alerta {
+    background-color: $tint-amarillo-24;
+
+    .dato__icono {
+      background-color: rgba($color-amarillo-queso, 0.6);
+      color: $color-cafe-tostado;
+    }
+
+    .dato__texto {
+      color: #7a4a00;
+    }
+  }
+
+  &--libre {
+    background-color: $tint-verde-10;
+
+    .dato__icono {
+      background-color: rgba($color-verde-albahaca, 0.16);
+      color: $color-verde-albahaca;
+    }
+
+    .dato__texto {
+      color: $color-verde-albahaca;
+    }
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@include reduced-motion {
+  .info[open] {
+    animation: none;
+  }
+}

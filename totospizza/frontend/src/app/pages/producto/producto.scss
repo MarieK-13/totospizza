@@ -1,0 +1,629 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+// Página contenida: foto y opciones a una escala cómoda, sin ocupar toda la pantalla
+.pagina {
+  max-width: 68rem;
+  padding-block: $space-4 $space-7;
+}
+
+.migas {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-4;
+  color: $color-text-secondary;
+  font-size: 0.8125rem;
+
+  &__enlace {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    color: inherit;
+    @include focus-ring;
+
+    &:hover {
+      color: $color-brand-primary;
+    }
+  }
+}
+
+.ficha {
+  display: grid;
+  gap: $space-6;
+
+  @include up(md) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: $space-7;
+    align-items: start;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+    min-width: 0;
+  }
+}
+
+// Foto protagonista: grande, con la información a un toque
+.escenario {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: $radius-lg;
+  background-color: $color-beige-horno;
+  box-shadow: $shadow-md;
+
+  @include up(md) {
+    position: sticky;
+    top: 5.5rem;
+    aspect-ratio: 1;
+  }
+
+  &__foto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__vacio {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: rgba($color-brand-primary, 0.4);
+  }
+
+  &__sello {
+    position: absolute;
+    top: $space-3;
+    left: $space-3;
+    padding: 0.25rem 0.75rem;
+    border-radius: $radius-pill;
+    background-color: $color-amarillo-queso;
+    color: $color-cafe-tostado;
+    font-size: 0.75rem;
+    font-weight: $weight-bold;
+  }
+
+  &__info {
+    position: absolute;
+    bottom: $space-3;
+    left: $space-3;
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    height: 2.25rem;
+    padding-inline: $space-3;
+    border: 0;
+    border-radius: $radius-pill;
+    background-color: rgba($color-blanco, 0.92);
+    color: $color-text-primary;
+    font-size: 0.875rem;
+    font-weight: $weight-semibold;
+    box-shadow: $shadow-md;
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+    @include transition((background-color, color));
+    @include focus-ring;
+
+    &:hover {
+      background-color: $color-brand-primary;
+      color: $color-text-inverse;
+    }
+  }
+}
+
+.cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+  }
+
+  &__titulo {
+    margin: 0;
+    font-family: $font-titulos;
+    font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1.05;
+  }
+
+  &__desc {
+    margin: 0;
+    color: $color-text-secondary;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  height: 1.625rem;
+  padding-inline: $space-3;
+  border: $border-width solid $color-beige-horno;
+  border-radius: $radius-pill;
+  background-color: $color-crema-claro;
+  color: $color-text-primary;
+  font-size: 0.75rem;
+  font-weight: $weight-medium;
+
+  &--marca {
+    border-color: transparent;
+    background-color: $tint-rojo-8;
+    color: $color-brand-primary;
+    font-weight: $weight-bold;
+  }
+
+  &__estrella {
+    color: #e0a800;
+  }
+}
+
+// Precio vivo: cambia con tamaño, masa y extras
+.precio {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: $space-3;
+  margin: $space-1 0 0;
+
+  &__valor {
+    color: $color-brand-primary;
+    font-family: $font-datos;
+    font-size: 1.75rem;
+    font-weight: $weight-bold;
+    line-height: 1;
+  }
+
+  &__nota {
+    color: $color-text-secondary;
+    font-size: 0.875rem;
+  }
+}
+
+// ── Compra ───────────────────────────────────────────────────────────────────
+.compra {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.paso {
+  min-width: 0;
+  margin: 0;
+  padding: $space-4;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-md;
+  background-color: $color-background-raised;
+
+  &__titulo {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    margin: 0 0 $space-3;
+    padding: 0;
+    font-family: $font-cuerpo;
+    font-size: 0.9375rem;
+    font-weight: $weight-bold;
+
+    small {
+      color: $color-text-secondary;
+      font-size: 0.8125rem;
+      font-weight: $weight-regular;
+    }
+  }
+
+  &__num {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 50%;
+    background-color: $color-brand-primary;
+    color: $color-text-inverse;
+    font-size: 0.75rem;
+    font-weight: $weight-bold;
+  }
+}
+
+.tamanos {
+  display: grid;
+  gap: $space-2;
+  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+}
+
+.tamano {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  padding: $space-3 $space-2;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-md;
+  background-color: $color-background-raised;
+  text-align: center;
+  cursor: pointer;
+  @include transition((border-color, background-color, box-shadow));
+
+  &:hover {
+    border-color: $color-border-strong;
+  }
+
+  &:has(:focus-visible) {
+    box-shadow: 0 0 0 3px rgba($color-brand-primary, 0.25);
+  }
+
+  &.is-activa {
+    border-color: $color-brand-primary;
+    background-color: $tint-rojo-8;
+    box-shadow: inset 0 0 0 1px $color-brand-primary;
+  }
+
+  &__nombre {
+    font-size: 0.875rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__precio {
+    font-family: $font-datos;
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
+    color: $color-brand-primary;
+  }
+}
+
+.masas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.pastilla {
+  display: inline-flex;
+  align-items: baseline;
+  gap: $space-2;
+  height: 2.25rem;
+  padding-inline: $space-4;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-pill;
+  background-color: $color-background-raised;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: $weight-medium;
+  cursor: pointer;
+  @include transition((border-color, background-color));
+
+  &:hover {
+    border-color: $color-border-strong;
+  }
+
+  &:has(:focus-visible) {
+    box-shadow: 0 0 0 3px rgba($color-brand-primary, 0.25);
+  }
+
+  &.is-activa {
+    border-color: $color-brand-primary;
+    background-color: $tint-rojo-8;
+    color: $color-brand-primary;
+  }
+
+  small {
+    font-size: 0.75rem;
+    opacity: 0.85;
+  }
+}
+
+.adicionales {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.adicional {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 0;
+  @include transition((background-color));
+
+  & + & {
+    border-top: $border-width solid $color-border-default;
+  }
+
+  &.is-activo .adicional__nombre {
+    color: $color-brand-primary;
+  }
+
+  &__nombre {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.875rem;
+    font-weight: $weight-medium;
+  }
+
+  &__precio {
+    color: $color-text-secondary;
+    font-family: $font-datos;
+    font-size: 0.875rem;
+  }
+}
+
+.contador {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+
+  &__boton {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: $border-width solid $color-border-default;
+    border-radius: 50%;
+    background-color: $color-background-raised;
+    color: $color-text-primary;
+    cursor: pointer;
+    @include transition((border-color, background-color));
+    @include focus-ring;
+
+    &:hover:not(:disabled) {
+      border-color: $color-brand-primary;
+      color: $color-brand-primary;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+  }
+
+  &__valor {
+    min-width: 1.75rem;
+    text-align: center;
+    font-family: $font-datos;
+    font-weight: $weight-semibold;
+  }
+
+  &--grande {
+    padding: $space-1;
+    border: $border-width solid $color-border-default;
+    border-radius: $radius-pill;
+    background-color: $color-background-raised;
+
+    .contador__boton {
+      width: 2.375rem;
+      height: 2.375rem;
+      border: 0;
+    }
+
+    .contador__valor {
+      min-width: 2rem;
+      font-size: 1rem;
+    }
+  }
+}
+
+.notas {
+  width: 100%;
+  padding: $space-3 $space-4;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-md;
+  background-color: $color-background-raised;
+  color: $color-text-primary;
+  font: inherit;
+  resize: vertical;
+  @include transition((border-color, box-shadow));
+
+  &:focus-visible {
+    outline: none;
+    border-color: $color-border-strong;
+    box-shadow: 0 0 0 3px rgba($color-brand-primary, 0.18);
+  }
+}
+
+.aviso {
+  margin: 0;
+  color: $color-text-secondary;
+  font-size: 0.9375rem;
+
+  &--ok {
+    color: $color-success;
+    font-weight: $weight-semibold;
+  }
+}
+
+.enlace {
+  color: $color-brand-primary;
+  font-weight: $weight-semibold;
+  @include focus-ring;
+}
+
+// ── Barra de compra fija ─────────────────────────────────────────────────────
+.barra {
+  position: sticky;
+  bottom: 0;
+  z-index: $z-header - 10;
+  border-top: $border-width solid $color-border-default;
+  background-color: rgba($color-background-raised, 0.96);
+  backdrop-filter: blur(8px);
+
+  // Compacta y centrada: los botones quedan cerca unos de otros
+  &__contenido {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $space-3;
+    width: min(100% - #{$space-8}, 36rem);
+    margin-inline: auto;
+    padding-block: $space-2;
+  }
+
+  &__boton {
+    display: inline-flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    gap: $space-2;
+    height: 2.75rem;
+    padding-inline: $space-5;
+    border: $border-width solid transparent;
+    border-radius: $radius-pill;
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: $weight-bold;
+    white-space: nowrap;
+    cursor: pointer;
+    @include transition((background-color, border-color, opacity));
+    @include focus-ring;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &--suave {
+      border-color: $color-brand-primary;
+      background-color: transparent;
+      color: $color-brand-primary;
+
+      &:hover:not(:disabled) {
+        background-color: $tint-rojo-8;
+      }
+    }
+
+    &--fuerte {
+      flex-grow: 1.4;
+      background-color: $color-brand-primary;
+      color: $color-text-inverse;
+
+      &:hover:not(:disabled) {
+        background-color: $color-rojo-intenso;
+      }
+    }
+  }
+
+  // En móvil: contador y botones más compactos para que quepan en una sola fila
+  @include down(sm) {
+    &__contenido {
+      gap: $space-2;
+      width: calc(100% - #{$space-4});
+    }
+
+    &__boton {
+      min-width: 0;
+      padding-inline: $space-2;
+      font-size: 0.8125rem;
+    }
+
+    &__boton--fuerte {
+      flex-grow: 1.2;
+    }
+
+    &__total {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    &__ahora {
+      display: none;
+    }
+
+    .contador--grande {
+      padding: 0.125rem;
+    }
+
+    .contador__boton {
+      width: 2rem;
+      height: 2rem;
+    }
+
+    .contador__valor {
+      min-width: 1.25rem;
+      font-size: 1rem;
+    }
+  }
+
+  &__total {
+    padding-left: $space-2;
+    border-left: $border-width solid rgba($color-blanco, 0.5);
+    font-family: $font-datos;
+  }
+}
+
+// ── Estados ──────────────────────────────────────────────────────────────────
+.estado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+  padding-block: $space-10;
+  text-align: center;
+
+  &__icono {
+    color: $color-text-secondary;
+  }
+
+  &__titulo {
+    margin: 0;
+    font-family: $font-titulos;
+    font-size: 2rem;
+    font-weight: 400;
+  }
+
+  &__texto {
+    max-width: 28rem;
+    margin: 0;
+    color: $color-text-secondary;
+  }
+
+  &__acciones {
+    display: flex;
+    gap: $space-3;
+    margin-top: $space-3;
+  }
+}
+
+.esqueleto {
+  border-radius: $radius-md;
+  background: linear-gradient(100deg, $color-beige-horno 30%, rgba($color-blanco, 0.7) 50%, $color-beige-horno 70%) 0 0 / 200% 100%;
+  animation: brillo 1.4s linear infinite;
+
+  &--linea {
+    height: 1.25rem;
+  }
+
+  &--corta {
+    width: 30%;
+  }
+
+  &--titulo {
+    height: 3rem;
+    width: 70%;
+  }
+}
+
+@keyframes brillo {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@include reduced-motion {
+  .esqueleto {
+    animation: none;
+  }
+}

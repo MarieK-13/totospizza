@@ -9,23 +9,18 @@ import com.totospizza.dto.request.seguridad.RestablecerContrasenaRequest;
 import com.totospizza.dto.response.seguridad.TokenResponse;
 
 /**
- * Registro, inicio de sesión y manejo de contraseñas. Los refresh tokens rotan en cada uso:
- * si alguien presenta uno ya usado, se revocan todas las sesiones de ese usuario.
+ * Registro, inicio de sesión y manejo de contraseñas. Los refresh tokens rotan en cada uso
  */
 public interface AuthService {
 
-    /** Crea una cuenta de cliente y la deja con la sesión iniciada. */
     TokenResponse registrar(RegistroRequest request);
 
     TokenResponse login(LoginRequest request);
 
-    /** Cambia un refresh token vigente por un par de tokens nuevo. */
     TokenResponse renovar(RefreshTokenRequest request);
 
-    /** Revoca todas las sesiones del usuario. */
     void cerrarSesion(Long usuarioId);
 
-    /** Envía el enlace de recuperación. Responde igual exista o no el correo, para no revelar cuentas. */
     void solicitarRecuperacion(OlvidoContrasenaRequest request);
 
     void restablecerContrasena(RestablecerContrasenaRequest request);

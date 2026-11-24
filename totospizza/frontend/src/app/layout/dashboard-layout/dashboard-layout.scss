@@ -1,0 +1,66 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+:host {
+  display: block;
+  min-height: 100dvh;
+  background:
+    radial-gradient(60rem 30rem at 85% -10%, $tint-amarillo-24, transparent 70%),
+    radial-gradient(50rem 28rem at 0% 0%, $tint-rojo-8, transparent 70%),
+    $color-background-canvas;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+
+  @include up(lg) {
+    padding-left: 16rem; // ancho del sidebar
+  }
+
+  &__content {
+    flex: 1;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding: $space-6 $container-gutter $space-9;
+    outline: none;
+
+    @include up(lg) {
+      padding-inline: $space-8;
+    }
+  }
+
+  &__bell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: $control-height-md;
+    height: $control-height-md;
+    padding: 0;
+    border: 0;
+    border-radius: $radius-pill;
+    background: none;
+    color: $color-text-primary;
+    cursor: pointer;
+    @include transition((background-color));
+    @include focus-ring;
+
+    &:hover {
+      background-color: $color-background-alt;
+    }
+  }
+
+  &__dot {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.75rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 2px solid $color-background-raised;
+    border-radius: $radius-pill;
+    background-color: $color-brand-primary;
+  }
+}

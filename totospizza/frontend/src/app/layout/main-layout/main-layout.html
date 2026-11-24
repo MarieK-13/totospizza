@@ -1,0 +1,8 @@
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<app-announcement-bar />
+<app-site-header />
+<main #main id="contenido" class="main" tabindex="-1">
+  <router-outlet (activate)="onPageActivate()" />
+</main>
+<app-site-footer />
+<app-order-fab />

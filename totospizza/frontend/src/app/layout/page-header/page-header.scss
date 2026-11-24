@@ -1,0 +1,81 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  margin-bottom: $space-6;
+
+  &__crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-1;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+
+    li {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
+    }
+
+    a {
+      border-radius: $radius-sm;
+      @include transition((color));
+      @include focus-ring;
+
+      &:hover {
+        color: $color-brand-primary;
+      }
+    }
+
+    [aria-current='page'] {
+      color: $color-text-primary;
+      font-weight: $weight-semibold;
+    }
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+
+    @include up(md) {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+  }
+
+  &__title {
+    margin: 0;
+    @include text('h2');
+  }
+
+  &__subtitle {
+    max-width: 40rem;
+    margin: $space-1 0 0;
+    color: $color-text-secondary;
+    @include text('cuerpo');
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-3;
+
+    &:empty {
+      display: none;
+    }
+  }
+}

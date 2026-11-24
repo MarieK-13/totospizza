@@ -1,0 +1,34 @@
+<div class="field" [class.is-invalid]="showError" [class.is-focused]="focused()" [class.is-disabled]="disabled()">
+  <label class="field__label" [attr.for]="id">
+    {{ label() }}
+    @if (required()) {
+      <span class="field__required" aria-hidden="true">*</span>
+    }
+  </label>
+
+  <div class="field__control">
+    <select
+      class="field__select"
+      [id]="id"
+      [disabled]="disabled()"
+      [attr.aria-invalid]="showError"
+      [attr.aria-describedby]="id + '-msg'"
+      (change)="alCambiar($event)"
+      (focus)="focused.set(true)"
+      (blur)="alSalir()"
+    >
+      @for (opcion of opciones(); track opcion.valor) {
+        <option [value]="opcion.valor" [selected]="opcion.valor === value()">{{ opcion.etiqueta }}</option>
+      }
+    </select>
+    <span class="field__chevron" aria-hidden="true">
+      <lucide-icon [img]="ChevronIcon" [size]="16" [strokeWidth]="2"></lucide-icon>
+    </span>
+  </div>
+
+  <div [id]="id + '-msg'">
+    @if (showError) {
+      <p class="field__error" role="alert">{{ errorMessage }}</p>
+    }
+  </div>
+</div>

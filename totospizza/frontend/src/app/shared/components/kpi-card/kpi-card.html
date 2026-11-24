@@ -1,0 +1,22 @@
+<div class="kpi__head">
+  <p class="kpi__label">{{ label() }}</p>
+  @if (icon(); as kpiIcon) {
+    <span class="kpi__icon">
+      <lucide-icon [img]="kpiIcon" [size]="22" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+    </span>
+  }
+</div>
+
+<p class="kpi__value">{{ value() }}</p>
+
+<div class="kpi__foot">
+  @if (trend() !== undefined) {
+    <span class="kpi__trend" [class.is-down]="!trendUp()">
+      <lucide-icon [img]="trendUp() ? TrendUp : TrendDown" [size]="14" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+      {{ trendLabel() }}
+    </span>
+  }
+  @if (hint()) {
+    <span class="kpi__hint">{{ hint() }}</span>
+  }
+</div>

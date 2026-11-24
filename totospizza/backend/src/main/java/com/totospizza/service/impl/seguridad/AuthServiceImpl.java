@@ -84,7 +84,6 @@ public class AuthServiceImpl implements AuthService {
         return emitirTokens(usuario);
     }
 
-    /** No revierte al detectar reutilización: la revocación masiva debe quedar guardada. */
     @Override
     @Transactional(noRollbackFor = NoAutenticadoException.class)
     public TokenResponse renovar(RefreshTokenRequest request) {

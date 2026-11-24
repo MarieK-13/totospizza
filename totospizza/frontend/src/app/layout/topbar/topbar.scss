@@ -1,0 +1,59 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: $z-header;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  height: 4rem;
+  padding-inline: $container-gutter;
+  border-bottom: $border-width solid $color-border-default;
+  background-color: $color-background-raised;
+
+  &__menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: $control-height-md;
+    height: $control-height-md;
+    margin-left: -$space-2;
+    padding: 0;
+    border: 0;
+    border-radius: $radius-sm;
+    background: none;
+    color: $color-text-primary;
+    cursor: pointer;
+    @include transition((background-color));
+    @include focus-ring;
+
+    &:hover {
+      background-color: $color-background-alt;
+    }
+
+    @include up(lg) {
+      display: none;
+    }
+  }
+
+  &__title {
+    margin: 0;
+    color: $color-text-primary;
+    font-size: 1rem;
+    font-weight: $weight-semibold;
+    line-height: 1.5rem;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    margin-left: auto;
+  }
+}

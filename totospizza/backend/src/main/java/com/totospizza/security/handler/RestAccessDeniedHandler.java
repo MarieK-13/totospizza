@@ -10,7 +10,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
-/** 403 en formato {@code ApiError} cuando el rol del usuario no alcanza para la ruta. */
+/** 403 cuando el rol del usuario no alcanza para la ruta. */
 @Component
 public class RestAccessDeniedHandler implements AccessDeniedHandler {
 

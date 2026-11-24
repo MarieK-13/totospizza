@@ -1,0 +1,71 @@
+@use '../../../styles/tokens/variables' as *;
+@use '../../../styles/mixins' as *;
+
+:host {
+  position: fixed;
+  right: $space-4;
+  bottom: $space-4;
+  z-index: $z-dropdown;
+
+  @include up(md) {
+    right: $space-6;
+    bottom: $space-6;
+  }
+}
+
+// Círculo rojo que se expande a píldora al pasar el mouse o enfocar
+.fab {
+  display: inline-flex;
+  align-items: center;
+  height: 4.5rem;
+  padding: 0 1.4375rem;
+  border: 0;
+  border-radius: $radius-pill;
+  background-color: $color-brand-primary;
+  color: $color-text-inverse;
+  font-family: $font-cuerpo;
+  font-size: 1.0625rem;
+  font-weight: $weight-bold;
+  box-shadow: $shadow-lg;
+  cursor: pointer;
+  @include transition((background-color, box-shadow, transform), $duration-base);
+  @include focus-ring($color-cafe-tostado, 3px);
+
+  &:hover {
+    background-color: $color-rojo-intenso;
+    box-shadow: $shadow-xl;
+  }
+
+  &:active {
+    transform: scale($press-scale);
+  }
+
+  &__icon {
+    flex: none;
+  }
+
+  &__label {
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0;
+    transition:
+      max-width $duration-base $ease-out,
+      margin $duration-base $ease-out,
+      opacity $duration-fast $ease-out;
+  }
+
+  &:hover &__label,
+  &:focus-visible &__label {
+    max-width: 12rem;
+    margin-left: $space-3;
+    opacity: 1;
+  }
+}
+
+@include reduced-motion {
+  .fab,
+  .fab__label {
+    transition: none;
+  }
+}

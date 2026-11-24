@@ -8,7 +8,7 @@ import com.totospizza.model.entity.catalogo.Ingrediente;
 import com.totospizza.model.entity.catalogo.TamanoPizza;
 import com.totospizza.model.entity.catalogo.TipoMasa;
 
-/** Precio de una pizza armada por el cliente: tamaño + recargo de masa + extras elegidos. */
+/** Precio de una pizza armada por el cliente */
 public final class CalculadoraPizza {
 
     private CalculadoraPizza() {

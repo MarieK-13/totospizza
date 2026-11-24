@@ -1,0 +1,41 @@
+@use '../tokens/variables' as *;
+@use '../mixins' as *;
+
+.container {
+  @include container;
+}
+
+.section {
+  padding-block: $space-8;
+
+  @include up(md) {
+    padding-block: $space-10;
+  }
+}
+
+.prose {
+  max-width: 70ch;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--stack-gap, #{$space-4});
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cluster-gap, #{$space-3});
+}
+
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--grid-min, 16rem), 1fr));
+  gap: var(--grid-gap, #{$space-5});
+}
+
+.hidden {
+  display: none !important;
+}

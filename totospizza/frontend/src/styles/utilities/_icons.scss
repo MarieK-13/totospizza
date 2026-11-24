@@ -1,0 +1,20 @@
+@use '../tokens/variables' as *;
+
+.icon-xs svg { width: $icon-size-xs; height: $icon-size-xs; }
+.icon-sm svg { width: $icon-size-sm; height: $icon-size-sm; }
+.icon-md svg { width: $icon-size-md; height: $icon-size-md; }
+.icon-lg svg { width: $icon-size-lg; height: $icon-size-lg; }
+.icon-xl svg { width: $icon-size-xl; height: $icon-size-xl; }
+
+.icon-fino svg {
+  stroke-width: $icon-stroke;
+}
+
+.icon-relleno svg {
+  fill: currentColor;
+}
+
+.icon-brand     { color: $color-brand-primary; }
+.icon-secondary { color: $color-text-secondary; }
+.icon-success   { color: $color-success; }
+.icon-accent    { color: $color-brand-accent; }

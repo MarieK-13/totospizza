@@ -1,141 +1,179 @@
-<section class="locales-section">
-  <div class="locales-section__container">
-    <!-- Encabezado de Sección -->
-    <header class="locales-header">
-      <div class="locales-header__info">
-        <span class="eyebrow">
-          <span class="eyebrow__dot"></span>
-          TU MESA TE ESPERA
-        </span>
-        <h1 class="locales-header__title">Encuentra tu Toto’s Pizza</h1>
-        <p class="locales-header__subtitle">
-          Tres barrios, la misma bienvenida. Ven por una pizza al horno, una copa de vino y una sobremesa sin prisa.
-        </p>
-      </div>
+<!-- 1. Encabezado -->
+<section class="band cabecera">
+  <div class="wrap">
+    <header class="section-head section-head--center">
+      <span class="kicker">Locales</span>
+      <h1 class="section-head__title">Encuentra tu Toto’s Pizza</h1>
+      <p class="section-head__lead">
+        Tres barrios, la misma bienvenida. Elige un local para ver su horario y cómo llegar, o pídela a casa.
+      </p>
+      <p class="estado-general" role="status">
+        <span class="estado-general__punto" [class.is-off]="abiertosAhora() === 0" aria-hidden="true"></span>
+        @if (abiertosAhora() === 0) {
+          Ahora todos los locales están cerrados
+        } @else {
+          {{ abiertosAhora() }} de {{ sedes().length }} {{ sedes().length === 1 ? 'local abierto' : 'locales abiertos' }} ahora
+        }
+      </p>
+    </header>
 
-      <a routerLink="/zona-de-reparto" class="btn-outline-pill">
-        <span>Ver zona de reparto</span>
-        <lucide-icon [img]="BikeIcon" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+    <!-- 2. Selector + detalle: una sola tarjeta para que se lea como un conjunto -->
+    @if (activa(); as sede) {
+      <div class="visor">
+        <div class="lista" role="tablist" aria-label="Locales de Toto's Pizza" aria-orientation="vertical" (keydown)="onTeclas($event)">
+          @for (s of sedes(); track s.id) {
+            <button
+              type="button"
+              role="tab"
+              class="item"
+              [id]="'tab-local-' + s.id"
+              [attr.aria-selected]="s.id === sede.id"
+              [attr.aria-controls]="'panel-local'"
+              [attr.tabindex]="s.id === sede.id ? 0 : -1"
+              [class.is-active]="s.id === sede.id"
+              (click)="elegir(s.id)"
+            >
+              <img class="item__foto" [src]="s.imagen" alt="" width="56" height="56" loading="lazy" [class.item__foto--logo]="s.esLogo" />
+              <span class="item__texto">
+                <span class="item__nombre">{{ s.nombreCorto }}</span>
+                <span class="item__zona">{{ s.distrito }}</span>
+              </span>
+              <span class="item__estado" [class.is-open]="s.abierto">
+                <span class="item__punto" aria-hidden="true"></span>
+                {{ s.abierto ? 'Abierto' : 'Cerrado' }}
+              </span>
+            </button>
+          }
+          <a routerLink="/zona-de-reparto" class="lista__pie">
+            <lucide-icon [img]="BikeIcon" [size]="18" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+            <span>¿Pides a domicilio? <strong>Ver cobertura</strong></span>
+          </a>
+        </div>
+
+        <!-- El panel se vuelve a crear al cambiar de local para que entre con una transición corta -->
+        @for (actual of [sede]; track actual.id) {
+          <article class="detalle" id="panel-local" role="tabpanel" [attr.aria-labelledby]="'tab-local-' + actual.id" tabindex="0">
+            <div class="detalle__foto">
+              <img [src]="actual.imagen" [alt]="'Fachada de ' + actual.nombre" [class.is-logo]="actual.esLogo" />
+              <span class="badge" [class.badge--open]="actual.abierto">
+                <span class="badge__punto" aria-hidden="true"></span>
+                {{ actual.abierto ? 'Abierto ahora' : 'Cerrado ahora' }}
+              </span>
+            </div>
+
+            <div class="detalle__cuerpo">
+              <h2 class="detalle__nombre">{{ actual.nombre }}</h2>
+
+              <div class="detalle__cols">
+                <ul class="datos">
+                  <li>
+                    <lucide-icon [img]="PinIcon" [size]="18" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+                    <span>
+                      {{ actual.direccion }}, {{ actual.distrito }}
+                      @if (actual.referencia) {
+                        <small>{{ actual.referencia }}</small>
+                      }
+                    </span>
+                  </li>
+                  <li>
+                    <lucide-icon [img]="ClockIcon" [size]="18" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+                    <span>Hoy: {{ actual.horarioHoy }}</span>
+                  </li>
+                  @if (actual.telefono) {
+                    <li>
+                      <lucide-icon [img]="PhoneIcon" [size]="18" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+                      <a [href]="'tel:' + actual.telefono">{{ actual.telefono }}</a>
+                    </li>
+                  }
+                  <li>
+                    <lucide-icon [img]="BikeIcon" [size]="18" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+                    <span>Delivery hasta {{ actual.radioKm }} km</span>
+                  </li>
+                </ul>
+
+                <div class="semana">
+                  <h3 class="semana__titulo">Horario de la semana</h3>
+                  <ul>
+                    @for (dia of actual.semana; track dia.etiqueta) {
+                      <li [class.is-hoy]="dia.esHoy" [class.is-cerrado]="dia.cerrado">
+                        <span>{{ dia.etiqueta }}@if (dia.esHoy) { <em>Hoy</em> }</span>
+                        <span>{{ dia.texto }}</span>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </div>
+
+              <div class="acciones">
+                <button type="button" class="btn btn--primary" (click)="pedirDesdeAqui(actual)">Pedir desde este local</button>
+                <a class="btn btn--secondary" [href]="actual.mapaUrl" target="_blank" rel="noopener noreferrer">
+                  <lucide-icon [img]="RouteIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                  Cómo llegar
+                  <span class="sr-only">(se abre en una pestaña nueva)</span>
+                </a>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- 3. Delivery: es una secuencia, por eso va numerada y unida por una línea -->
+<section class="band band--tint delivery" aria-labelledby="delivery-titulo">
+  <div class="wrap">
+    <header class="section-head section-head--center">
+      <span class="kicker">Delivery</span>
+      <h2 class="section-head__title" id="delivery-titulo">¿Te llevamos la pizza?</h2>
+      <p class="section-head__lead">Comprueba en segundos si llegamos a tu casa.</p>
+    </header>
+
+    <ol class="pasos">
+      @for (paso of pasosDelivery; track paso.titulo; let i = $index) {
+        <li class="paso">
+          <span class="paso__num" aria-hidden="true">{{ i + 1 }}</span>
+          <h3 class="paso__titulo">{{ paso.titulo }}</h3>
+          <p class="paso__texto">{{ paso.texto }}</p>
+        </li>
+      }
+    </ol>
+
+    <div class="barrios">
+      <p class="barrios__titulo">Barrios donde ya llegamos</p>
+      <ul class="barrios__lista">
+        @for (barrio of barrios; track barrio) {
+          <li>{{ barrio }}</li>
+        }
+      </ul>
+      <a routerLink="/zona-de-reparto" class="btn btn--primary">Ver si llegamos a mi casa</a>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Galería -->
+<section class="band galeria" aria-labelledby="galeria-titulo">
+  <div class="wrap">
+    <header class="section-head">
+      <div>
+        <span class="kicker">Instagram</span>
+        <h2 class="section-head__title" id="galeria-titulo">Una porción de nuestro día</h2>
+      </div>
+      <a class="btn btn--secondary" href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+        <lucide-icon [img]="InstagramIcon" [size]="16" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+        Ver Instagram
+        <span class="sr-only">(se abre en una pestaña nueva)</span>
       </a>
     </header>
 
-    <!-- Grid de 3 Tarjetas de Sedes -->
-    <div class="sedes-grid">
-      @for (sede of sedes; track sede.nombre) {
-        <article class="sede-card">
-          <div class="sede-card__image-wrapper">
-            <img [src]="sede.imagen" [alt]="sede.nombre" class="sede-card__image" />
-          </div>
-
-          <div class="sede-card__body">
-            <div class="sede-card__top">
-              <h2 class="sede-card__title">{{ sede.nombre }}</h2>
-              <span class="badge-open">{{ sede.estado }}</span>
-            </div>
-
-            <ul class="sede-card__details">
-              <li>
-                <lucide-icon [img]="MapPinIcon" [size]="15" [strokeWidth]="1.5" class="icon-red"></lucide-icon>
-                <span>{{ sede.direccion }}</span>
-              </li>
-              <li>
-                <lucide-icon [img]="ClockIcon" [size]="15" [strokeWidth]="1.5" class="icon-red"></lucide-icon>
-                <span>{{ sede.horario }}</span>
-              </li>
-            </ul>
-
-            <a [href]="sede.mapaUrl" target="_blank" rel="noopener noreferrer" class="sede-card__link">
-              <span>Cómo llegar</span>
-              <lucide-icon [img]="ArrowUpRightIcon" [size]="14" [strokeWidth]="1.8"></lucide-icon>
-            </a>
-          </div>
-        </article>
+    <ul class="mosaico">
+      @for (foto of galeria; track foto.src) {
+        <li class="mosaico__item">
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" [attr.aria-label]="foto.alt + ' (abre Instagram)'">
+            <img [src]="foto.src" [alt]="foto.alt" loading="lazy" />
+          </a>
+        </li>
       }
-    </div>
-
-    <!-- Banner de Cobertura Delivery -->
-    <div class="delivery-banner">
-      <span class="delivery-banner__tag">DELIVERY A TU BARRIO</span>
-
-      <p class="delivery-banner__zones">
-        {{ zonasDelivery.join(' · ') }}
-      </p>
-
-      <a routerLink="/zona-de-reparto" class="delivery-banner__cta">
-        Consulta cobertura →
-      </a>
-    </div>
-  </div>
-
-  <!-- Banda de Propuesta de Valor (4 pilares) -->
-  <div class="pillars-bar">
-    <div class="locales-section__container pillars-bar__grid">
-      <div class="pillar-item">
-        <span class="pillar-item__icon">
-          <lucide-icon [img]="FlameIcon" [size]="18" [strokeWidth]="1.5"></lucide-icon>
-        </span>
-        <div>
-          <h3 class="pillar-item__title">Horno de piedra</h3>
-          <p class="pillar-item__desc">450° de puro sabor</p>
-        </div>
-      </div>
-
-      <div class="pillar-item">
-        <span class="pillar-item__icon">
-          <lucide-icon [img]="WheatIcon" [size]="18" [strokeWidth]="1.5"></lucide-icon>
-        </span>
-        <div>
-          <h3 class="pillar-item__title">Masa de 48 horas</h3>
-          <p class="pillar-item__desc">Ligera y crujiente</p>
-        </div>
-      </div>
-
-      <div class="pillar-item">
-        <span class="pillar-item__icon">
-          <lucide-icon [img]="BikeIcon" [size]="18" [strokeWidth]="1.5"></lucide-icon>
-        </span>
-        <div>
-          <h3 class="pillar-item__title">Delivery rápido</h3>
-          <p class="pillar-item__desc">En 35 minutos</p>
-        </div>
-      </div>
-
-      <div class="pillar-item">
-        <span class="pillar-item__icon">
-          <lucide-icon [img]="SproutIcon" [size]="18" [strokeWidth]="1.5"></lucide-icon>
-        </span>
-        <div>
-          <h3 class="pillar-item__title">Ingredientes frescos</h3>
-          <p class="pillar-item__desc">Selección diaria</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sección Social: Una porción de nuestro día -->
-  <div class="social-feed">
-    <div class="locales-section__container">
-      <div class="social-feed__header">
-        <div>
-          <h2 class="social-feed__title">Una porción de nuestro día</h2>
-          <p class="social-feed__subtitle">
-            Síguenos en <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">&#64;Totto's.Pizza.Ica</a>
-          </p>
-        </div>
-
-        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-feed__link">
-          <lucide-icon [img]="InstagramIcon" [size]="16" [strokeWidth]="1.5"></lucide-icon>
-          <span>Ver Instagram</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="social-feed__gallery">
-      @for (foto of galeriaFotos; track foto.src) {
-        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="gallery-tile">
-          <img [src]="foto.src" [alt]="foto.alt" />
-        </a>
-      }
-    </div>
+    </ul>
   </div>
 </section>

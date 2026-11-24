@@ -1,0 +1,93 @@
+<section class="band zona">
+  <div class="wrap">
+    <header class="section-head section-head--center">
+      <span class="kicker">Delivery</span>
+      <h1 class="section-head__title">¿Llegamos a tu casa?</h1>
+      <p class="section-head__lead">
+        Usa tu ubicación y te decimos al instante si llegamos, cuánto cuesta el envío y en cuánto tiempo.
+      </p>
+    </header>
+
+    <div class="checker">
+      <button type="button" class="btn btn--primary checker__btn" (click)="consultar()" [disabled]="buscando()">
+        <lucide-icon [img]="LocateIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        {{ buscando() ? 'Buscando tu ubicación…' : 'Usar mi ubicación' }}
+      </button>
+
+      <div class="checker__result" aria-live="polite">
+        @switch (consulta().tipo) {
+          @case ('resultado') {
+            @let c = $any(consulta()).cobertura;
+            @if (c.dentroCobertura) {
+              <div class="result result--ok">
+                <p class="result__title">Sí llegamos a tu zona</p>
+                <p class="result__text">{{ c.mensaje }}</p>
+                <dl class="result__facts">
+                  @if (c.sucursalNombre) {
+                    <div>
+                      <dt><lucide-icon [img]="PinIcon" [size]="15" [strokeWidth]="1.6" aria-hidden="true"></lucide-icon> Sale de</dt>
+                      <dd>{{ c.sucursalNombre }}</dd>
+                    </div>
+                  }
+                  @if (c.costoEnvio !== null) {
+                    <div>
+                      <dt><lucide-icon [img]="WalletIcon" [size]="15" [strokeWidth]="1.6" aria-hidden="true"></lucide-icon> Envío</dt>
+                      <dd>{{ c.costoEnvio === 0 ? 'Gratis' : soles(c.costoEnvio) }}</dd>
+                    </div>
+                  }
+                  @if (c.minutosEstimados !== null) {
+                    <div>
+                      <dt><lucide-icon [img]="ClockIcon" [size]="15" [strokeWidth]="1.6" aria-hidden="true"></lucide-icon> Tiempo</dt>
+                      <dd>{{ c.minutosEstimados }} min aprox.</dd>
+                    </div>
+                  }
+                </dl>
+                <button type="button" class="btn btn--primary" (click)="armarPedido()">Armar mi pedido</button>
+              </div>
+            } @else {
+              <div class="result result--no">
+                <p class="result__title">Todavía no llegamos a tu zona</p>
+                <p class="result__text">{{ c.mensaje }}</p>
+                <a routerLink="/locales" class="btn btn--secondary">Ver locales para recoger</a>
+              </div>
+            }
+          }
+          @case ('error') {
+            <div class="result result--error" role="alert">
+              <p class="result__title">No pudimos consultar</p>
+              <p class="result__text">{{ $any(consulta()).mensaje }}</p>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    @if (localesConZonas().length > 0) {
+      <div class="zonas">
+        <h2 class="zonas__title">Costo de envío por zona</h2>
+        <div class="zonas__grid">
+          @for (local of localesConZonas(); track local.id) {
+            <article class="zonas__card">
+              <h3 class="zonas__local">{{ local.nombre }}</h3>
+              <table>
+                <caption class="sr-only">Zonas de reparto de {{ local.nombre }}</caption>
+                <thead>
+                  <tr><th scope="col">Zona</th><th scope="col">Distancia</th><th scope="col">Envío</th></tr>
+                </thead>
+                <tbody>
+                  @for (zona of local.zonas; track zona.id) {
+                    <tr>
+                      <th scope="row">{{ zona.nombre }}</th>
+                      <td>{{ zona.distanciaDesdeKm }}–{{ zona.distanciaHastaKm }} km</td>
+                      <td>{{ zona.costoEnvio === 0 ? 'Gratis' : soles(zona.costoEnvio) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </article>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</section>

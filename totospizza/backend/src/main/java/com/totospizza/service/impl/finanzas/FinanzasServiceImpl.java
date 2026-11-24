@@ -215,8 +215,6 @@ public class FinanzasServiceImpl implements FinanzasService {
         return finanzasMapper.toPagoMotorizado(pago);
     }
 
-    // ---- apoyo ----
-
     private RankingProductosResponse ranking(Long sucursalId, Instant inicio, Instant fin) {
         List<ProductoVendidoResponse> todos = finanzasMapper.toProductosVendidos(detallePedidoRepository.masVendidos(
                 PedidoEstadoPolicy.ESTADOS_VENTA, inicio, fin, sucursalId, Pageable.unpaged()));

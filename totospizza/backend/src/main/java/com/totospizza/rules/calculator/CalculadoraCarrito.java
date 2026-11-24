@@ -6,8 +6,7 @@ import com.totospizza.model.entity.pedido.ItemCarrito;
 import com.totospizza.model.entity.pedido.ItemCarritoAdicional;
 
 /**
- * Precios de una línea del carrito. El precio unitario NO incluye los adicionales:
- * subtotal = (precio unitario + suma de adicionales por unidad) x cantidad.
+ * Precios de una línea del carrito. 
  */
 public final class CalculadoraCarrito {
 

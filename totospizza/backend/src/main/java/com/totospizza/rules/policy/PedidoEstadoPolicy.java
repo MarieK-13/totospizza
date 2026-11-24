@@ -10,15 +10,9 @@ import com.totospizza.model.enums.EstadoPedido;
 import com.totospizza.model.enums.TipoEntrega;
 
 /**
- * Máquina de estados del pedido.
- * <pre>
- * PENDIENTE_PAGO -> CONFIRMADO -> EN_PREPARACION -> EN_HORNO -> LISTO
- *   LISTO -> EN_CAMINO -> ENTREGADO        (delivery)
- *   LISTO -> ENTREGADO | NO_RECOGIDO       (recojo)
- *   PENDIENTE_PAGO | CONFIRMADO -> CANCELADO
- * </pre>
- * El pizzero puede pasar de CONFIRMADO directo a EN_HORNO: EN_PREPARACION es opcional.
- */
+ *  Estados del pedido.
+ **/
+
 public final class PedidoEstadoPolicy {
 
     /** Estados de un pedido pagado y no anulado: cuentan como venta. */

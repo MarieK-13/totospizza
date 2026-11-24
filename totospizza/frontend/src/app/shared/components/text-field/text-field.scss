@@ -1,0 +1,181 @@
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  &__label {
+    color: $color-text-primary;
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
+    line-height: 1.25rem;
+  }
+
+  &__required {
+    color: $color-error;
+  }
+
+  &__control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    // Cada pantalla puede cambiar altura y redondeo con --field-height y --field-radius
+    height: var(--field-height, #{$control-height-lg - 0.25rem});
+    padding-inline: $space-4;
+    gap: $space-3;
+    border: 1.5px solid $color-border-default;
+    border-radius: var(--field-radius, #{$radius-pill});
+    background-color: $color-background-raised;
+    @include transition((border-color, box-shadow));
+
+    &:hover {
+      border-color: $color-marron-suave;
+    }
+  }
+
+  &.is-focused &__control {
+    border-color: $color-border-strong;
+    box-shadow: 0 0 0 4px $tint-cafe-10;
+  }
+
+  &.is-invalid &__control {
+    border-color: $color-error;
+  }
+
+  &.is-invalid.is-focused &__control {
+    box-shadow: 0 0 0 4px $tint-rojo-8;
+  }
+
+  &.is-disabled &__control {
+    background-color: $color-background-alt;
+    opacity: 0.6;
+  }
+
+  &__icon {
+    flex: none;
+    color: $color-text-secondary;
+  }
+
+  &.is-invalid &__icon {
+    color: $color-error;
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: $color-text-primary;
+    font-family: $font-cuerpo;
+    font-size: 0.9375rem;
+
+    &::placeholder {
+      color: $color-text-secondary;
+      opacity: 0.7;
+    }
+
+    // Calendario nativo teñido de rojo de marca
+    &[type='date']::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      filter: invert(24%) sepia(95%) saturate(2800%) hue-rotate(350deg) brightness(90%);
+    }
+  }
+
+  &__toggle {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    margin-right: -$space-2;
+    padding: 0;
+    border: 0;
+    border-radius: $radius-pill;
+    background: none;
+    color: $color-text-secondary;
+    cursor: pointer;
+    @include transition((background-color, color));
+    @include focus-ring;
+
+    &:hover {
+      background-color: $tint-cafe-10;
+      color: $color-text-primary;
+    }
+  }
+
+  &__error,
+  &__hint {
+    margin: 0;
+    padding-left: $space-4;
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+  }
+
+  &__error {
+    color: $color-error;
+    font-weight: $weight-medium;
+    animation: shake 300ms $ease-standard;
+  }
+
+  &__hint {
+    color: $color-text-secondary;
+  }
+}
+
+// Requisitos de contraseña: rojo si falta, verde si cumple
+.rules {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  margin: 0;
+  padding: 0 0 0 $space-4;
+  list-style: none;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    @include transition((color));
+
+    &--pending {
+      color: $color-text-secondary;
+    }
+
+    &--fail {
+      color: $color-error;
+    }
+
+    &--ok {
+      color: $color-success;
+    }
+  }
+}
+
+@keyframes shake {
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@include reduced-motion {
+  .field__error {
+    animation: none;
+  }
+}

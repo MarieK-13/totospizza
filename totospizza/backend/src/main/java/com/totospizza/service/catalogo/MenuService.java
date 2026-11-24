@@ -14,7 +14,6 @@ public interface MenuService {
     /** Promociones vigentes, destacados, reseñas y datos del negocio en una sola llamada. */
     HomeResponse home();
 
-    /** Solo productos disponibles. Cualquier filtro en null se ignora. */
     PageResponse<ProductoResumenResponse> buscar(String categoriaSlug, String etiquetaSlug, String texto, Pageable pageable);
 
     ProductoDetalleResponse detalle(String slug);

@@ -1,0 +1,28 @@
+<section class="toasts" aria-label="Notificaciones">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <article class="toast" [class]="'toast toast--' + toast.kind" [attr.role]="toast.kind === 'error' ? 'alert' : 'status'">
+      <span class="toast__icon">
+        <lucide-icon [img]="iconFor(toast.kind)" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+      </span>
+
+      <div class="toast__body">
+        <p class="toast__title">{{ toast.title }}</p>
+        @if (toast.message) {
+          <p class="toast__message">{{ toast.message }}</p>
+        }
+      </div>
+
+      <button type="button" class="toast__close" (click)="toastService.dismiss(toast.id)" aria-label="Cerrar notificación">
+        <lucide-icon [img]="CloseIcon" [size]="16" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+      </button>
+
+      @if (toast.duration > 0) {
+        <span
+          class="toast__progress"
+          [style.animation-duration.ms]="toast.duration"
+          (animationend)="toastService.dismiss(toast.id)"
+        ></span>
+      }
+    </article>
+  }
+</section>

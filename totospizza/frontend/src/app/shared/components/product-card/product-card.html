@@ -1,0 +1,42 @@
+<article class="card">
+  <a class="card__media" [routerLink]="['/menu', producto().slug]" tabindex="-1" aria-hidden="true">
+    @if (imagen(); as src) {
+      <img [src]="src" alt="" loading="lazy" />
+    } @else {
+      <span class="card__placeholder"><lucide-icon [img]="PizzaIcon" [size]="56" [strokeWidth]="1" aria-hidden="true"></lucide-icon></span>
+    }
+    @if (producto().destacado) {
+      <span class="card__badge">Favorito</span>
+    }
+  </a>
+
+  @if (conInfo()) {
+    <button type="button" class="card__info" (click)="verInformacion()" [attr.aria-label]="'Alérgenos e información de ' + producto().nombre">
+      <lucide-icon [img]="InfoIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+    </button>
+  }
+
+  <div class="card__body">
+    <h3 class="card__title">
+      <a [routerLink]="['/menu', producto().slug]" class="card__link">{{ producto().nombre }}</a>
+    </h3>
+    <p class="card__desc">{{ producto().descripcion }}</p>
+
+
+    <div class="card__footer">
+      <div class="card__precio">
+        <p class="card__price"><small>Desde</small> {{ precio() }}</p>
+      </div>
+
+      <button type="button" class="card__add" [class.is-ok]="agregado()" [disabled]="ocupado()" (click)="agregar()" [attr.aria-label]="'Agregar ' + producto().nombre + ' al carrito'" [attr.aria-busy]="ocupado()">
+        @if (ocupado()) {
+          <lucide-icon class="card__spin" [img]="LoadingIcon" [size]="20" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+        } @else if (agregado()) {
+          <lucide-icon [img]="CheckIcon" [size]="20" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
+        } @else {
+          <lucide-icon [img]="PlusIcon" [size]="20" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
+        }
+      </button>
+    </div>
+  </div>
+</article>

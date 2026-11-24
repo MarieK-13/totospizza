@@ -1,324 +1,305 @@
 @use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
 
-.order-now-section {
-  background-color: $color-crema-masa;
-  padding: 48px 0 56px;
-
-  &__container {
-    max-width: $container-max;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
+:host {
+  display: block;
 }
 
-// Encabezado
-.order-now-header {
+// Deja visible el título bajo el header fijo al llegar desde el botón flotante
+.section-anchor {
+  scroll-margin-top: 4rem;
+  outline: none;
+}
+
+.tabs {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  margin-bottom: 32px;
-
-  &__title {
-    font-family: $font-titulos;
-    font-size: clamp(30px, 3.6vw, 42px);
-    font-weight: 400;
-    line-height: 1.12;
-    color: $color-cafe-tostado;
-    margin: 6px 0 0;
-  }
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: $space-2;
+  margin-bottom: $space-6;
 }
 
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-family: $font-cuerpo;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: $color-verde-albahaca;
-
-  &__dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: $color-rojo-tomate;
-  }
-}
-
-.btn-outline-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 22px;
-  border-radius: 999px;
-  border: 1px solid $color-cafe-tostado;
-  background-color: $color-blanco;
-  color: $color-cafe-tostado;
-  font-family: $font-cuerpo;
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
-
-  &:hover {
-    background-color: $color-cafe-tostado;
-    color: $color-blanco;
-    transform: translateY(-1px);
-  }
-}
-
-// Grid de 3 Tarjetas
-.combos-grid {
+.builder {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-  animation: fadeCombos 0.3s ease;
+  gap: $space-5;
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: stretch;
+  }
 }
 
-.combo-card {
-  background-color: $color-blanco;
-  border: 1px solid rgba($color-arena, 0.85);
-  border-radius: 18px;
+// ---- Producto principal ----
+.showcase {
+  position: relative;
+  min-height: 22rem;
+  margin: 0;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 6px 20px rgba($color-cafe-tostado, 0.04);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 26px rgba($color-cafe-tostado, 0.08);
-  }
-
-  &__media {
-    height: 225px;
-    overflow: hidden;
-    background-color: $color-beige-horno;
-  }
+  border-radius: $radius-xl;
+  background-color: $color-cafe-tostado;
 
   &__img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
-    transition: transform 0.35s ease;
+    opacity: 0;
+    transform: scale(1.06);
+    transition:
+      opacity 500ms $ease-out,
+      transform 900ms $ease-out;
 
-    .combo-card:hover & {
-      transform: scale(1.04);
+    &.is-active {
+      opacity: 1;
+      transform: none;
     }
   }
 
-  &__body {
-    padding: 22px 24px 24px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba($color-cafe-tostado, 0.88), rgba($color-cafe-tostado, 0) 62%);
+  }
+
+  &__caption {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 1;
+    padding: $space-6;
+    color: $color-text-inverse;
   }
 
   &__title {
+    margin: 0;
     font-family: $font-titulos;
-    font-size: 22px;
+    font-size: clamp(1.75rem, 2.6vw, 2.25rem);
     font-weight: 400;
-    line-height: 1.22;
-    color: $color-cafe-tostado;
-    margin: 0 0 8px;
+    line-height: 1.15;
   }
 
-  &__subtitle {
-    font-family: $font-cuerpo;
-    font-size: 13px;
-    line-height: 1.48;
-    color: $color-marron-suave;
-    margin: 0 0 16px;
+  &__text {
+    max-width: 28rem;
+    margin: $space-2 0 $space-3;
+    font-size: 0.9375rem;
+    line-height: 1.5rem;
+    opacity: 0.9;
   }
 
-  &__footer {
+  &__price {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: auto;
-    padding-top: 16px;
-  }
-}
+    align-items: baseline;
+    gap: $space-2;
+    margin: 0;
+    font-family: $font-datos;
+    font-size: 1.5rem;
+    font-weight: $weight-semibold;
 
-// Lista de opciones interactivas
-.options-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.option-row {
-  width: 100%;
-  background: transparent;
-  border: 0;
-  padding: 4px 6px;
-  margin: 0 -6px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 0.16s ease;
-
-  &:hover {
-    background-color: rgba($color-crema-masa, 0.9);
-  }
-
-  &__radio {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 1.5px solid $color-arena;
-    background-color: $color-blanco;
-    flex-shrink: 0;
-    position: relative;
-    transition: border-color 0.18s ease;
-
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 2.5px;
-      border-radius: 50%;
-      background-color: $color-rojo-tomate;
-      transform: scale(0);
-      transition: transform 0.18s ease;
+    small {
+      font-family: $font-cuerpo;
+      font-size: 0.75rem;
+      font-weight: $weight-semibold;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.8;
     }
   }
+}
 
-  &__label {
-    font-family: $font-cuerpo;
-    font-size: 12px;
-    line-height: 1.4;
-    color: $color-marron-suave;
-    flex: 1;
-    transition: color 0.18s ease, font-weight 0.18s ease;
+// ---- Panel de opciones ----
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  padding: $space-5;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-xl;
+  background-color: $color-background-raised;
+  box-shadow: $shadow-md;
+
+  @include up(md) {
+    padding: $space-6;
   }
 
-  &__extra {
-    font-family: $font-cuerpo;
-    font-size: 11px;
-    font-weight: 700;
-    color: $color-verde-albahaca;
-    white-space: nowrap;
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__step {
+    padding: $space-1 $space-3;
+    border-radius: $radius-pill;
+    background-color: $color-brand-primary;
+    color: $color-text-inverse;
+    font-size: 0.75rem;
+    font-weight: $weight-bold;
+    letter-spacing: 0.06em;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: $font-titulos;
+    font-size: 1.5rem;
+    font-weight: 400;
+  }
+
+  &__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-4;
+    margin-top: auto;
+    padding-top: $space-5;
+    border-top: $border-width solid $color-border-default;
+  }
+
+  &__total {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+
+    small {
+      color: $color-text-secondary;
+      font-size: 0.75rem;
+      font-weight: $weight-semibold;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    strong {
+      font-family: $font-datos;
+      font-size: 1.75rem;
+      font-weight: $weight-semibold;
+      line-height: 2rem;
+    }
+  }
+}
+
+.options {
+  display: grid;
+  gap: $space-3;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include up(md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-4 $space-3 $space-3;
+  border: 2px solid $color-border-default;
+  border-radius: $radius-lg;
+  background-color: $color-background-raised;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  @include transition((border-color, box-shadow, transform, background-color));
+  @include focus-ring;
+
+  &:hover {
+    border-color: $color-border-strong;
+    transform: translateY(-2px);
   }
 
   &.is-selected {
-    .option-row__radio {
-      border-color: $color-rojo-tomate;
-
-      &::after {
-        transform: scale(1);
-      }
-    }
-
-    .option-row__label {
-      color: $color-cafe-tostado;
-      font-weight: 700;
-    }
-  }
-}
-
-// Precio y botón agregar
-.price-box {
-  display: flex;
-  flex-direction: column;
-
-  &__label {
-    font-family: $font-cuerpo;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    color: $color-marron-suave;
-    margin-bottom: 2px;
+    border-color: $color-brand-primary;
+    background-color: $tint-rojo-8;
+    box-shadow: 0 0 0 4px rgba($color-brand-primary, 0.12);
   }
 
-  &__amount {
-    font-family: $font-cuerpo;
-    font-size: 20px;
-    font-weight: 800;
-    color: $color-cafe-tostado;
-    line-height: 1;
-  }
-}
-
-.btn-add-circle {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 0;
-  background-color: $color-rojo-tomate;
-  color: $color-blanco;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba($color-rojo-tomate, 0.25);
-  transition: transform 0.18s ease, background-color 0.2s ease;
-
-  &:hover {
-    background-color: #b72525;
-    transform: scale(1.08);
+  &__img {
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-bottom: $space-1;
+    border-radius: $radius-pill;
+    object-fit: cover;
+    background-color: $color-background-alt;
   }
 
-  &.is-added {
-    background-color: $color-verde-albahaca;
-    box-shadow: 0 4px 10px rgba($color-verde-albahaca, 0.28);
+  &__name {
+    font-size: 0.875rem;
+    font-weight: $weight-bold;
+    line-height: 1.25rem;
   }
-}
 
-// Dots de paginación inferior
-.carousel-dots {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-top: 28px;
-
-  &__dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 999px;
-    border: 0;
-    padding: 0;
-    background-color: $color-arena;
-    cursor: pointer;
-    transition: width 0.25s ease, background-color 0.25s ease;
-
-    &.is-active {
-      width: 28px;
-      background-color: $color-rojo-tomate;
-    }
+  &__detail {
+    color: $color-text-secondary;
+    font-size: 0.75rem;
+    line-height: 1.125rem;
   }
-}
 
-@keyframes fadeCombos {
-  from {
-    opacity: 0.55;
-    transform: translateY(4px);
+  &__extra {
+    margin-top: auto;
+    padding-top: $space-1;
+    color: $color-brand-secondary;
+    font-family: $font-datos;
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
   }
-  to {
+
+  &__check {
+    position: absolute;
+    top: $space-2;
+    right: $space-2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: $radius-pill;
+    background-color: $color-brand-primary;
+    color: $color-text-inverse;
+    opacity: 0;
+    transform: scale(0.5);
+    @include transition((opacity, transform), $duration-base);
+  }
+
+  &.is-selected &__check {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
+  }
+
+  &__badge {
+    position: absolute;
+    top: -0.625rem;
+    left: 50%;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem $space-2;
+    border-radius: $radius-pill;
+    background-color: $color-brand-accent;
+    color: $color-cafe-tostado;
+    font-size: 0.625rem;
+    font-weight: $weight-bold;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transform: translateX(-50%);
+
+    &--new {
+      background-color: $color-brand-secondary;
+      color: $color-text-inverse;
+    }
   }
 }
 
-// Responsivo
-@media (max-width: 980px) {
-  .combos-grid {
-    grid-template-columns: 1fr;
+@include reduced-motion {
+  .showcase__img,
+  .option {
+    transition: none;
   }
-}
 
-@media (max-width: 640px) {
-  .order-now-header {
-    flex-direction: column;
-    align-items: flex-start;
+  .option:hover {
+    transform: none;
   }
 }

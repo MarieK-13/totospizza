@@ -1,0 +1,31 @@
+<header class="page-header">
+  @if (breadcrumbs().length) {
+    <nav class="page-header__crumbs" aria-label="Ruta de navegación">
+      <ol>
+        @for (crumb of breadcrumbs(); track crumb.label; let last = $last) {
+          <li>
+            @if (crumb.route && !last) {
+              <a [routerLink]="crumb.route">{{ crumb.label }}</a>
+              <lucide-icon [img]="SeparatorIcon" [size]="14" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+            } @else {
+              <span [attr.aria-current]="last ? 'page' : null">{{ crumb.label }}</span>
+            }
+          </li>
+        }
+      </ol>
+    </nav>
+  }
+
+  <div class="page-header__row">
+    <div class="page-header__text">
+      <h1 class="page-header__title">{{ title() }}</h1>
+      @if (subtitle()) {
+        <p class="page-header__subtitle">{{ subtitle() }}</p>
+      }
+    </div>
+
+    <div class="page-header__actions">
+      <ng-content select="[pageActions]" />
+    </div>
+  </div>
+</header>

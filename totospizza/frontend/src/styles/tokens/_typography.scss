@@ -1,0 +1,73 @@
+
+// 1. Familias
+$font-titulos: 'DM Serif Display', 'Georgia', serif;                     // Títulos y momentos de marca (400)
+$font-cuerpo:  'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif; // Cuerpo e interfaz (400-700)
+$font-datos:   'Outfit', 'Montserrat', system-ui, sans-serif;            // Chips, badges, contadores (600)
+$font-acento:  'Fraunces', 'Georgia', serif;                             // Frases promocionales destacadas (700)
+
+// 2. Pesos
+$weight-regular:  400;
+$weight-medium:   500;
+$weight-semibold: 600;
+$weight-bold:     700;
+
+// 3. Escala. Mobile primero
+$type-scale: (
+  'h1': (
+    font: $font-titulos, weight: $weight-regular,
+    size: 2.25rem, line: 2.625rem,
+    size-md: 3rem, line-md: 3.375rem,
+    tracking: -0.01em,
+  ),
+  'h2': (
+    font: $font-titulos, weight: $weight-regular,
+    size: 1.75rem, line: 2.125rem,
+    size-md: 2rem, line-md: 2.375rem,
+    tracking: -0.005em,
+  ),
+  'h3': (
+    font: $font-titulos, weight: $weight-regular,
+    size: 1.5rem, line: 1.875rem,
+  ),
+  'subtitulo': (
+    font: $font-cuerpo, weight: $weight-semibold,
+    size: 1.125rem, line: 1.625rem,
+  ),
+  'cuerpo': (
+    font: $font-cuerpo, weight: $weight-regular,
+    size: 1rem, line: 1.5rem,
+  ),
+  'cuerpo-sm': (
+    font: $font-cuerpo, weight: $weight-regular,
+    size: 0.875rem, line: 1.25rem,
+  ),
+  'precio': (
+    font: $font-cuerpo, weight: $weight-bold,
+    size: 1.25rem, line: 1.75rem,
+  ),
+  'boton': (
+    font: $font-cuerpo, weight: $weight-semibold,
+    size: 0.875rem, line: 1.25rem,
+  ),
+  'etiqueta': (
+    font: $font-cuerpo, weight: $weight-semibold,
+    size: 0.75rem, line: 1rem,
+    tracking: 0.06em, uppercase: true,
+  ),
+  // Outfit: microinteracciones, badges y datos
+  'dato': (
+    font: $font-datos, weight: $weight-semibold,
+    size: 0.875rem, line: 1.25rem,
+  ),
+  'dato-sm': (
+    font: $font-datos, weight: $weight-semibold,
+    size: 0.75rem, line: 1rem,
+  ),
+  'acento': (
+    font: $font-acento, weight: $weight-bold,
+    size: 1.25rem, line: 1.625rem,
+    size-md: 1.5rem, line-md: 1.875rem,
+  ),
+);
+
+$font-size-min: 0.75rem; 

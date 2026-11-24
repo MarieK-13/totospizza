@@ -1,0 +1,115 @@
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+:host {
+  --kpi-color: #{$color-cafe-tostado};
+  --kpi-tint: #{$tint-cafe-10};
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  padding: $space-5;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-lg;
+  background-color: $color-background-raised;
+  box-shadow: $shadow-sm;
+  @include transition((box-shadow, transform), $duration-base);
+
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+  }
+}
+
+:host(.kpi--rojo) {
+  --kpi-color: #{$color-brand-primary};
+  --kpi-tint: #{$tint-rojo-8};
+}
+
+:host(.kpi--verde) {
+  --kpi-color: #{$color-brand-secondary};
+  --kpi-tint: #{$tint-verde-10};
+}
+
+:host(.kpi--amarillo) {
+  --kpi-color: #8a6a00;
+  --kpi-tint: #{$tint-amarillo-24};
+}
+
+.kpi {
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $space-3;
+  }
+
+  &__label {
+    margin: 0;
+    color: $color-text-secondary;
+    font-size: 0.75rem;
+    font-weight: $weight-semibold;
+    letter-spacing: 0.08em;
+    line-height: 1rem;
+    text-transform: uppercase;
+  }
+
+  &__icon {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: $radius-md;
+    background-color: var(--kpi-tint);
+    color: var(--kpi-color);
+  }
+
+  &__value {
+    margin: 0;
+    color: $color-text-primary;
+    font-family: $font-datos;
+    font-size: clamp(1.75rem, 2.4vw, 2.25rem);
+    font-weight: $weight-semibold;
+    line-height: 1.1;
+  }
+
+  &__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2;
+    min-height: 1.5rem;
+  }
+
+  &__trend {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    padding: 0.125rem $space-2;
+    border-radius: $radius-pill;
+    background-color: $tint-verde-10;
+    color: $color-success;
+    font-family: $font-datos;
+    font-size: 0.75rem;
+    font-weight: $weight-semibold;
+
+    &.is-down {
+      background-color: $tint-rojo-8;
+      color: $color-error;
+    }
+  }
+
+  &__hint {
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+  }
+}
+
+@include reduced-motion {
+  :host,
+  :host:hover {
+    transform: none;
+  }
+}

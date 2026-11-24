@@ -1,77 +1,59 @@
-<section class="recommended-section" aria-label="Recomendado para ti">
-  <div class="recommended-section__container">
-    <!-- Cabecera superior -->
-    <header class="recommended-header">
-      <div class="recommended-header__info">
-        <span class="eyebrow">
-          <span class="eyebrow__dot"></span>
-          LOS FAVORITOS DE LA CASA
-        </span>
-        <h2 class="recommended-header__title">Recomendado para ti</h2>
-        <p class="recommended-header__subtitle">
-          Recetas que ya conquistaron Ica. Elige tu tamaño, personaliza los ingredientes y disfruta recién salido del horno.
-        </p>
+<section class="band band--white" aria-labelledby="recomendado-titulo">
+  <div class="wrap">
+    <header class="section-head">
+      <div>
+        <span class="kicker">Los favoritos de la casa</span>
+        <h2 id="recomendado-titulo" class="section-head__title">Recomendado para ti</h2>
+        <p class="section-head__lead">Recetas que ya conquistaron Ica. Desliza y elige la tuya.</p>
       </div>
 
-      <a routerLink="/menu" class="btn-outline-pill">
-        <span>Ver todas las pizzas</span>
-        <lucide-icon [img]="ArrowRightIcon" [size]="16" [strokeWidth]="1.8"></lucide-icon>
-      </a>
+      <div class="controls">
+        <button type="button" class="arrow" (click)="mover(-1)" [disabled]="!canPrev()" aria-label="Pizzas anteriores">
+          <lucide-icon [img]="PrevIcon" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+        </button>
+        <button type="button" class="arrow" (click)="mover(1)" [disabled]="!canNext()" aria-label="Pizzas siguientes">
+          <lucide-icon [img]="NextIcon" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+        </button>
+        <a routerLink="/menu" class="btn btn--secondary">
+          Ver todas
+          <lucide-icon [img]="ArrowRightIcon" [size]="16" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+        </a>
+      </div>
     </header>
 
-    <!-- Grid / Carrusel de 4 Tarjetas por página -->
-    <div class="pizzas-grid">
-      @for (p of productosVisibles(); track p.nombre) {
-        <article class="pizza-card">
-          <div class="pizza-card__media">
-            <img [src]="p.imagen" [alt]="p.nombre" class="pizza-card__img" />
-            <span class="pizza-card__badge">{{ p.etiqueta }}</span>
+    <div #track class="track" (scroll)="onScroll()" tabindex="0" role="region" aria-label="Pizzas recomendadas">
+      @for (p of pizzas; track p.nombre) {
+        <article class="card">
+          <div class="card__media">
+            <img [src]="p.imagen" [alt]="p.nombre" loading="lazy" />
+            <span class="card__badge">{{ p.etiqueta }}</span>
           </div>
 
-          <div class="pizza-card__body">
-            <h3 class="pizza-card__title">{{ p.nombre }}</h3>
-
-            <div class="pizza-card__rating" [attr.aria-label]="'Calificación ' + p.rating + ' de 5'">
-              <div class="stars">
-                @for (s of estrellas; track s) {
-                  <lucide-icon [img]="StarIcon" [size]="13" [strokeWidth]="0" class="star-icon"></lucide-icon>
-                }
-              </div>
-              <span class="rating-value">{{ p.rating }}</span>
+          <div class="card__body">
+            <div class="card__meta">
+              <p class="card__category">{{ p.categoria }}</p>
+              <p class="card__rating" [attr.aria-label]="'Valoración ' + p.rating.toFixed(1) + ' de 5'">
+                <span class="card__star" aria-hidden="true">★</span>{{ p.rating.toFixed(1) }}
+              </p>
             </div>
+            <h3 class="card__title">{{ p.nombre }}</h3>
+            <p class="card__desc">{{ p.detalle }}</p>
 
-            <p class="pizza-card__desc">{{ p.detalle }}</p>
+            <ul class="card__tags" aria-label="Alérgenos y dieta">
+              @for (t of p.tags; track t.label) {
+                <li [class]="'tag tag--' + t.tipo">{{ t.label }}</li>
+              }
+            </ul>
 
-            <div class="pizza-card__footer">
-              <div class="price-box">
-                <span class="price-box__label">DESDE</span>
-                <strong class="price-box__amount">S/ {{ p.precio }}</strong>
-              </div>
-
-              <button
-                type="button"
-                class="btn-add-circle"
-                [attr.aria-label]="'Agregar ' + p.nombre + ' al pedido'"
-              >
-                <lucide-icon [img]="PlusIcon" [size]="18" [strokeWidth]="2.2"></lucide-icon>
+            <div class="card__foot">
+              <p class="card__price"><small>Desde</small>S/ {{ p.precio.toFixed(2) }}</p>
+              <button type="button" class="btn btn--primary btn--sm" (click)="agregar(p)" [attr.aria-label]="'Agregar ' + p.nombre + ' al pedido'">
+                <lucide-icon [img]="PlusIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                Añadir
               </button>
             </div>
           </div>
         </article>
-      }
-    </div>
-
-    <!-- Paginación inferior tipo píldora -->
-    <div class="carousel-dots" role="tablist" aria-label="Páginas de recomendaciones">
-      @for (idx of paginasIndices(); track idx) {
-        <button
-          type="button"
-          class="carousel-dots__dot"
-          [class.is-active]="idx === paginaActual()"
-          (click)="irAPagina(idx)"
-          [attr.aria-label]="'Ver página ' + (idx + 1)"
-          [attr.aria-selected]="idx === paginaActual()"
-        ></button>
       }
     </div>
   </div>
