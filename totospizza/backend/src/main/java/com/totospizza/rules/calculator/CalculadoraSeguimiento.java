@@ -27,15 +27,17 @@ public final class CalculadoraSeguimiento {
                                                 Entrega entrega, Instant ahora) {
         int nivel = nivel(pedido.getEstado());
         boolean delivery = pedido.getTipoEntrega() == TipoEntrega.DELIVERY;
-        String tercera = delivery ? "En camino" : "Listo para recoger";
+        // En delivery, LISTO todavía espera al motorizado: se muestra así hasta que sale (EN_CAMINO).
+        String tercera = !delivery ? "Listo para recoger"
+                : pedido.getEstado() == EstadoPedido.LISTO ? "Esperando motorizado" : "En camino";
 
         List<EtapaSeguimientoResponse> etapas = new ArrayList<>();
-        etapas.add(etapa("Pedido confirmado", 1, nivel, pedido.getConfirmadoEn()));
+        Instant fechaTercera = primeraFecha(historial, delivery ? Set.of(EstadoPedido.EN_CAMINO) : Set.of(EstadoPedido.LISTO));
+        etapas.add(etapa("Pedido confirmado", 1, nivel, pedido.getConfirmadoEn(), true));
         etapas.add(etapa("En preparación", 2, nivel,
-                primeraFecha(historial, Set.of(EstadoPedido.EN_PREPARACION, EstadoPedido.EN_HORNO))));
-        etapas.add(etapa(tercera, 3, nivel,
-                primeraFecha(historial, delivery ? Set.of(EstadoPedido.EN_CAMINO) : Set.of(EstadoPedido.LISTO))));
-        etapas.add(etapa("Entregado", 4, nivel, pedido.getEntregadoEn()));
+                primeraFecha(historial, Set.of(EstadoPedido.EN_PREPARACION, EstadoPedido.EN_HORNO)), false));
+        etapas.add(etapa(tercera, 3, nivel, fechaTercera, fechaTercera != null));
+        etapas.add(etapa("Entregado", 4, nivel, pedido.getEntregadoEn(), true));
 
         boolean enCurso = nivel >= 1 && nivel <= 3;
         Instant entregaEstimada = entregaEstimada(pedido);
@@ -49,8 +51,13 @@ public final class CalculadoraSeguimiento {
                 pedido.isGarantiaAplicada());
     }
 
-    private static EtapaSeguimientoResponse etapa(String nombre, int numero, int nivel, Instant fecha) {
-        boolean completada = nivel > numero || (numero == 4 && nivel == 4);
+    /**
+     * {@code alcanzarCompleta}: la etapa es un hecho (se confirmó, quedó listo, salió) y queda completa
+     * en cuanto se alcanza; las que son un proceso (en preparación) se completan al pasar a la siguiente.
+     */
+    private static EtapaSeguimientoResponse etapa(String nombre, int numero, int nivel, Instant fecha,
+                                                  boolean alcanzarCompleta) {
+        boolean completada = nivel > numero || (nivel == numero && alcanzarCompleta);
         boolean actual = nivel == numero && numero < 4;
         return new EtapaSeguimientoResponse(nombre, completada, actual, fecha);
     }

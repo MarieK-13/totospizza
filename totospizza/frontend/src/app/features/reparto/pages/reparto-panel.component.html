@@ -1,179 +1,299 @@
-<div class="staff-shell">
-  <div *ngIf="toastMensaje() as msg" class="toast-banner">{{ msg }}</div>
-
-  <!-- TOPBAR -->
-  <header class="staff-topbar">
-    <div class="staff-topbar__left">
-      <div class="brand-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M12 2L2 19h20L12 2z" />
-          <circle cx="12" cy="13" r="1.4" />
-          <circle cx="9.5" cy="16" r="1" />
-          <circle cx="14.5" cy="16" r="1" />
-        </svg>
-        <div>
-          <strong>TOTO'S</strong>
-          <span>PIZZA</span>
-        </div>
-      </div>
-
-      <span class="staff-topbar__divider"></span>
-
-      <div class="staff-topbar__module">
-        <strong>Mis Entregas</strong>
-        <span>{{ motorizadoNombre() }} · Moto · {{ totalAsignadas() }} entregas asignadas</span>
-      </div>
+<div class="op">
+  <section class="op-cabecera">
+    <div>
+      <span class="op-cabecera__eyebrow">
+        <span class="op-vivo" [class.is-caido]="sinConexion()" aria-hidden="true"></span>
+        {{ sinConexion() ? 'Sin conexión con el servidor' : textoActualizado() }}
+      </span>
+      <h2 class="op-cabecera__titulo">{{ saludo }}</h2>
+      <p class="op-cabecera__subtitulo">
+        Recoge en el mostrador, sal a reparto y confirma cada entrega con el PIN del cliente.
+        @if (resumen(); as r) {
+          @if (r.entregadasHoy) {
+            Hoy llevas <strong>{{ r.kmHoy }} km</strong>@if (r.minutosPromedioRuta !== null) { y tardas <strong>{{ r.minutosPromedioRuta }} min</strong> en promedio por entrega}.
+          }
+        }
+      </p>
     </div>
 
-    <div class="staff-topbar__right">
-      <span class="shift-live">
-        <span class="shift-live__dot"></span>
-        Turno activo
-      </span>
+    <ul class="op-resumen" aria-label="Resumen de tu jornada">
+      <li class="op-resumen__item tono-amarillo" [class.is-cero]="!porSalir().length">
+        <lucide-icon [img]="Icons.PackageCheck" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <strong>{{ porSalir().length }}</strong>
+        <span>por salir</span>
+      </li>
+      <li class="op-resumen__item tono-rojo" [class.is-cero]="!enCamino().length">
+        <lucide-icon [img]="Icons.Bike" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <strong>{{ enCamino().length }}</strong>
+        <span>en camino</span>
+      </li>
+      <li class="op-resumen__item tono-verde">
+        <lucide-icon [img]="Icons.CircleCheck" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <strong>{{ resumen()?.entregadasHoy ?? '—' }}</strong>
+        <span>entregadas hoy</span>
+      </li>
+      <li class="op-resumen__item tono-beige" [attr.title]="resumen()?.bonoPorEntrega ? formatearSoles(resumen()!.bonoPorEntrega) + ' por entrega' : null">
+        <lucide-icon [img]="Icons.Wallet" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <strong>{{ bonosHoy() }}</strong>
+        <span>bono de hoy</span>
+      </li>
+    </ul>
+  </section>
 
-      <div class="clock-block">
-        <strong>{{ horaReloj() }}</strong>
-        <span>{{ fechaActualTexto() }}</span>
-      </div>
-
-      <button type="button" class="btn-logout" (click)="cerrarSesion()">
-        Cerrar sesión
+  @if (sinConexion()) {
+    <div class="op-aviso" role="alert">
+      No pudimos actualizar tus entregas. Se reintentará solo cada 15 segundos.
+      <button type="button" (click)="reintentar()">
+        <lucide-icon [img]="Icons.RefreshCw" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+        Reintentar ahora
       </button>
     </div>
-  </header>
+  }
 
-  <main class="staff-main">
-    <!-- HERO Y MÉTRICAS DERECHAS -->
-    <section class="page-hero">
-      <div>
-        <span class="page-hero__eyebrow">REPARTO · {{ motorizadoNombre() | uppercase }}</span>
-        <h1 class="page-hero__title">Entregas asignadas</h1>
-        <p class="page-hero__subtitle">
-          Revisa la dirección, contacta al cliente y actualiza el estado de cada entrega.
-        </p>
-      </div>
-
-      <div class="reparto-stats">
-        <div>
-          <strong>{{ totalAsignadas() }}</strong>
-          <span>Asignadas</span>
-        </div>
-        <div>
-          <strong>{{ totalEnCamino() }}</strong>
-          <span>En camino</span>
-        </div>
-        <div>
-          <strong>{{ totalPorSalir() }}</strong>
-          <span>Por salir</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- BANNER DE AVISO DE RUTA ACTIVA -->
-    <div class="route-alert-bar" *ngIf="entregaActivaEnCamino() as activa">
-      <span>
-        🛵 Una entrega en camino. Completa el pedido <strong>{{ activa.codigoPedido }}</strong> antes de iniciar el siguiente reparto.
-      </span>
-      <strong>{{ zonaAsignada() }}</strong>
+  @if (backendDesactualizado()) {
+    <div class="op-aviso" role="alert">
+      El servidor está corriendo una versión anterior del backend: tu jornada y la hora prometida no llegan.
+      Detén el backend y vuelve a iniciarlo para cargar la versión nueva.
     </div>
+  }
 
-    <!-- LISTA DE TARJETAS DE ENTREGA -->
-    <section class="deliveries-stack">
-      <article class="delivery-card" *ngFor="let e of entregas()">
-        <!-- Cabecera de orden -->
-        <div class="delivery-card__header">
-          <div class="delivery-card__title-group">
-            <span class="order-label">{{ e.ordenNumero }}</span>
-            <span class="order-sep">|</span>
-            <strong class="order-code">{{ e.codigoPedido }}</strong>
-            <span
-              class="status-pill"
-              [class.status-pill--camino]="e.estado === 'EN_CAMINO'"
-              [class.status-pill--pendiente]="e.estado === 'PENDIENTE_SALIDA'"
-            >
-              {{ e.estado === 'EN_CAMINO' ? 'En camino' : 'Pendiente de salida' }}
-            </span>
+  <section class="op-tablero op-tablero--tres" [attr.aria-busy]="cargando()">
+    @for (col of columnas(); track col.etapa) {
+      <section [class]="'op-columna tono-' + col.tono" [attr.aria-labelledby]="'col-' + col.etapa">
+        <header class="op-columna__cabecera">
+          <span class="op-columna__icono" aria-hidden="true">
+            <lucide-icon [img]="iconoDe(col.etapa)" [size]="18" [strokeWidth]="1.8"></lucide-icon>
+          </span>
+          <div class="op-columna__titulos">
+            <h2 [id]="'col-' + col.etapa">{{ col.titulo }}</h2>
+            <span>{{ col.ayuda }}</span>
           </div>
+          <span class="op-columna__conteo" [attr.aria-label]="col.total + ' entregas'">{{ col.total }}</span>
+        </header>
 
-          <span class="delivery-card__time">{{ e.horaInfoSuperior }}</span>
+        <div class="op-columna__tickets">
+          @switch (col.etapa) {
+            @case ('por-salir') {
+              @for (e of porSalir(); track e.id) {
+                <article class="op-ticket" [class.is-nuevo]="e.esNueva">
+                  <header class="op-ticket__cabecera">
+                    <div>
+                      <strong class="op-ticket__numero">#{{ e.numero }}</strong>
+                      <span class="op-ticket__sub">Asignada {{ e.horaAsignada }} · {{ e.totalUnidades }} {{ e.totalUnidades === 1 ? 'unidad' : 'unidades' }}</span>
+                    </div>
+                    @if (e.distanciaKm !== null) {
+                      <span class="op-entrega op-entrega--delivery">
+                        <lucide-icon [img]="Icons.Route" [size]="13" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                        {{ e.distanciaKm }} km
+                      </span>
+                    }
+                  </header>
+
+                  @if (e.horaPrometida) {
+                    <p class="op-estado" [class.op-estado--alerta]="e.ritmo !== 'a-tiempo'">
+                      <lucide-icon [img]="Icons.Clock" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      Entregar antes de las {{ e.horaPrometida }}
+                      <small>{{ e.textoPromesa }}</small>
+                    </p>
+                  }
+
+                  <ng-container [ngTemplateOutlet]="datosCliente" [ngTemplateOutletContext]="{ $implicit: e }" />
+
+                  <ul class="op-lineas op-lineas--compactas">
+                    @for (l of e.lineas; track $index) {
+                      <li class="op-linea">
+                        <span class="op-linea__cantidad">{{ l.cantidad }}×</span>
+                        <div class="op-linea__texto">
+                          <strong>{{ l.nombre }}</strong>
+                          @if (l.descripcion) { <span class="op-linea__detalle">{{ l.descripcion }}</span> }
+                        </div>
+                      </li>
+                    }
+                  </ul>
+
+                  <footer class="op-ticket__acciones">
+                    <button type="button" class="op-btn op-btn--rojo" [disabled]="ocupado() !== null" (click)="salirAReparto(e)">
+                      <lucide-icon [img]="Icons.Bike" [size]="17" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      {{ ocupado() === e.id ? 'Saliendo…' : 'Salir a reparto' }}
+                    </button>
+                  </footer>
+                </article>
+              } @empty {
+                <app-estado-vacio [cargando]="cargando()" [compacto]="true" [icono]="Icons.PackageCheck" titulo="Sin entregas por recoger"
+                  mensaje="Cuando el despachador te asigne un pedido aparece aquí y te llega una notificación." />
+              }
+            }
+
+            @case ('en-camino') {
+              @for (e of enCamino(); track e.id) {
+                <article class="op-ticket" [class]="'op-ticket ritmo-' + e.ritmo">
+                  <header class="op-ticket__cabecera">
+                    <div>
+                      <strong class="op-ticket__numero">#{{ e.numero }}</strong>
+                      <span class="op-ticket__sub">Saliste {{ e.horaSalida ?? '—' }}@if (e.minutosEnRuta !== null) { · {{ e.minutosEnRuta }} min en ruta }</span>
+                    </div>
+                    @if (e.distanciaKm !== null) {
+                      <span class="op-entrega op-entrega--delivery">
+                        <lucide-icon [img]="Icons.Route" [size]="13" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                        {{ e.distanciaKm }} km
+                      </span>
+                    }
+                  </header>
+
+                  @if (e.horaPrometida) {
+                    <div class="op-tiempo">
+                      <div class="op-tiempo__fila">
+                        <span class="op-tiempo__total">
+                          <lucide-icon [img]="Icons.Clock" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                          {{ e.horaPrometida }}
+                          <small>hora prometida</small>
+                        </span>
+                        <span class="op-tiempo__etapa" [class.op-tiempo__etapa--alerta]="e.ritmo === 'atrasado'">
+                          {{ e.textoPromesa }}
+                        </span>
+                      </div>
+                      <div class="op-tiempo__barra" role="progressbar" aria-label="Avance frente a la hora prometida"
+                        [attr.aria-valuenow]="e.progreso" aria-valuemin="0" aria-valuemax="100">
+                        <span class="op-tiempo__relleno" [style.width.%]="e.progreso"></span>
+                      </div>
+                    </div>
+                  }
+
+                  <ng-container [ngTemplateOutlet]="datosCliente" [ngTemplateOutletContext]="{ $implicit: e }" />
+
+                  @if (e.intentosRestantes === 0) {
+                    <p class="op-instrucciones bloqueo">
+                      <lucide-icon [img]="Icons.ShieldAlert" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                      <span>PIN bloqueado por demasiados intentos. Llama al despachador: puede desbloquearlo o confirmar la entrega.</span>
+                    </p>
+                  } @else if (e.intentosRestantes < 5) {
+                    <p class="op-estado op-estado--alerta">
+                      <lucide-icon [img]="Icons.KeyRound" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      {{ e.intentosRestantes }} {{ e.intentosRestantes === 1 ? 'intento' : 'intentos' }} de PIN restantes
+                    </p>
+                  }
+
+                  <footer class="op-ticket__acciones">
+                    <a class="op-btn op-btn--claro" [href]="e.mapa" target="_blank" rel="noopener noreferrer"
+                      [attr.aria-label]="'Abrir la ruta a ' + e.direccion + ' en Google Maps'">
+                      <lucide-icon [img]="Icons.Navigation" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      <span class="solo-ancho">Ruta</span>
+                    </a>
+                    <a class="op-btn-icono" [href]="'tel:' + e.telefono" [attr.aria-label]="'Llamar a ' + e.cliente">
+                      <lucide-icon [img]="Icons.Phone" [size]="17" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                    </a>
+                    <button type="button" class="op-btn op-btn--verde" [disabled]="ocupado() !== null || e.intentosRestantes === 0"
+                      (click)="abrirConfirmacion(e)">
+                      <lucide-icon [img]="Icons.KeyRound" [size]="17" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      Confirmar entrega
+                    </button>
+                  </footer>
+                  <button type="button" class="no-entregada" [disabled]="ocupado() !== null" (click)="abrirFallida(e)">
+                    <lucide-icon [img]="Icons.CircleX" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                    No se pudo entregar
+                  </button>
+                </article>
+              } @empty {
+                <app-estado-vacio [cargando]="cargando()" [compacto]="true" [icono]="Icons.Navigation" titulo="Nadie en ruta"
+                  mensaje="Al pulsar «Salir a reparto» el pedido pasa aquí y el cliente lo ve en camino." />
+              }
+            }
+
+            @case ('entregadas') {
+              @for (r of realizadas(); track r.id) {
+                <article class="op-ticket realizada">
+                  <header class="op-ticket__cabecera">
+                    <div>
+                      <strong class="op-ticket__numero">#{{ r.numero }}</strong>
+                      <span class="op-ticket__sub">{{ r.cliente }}@if (r.distrito) { · {{ r.distrito }} }</span>
+                    </div>
+                    <span class="sello" [class.sello--tarde]="!r.aTiempo">{{ r.aTiempo ? 'A tiempo' : 'Con garantía' }}</span>
+                  </header>
+                  <p class="realizada__datos">
+                    <span>
+                      <lucide-icon [img]="Icons.CircleCheck" [size]="13" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      {{ r.horaEntregada }}
+                    </span>
+                    @if (r.minutosEnRuta !== null) {
+                      <span>
+                        <lucide-icon [img]="Icons.Clock" [size]="13" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                        {{ r.minutosEnRuta }} min
+                      </span>
+                    }
+                    @if (r.distanciaKm !== null) {
+                      <span>
+                        <lucide-icon [img]="Icons.Route" [size]="13" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                        {{ r.distanciaKm }} km
+                      </span>
+                    }
+                  </p>
+                </article>
+              } @empty {
+                <app-estado-vacio [cargando]="cargando()" [compacto]="true" [icono]="Icons.CircleCheck" titulo="Aún no hay entregas hoy"
+                  mensaje="Cada entrega confirmada con PIN suma a tu bono del día." />
+              }
+            }
+          }
         </div>
+      </section>
+    }
+  </section>
 
-        <!-- Cuerpo dividido: Info cliente izquierda + Mini mapa derecha -->
-        <div class="delivery-card__body">
-          <div class="delivery-info">
-            <div class="delivery-info__client-row">
-              <h3>{{ e.clienteNombre }}</h3>
-              <span class="client-phone">{{ e.clienteTelefono }}</span>
-            </div>
+  <ng-template #datosCliente let-e>
+    <ul class="op-datos">
+      <li>
+        <lucide-icon [img]="Icons.User" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <span><strong>{{ e.cliente }}</strong> · <a [href]="'tel:' + e.telefono">{{ e.telefono }}</a></span>
+      </li>
+      <li>
+        <lucide-icon [img]="Icons.MapPin" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <span>
+          <a [href]="e.mapa" target="_blank" rel="noopener noreferrer">{{ e.direccion }}</a>
+          @if (e.referencia) { <br />{{ e.referencia }} }
+        </span>
+      </li>
+    </ul>
+    @if (e.instrucciones) {
+      <p class="op-instrucciones">
+        <lucide-icon [img]="Icons.MessageSquareWarning" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <span>{{ e.instrucciones }}</span>
+      </p>
+    }
+  </ng-template>
 
-            <p class="delivery-info__address">{{ e.direccion }}</p>
-            <p class="delivery-info__ref">{{ e.referencia }}</p>
+  @if (confirmando(); as e) {
+    <app-panel-modal [titulo]="'Confirmar #' + e.numero" (cerrar)="cerrarConfirmacion()"
+      [descripcion]="'Pide a ' + e.primerNombre + ' el código de 4 dígitos que ve en su seguimiento del pedido.'">
+      <label class="pin">
+        <span class="pin__etiqueta">Código de entrega</span>
+        <input class="pin__campo" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="4" placeholder="••••"
+          [attr.aria-invalid]="!!errorPin()" [attr.aria-describedby]="'pin-ayuda'" [disabled]="e.intentosRestantes === 0"
+          (input)="escribirPin($event)" (keydown.enter)="confirmarEntrega()" />
+      </label>
+      @if (errorPin(); as error) {
+        <p class="pin__error" role="alert">{{ error }}</p>
+      }
+      <p id="pin-ayuda" class="pin__ayuda">
+        @if (e.intentosRestantes === 0) {
+          Se agotaron los intentos. Llama al despachador.
+        } @else {
+          Te quedan {{ e.intentosRestantes }} {{ e.intentosRestantes === 1 ? 'intento' : 'intentos' }}.
+        }
+      </p>
+      <div acciones class="op acciones-modal">
+        <button type="button" class="op-btn op-btn--claro" (click)="cerrarConfirmacion()" [disabled]="ocupado() !== null">Volver</button>
+        <button type="button" class="op-btn op-btn--verde" (click)="confirmarEntrega()"
+          [disabled]="ocupado() !== null || pin().length !== 4 || e.intentosRestantes === 0">
+          {{ ocupado() !== null ? 'Confirmando…' : 'Confirmar entrega' }}
+        </button>
+      </div>
+    </app-panel-modal>
+  }
 
-            <div class="delivery-info__products">
-              <span class="products-label">+ PRODUCTOS</span>
-              <div class="products-inline">
-                <span *ngFor="let prod of e.productos; let last = last">
-                  {{ prod.cantidad }} × {{ prod.nombre }}<ng-container *ngIf="!last"> · </ng-container>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Mapa esquemático referencial -->
-          <div class="mini-map-card">
-            <div class="mini-map-canvas">
-              <div class="street-tag street-tag--top">{{ e.callePrincipalMapa }}</div>
-              <span class="map-pin">📍</span>
-              <div class="street-tag street-tag--bottom">{{ e.calleSecundariaMapa }}</div>
-            </div>
-            <div class="mini-map-footer">
-              <span>Ubicación del cliente</span>
-              <strong>{{ e.distanciaKm }} km desde tienda</strong>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pie con método de pago y botones de acción -->
-        <div class="delivery-card__footer">
-          <span class="payment-info">💳 {{ e.metodoPagoTexto }}</span>
-
-          <div class="delivery-card__buttons">
-            <button type="button" class="btn-outline-red" (click)="cancelarEntrega(e)">
-              Cancelado
-            </button>
-            <button type="button" class="btn-outline-neutral" (click)="llamarCliente(e)">
-              📞 Llamar cliente
-            </button>
-
-            <button
-              *ngIf="e.estado === 'EN_CAMINO'"
-              type="button"
-              class="btn-solid-red"
-              (click)="marcarEntregado(e)"
-            >
-              ✓ Entregado
-            </button>
-
-            <button
-              *ngIf="e.estado === 'PENDIENTE_SALIDA'"
-              type="button"
-              class="btn-solid-red"
-              (click)="salirAReparto(e)"
-            >
-              🛵 Salir a reparto
-            </button>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <p class="staff-hint">
-      ⓘ Mapas referenciales. Confirma la dirección y la referencia con el cliente si lo necesitas.
-    </p>
-  </main>
-
-  <footer class="staff-footer">
-    <span>Reparto · {{ totalAsignadas() }} entregas pendientes de completar</span>
-    <span>Toto's Pizza · Sede Miraflores</span>
-  </footer>
+  @if (paraFallida(); as e) {
+    <app-motivo-dialog [titulo]="'No se pudo entregar #' + e.numero" tono="rojo" etiquetaConfirmar="Devolver al mostrador"
+      descripcion="El pedido vuelve al local y el despachador decide si lo reasigna o lo cancela. Al cliente le llega un aviso."
+      [opciones]="motivosFallo" [ocupado]="ocupado() !== null" [error]="errorFallida()"
+      (confirmar)="reportarFallida($event)" (cerrar)="cerrarFallida()" />
+  }
 </div>

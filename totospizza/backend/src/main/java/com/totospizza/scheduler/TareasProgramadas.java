@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.totospizza.service.pago.PagoService;
 import com.totospizza.service.pedido.PedidoEstadoService;
+import com.totospizza.service.seguridad.EmpleadoService;
 
 
 @Slf4j
@@ -21,6 +22,7 @@ public class TareasProgramadas {
 
     private final PedidoEstadoService pedidoEstadoService;
     private final PagoService pagoService;
+    private final EmpleadoService empleadoService;
 
     /** Cancela pedidos que nunca se pagaron y devuelve sus masas al stock web. */
     @Scheduled(fixedDelayString = "${app.jobs.expiracion-pedidos-ms:60000}", initialDelayString = "${app.jobs.espera-inicial-ms:30000}")
@@ -38,6 +40,12 @@ public class TareasProgramadas {
     @Scheduled(fixedDelayString = "${app.jobs.conciliacion-pagos-ms:60000}", initialDelayString = "${app.jobs.espera-inicial-ms:30000}")
     public void conciliarPagos() {
         ejecutar("pagos conciliados", pagoService::conciliarPendientes);
+    }
+
+    /** Inicia y termina los turnos del personal según su horario. Los finalizados cuentan para el pago base. */
+    @Scheduled(fixedDelayString = "${app.jobs.turnos-ms:60000}", initialDelayString = "${app.jobs.espera-inicial-ms:30000}")
+    public void actualizarTurnos() {
+        ejecutar("turnos actualizados", empleadoService::actualizarTurnos);
     }
 
     private void ejecutar(String descripcion, IntSupplier tarea) {

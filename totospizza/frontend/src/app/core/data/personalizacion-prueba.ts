@@ -10,14 +10,14 @@ const ing = (id: number, nombre: string, tipo: IngredienteResponse['tipo'], prec
 
 export const OPCIONES_PERSONALIZACION_PRUEBA: OpcionesPersonalizacionResponse = {
   tamanos: [
-    { id: 1, nombre: 'Personal', diametroCm: 22, personasMin: 1, personasMax: 1, precioBase: 18 },
-    { id: 2, nombre: 'Mediana', diametroCm: 30, personasMin: 2, personasMax: 3, precioBase: 32 },
-    { id: 3, nombre: 'Familiar', diametroCm: 40, personasMin: 4, personasMax: 5, precioBase: 48 },
+    { id: 1, nombre: 'Personal', diametroCm: 22, personasMin: 1, personasMax: 1, precioBase: 18, orden: 1, activo: true },
+    { id: 2, nombre: 'Mediana', diametroCm: 30, personasMin: 2, personasMax: 3, precioBase: 32, orden: 2, activo: true },
+    { id: 3, nombre: 'Familiar', diametroCm: 40, personasMin: 4, personasMax: 5, precioBase: 48, orden: 3, activo: true },
   ],
   tiposMasa: [
-    { id: 1, nombre: 'Clásica', recargo: 0 },
-    { id: 2, nombre: 'Delgada', recargo: 0 },
-    { id: 3, nombre: 'Borde de queso', recargo: 6 },
+    { id: 1, nombre: 'Clásica', recargo: 0, activa: true },
+    { id: 2, nombre: 'Delgada', recargo: 0, activa: true },
+    { id: 3, nombre: 'Borde de queso', recargo: 6, activa: true },
   ],
   pasos: [
     {

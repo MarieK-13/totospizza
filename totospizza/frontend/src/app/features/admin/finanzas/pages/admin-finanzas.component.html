@@ -1,448 +1,408 @@
-<div class="admin-layout">
-  <!-- SIDEBAR IZQUIERDO -->
-  <aside class="sidebar">
-    <div class="sidebar__brand">
-      <div class="sidebar__logo-badge">
-        <span class="sidebar__logo-top">TOTO'S</span>
-        <span class="sidebar__logo-sub">PIZZA</span>
-      </div>
-      <span class="sidebar__brand-title">TOTO'S PIZZA</span>
-    </div>
+<ng-template appPanelAcciones>
+  <button type="button" class="btn-export-top" (click)="conciliar()" [disabled]="conciliando()"
+    title="Consulta a la pasarela los pagos que quedaron pendientes">{{ conciliando() ? 'Conciliando…' : 'Conciliar pagos' }}</button>
+  <button type="button" class="btn-export-top" (click)="imprimirReporte()">Imprimir reporte</button>
+</ng-template>
 
-    <nav class="sidebar__nav">
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('resumen')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="3" width="7" height="7" rx="1.5" />
-          <rect x="14" y="3" width="7" height="7" rx="1.5" />
-          <rect x="3" y="14" width="7" height="7" rx="1.5" />
-          <rect x="14" y="14" width="7" height="7" rx="1.5" />
-        </svg>
-        <span>Resumen</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('pedidos')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-          <rect x="9" y="3" width="6" height="4" rx="1" />
-          <path d="M9 12h6M9 16h4" />
-        </svg>
-        <span>Pedidos</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('empleados')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-        </svg>
-        <span>Empleados</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item sidebar__nav-item--active" (click)="navegarA('finanzas')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-          <polyline points="17 6 23 6 23 12" />
-        </svg>
-        <span>Finanzas</span>
-        <span class="sidebar__active-pill"></span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('configuracion')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="3" />
-          <path
-            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
-          />
-        </svg>
-        <span>Configuración</span>
-      </button>
-    </nav>
-
-    <div class="sidebar__shift-card">
-      <div class="sidebar__shift-status">
-        <span class="status-dot status-dot--green"></span>
-        <span>TURNO ACTIVO</span>
-      </div>
-      <div class="sidebar__shift-hours">12:00 — 22:30</div>
-      <div class="sidebar__shift-location">Sede Miraflores · Caja principal</div>
-    </div>
-
-    <button
-      type="button"
-      class="sidebar__help-btn"
-      (click)="mostrarToast('ok', 'Soporte técnico Toto\'s Pizza disponible.')"
-    >
-      <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-        <line x1="12" y1="17" x2="12.01" y2="17" />
+<div class="finanzas-page" [attr.aria-busy]="cargando()">
+<section class="kpi-grid-5">
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Ventas de hoy</span>
+      <div class="kpi-card__icon kpi-card__icon--green">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <rect x="2" y="6" width="20" height="12" rx="2" />
+      <circle cx="12" cy="12" r="2" />
       </svg>
-      <span>Ayuda y soporte</span>
-    </button>
-  </aside>
+      </div>
+    </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">S/ {{ resumen()?.ventasHoy ?? 0 | number: '1.0-0' }}</strong>
+      
+    </div>
+    <div class="kpi-card__footer">{{ resumen()?.pedidosHoy ?? 0 }} pedidos</div>
+  </article>
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Ventas del periodo</span>
+      <div class="kpi-card__icon kpi-card__icon--green">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+      </svg>
+      </div>
+    </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">S/ {{ montoCorto(ventasPeriodo()) }}</strong>
+      @if (variacionVentas() !== null) {
+        @let v = variacionVentas()!;
+        <span class="kpi-card__trend" [class.kpi-card__trend--up]="v >= 0" [class.kpi-card__trend--down]="v < 0">{{ v >= 0 ? '↗ +' : '↘ ' }}{{ v }}%</span>
+      }
+    </div>
+    <div class="kpi-card__footer">vs. periodo anterior</div>
+  </article>
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Ganancia neta</span>
+      <div class="kpi-card__icon kpi-card__icon--green">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+      <polyline points="17 6 23 6 23 12" />
+      </svg>
+      </div>
+    </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">S/ {{ montoCorto(gananciaNeta()) }}</strong>
+      @if (variacionGanancia() !== null) {
+        @let v = variacionGanancia()!;
+        <span class="kpi-card__trend" [class.kpi-card__trend--up]="v >= 0" [class.kpi-card__trend--down]="v < 0">{{ v >= 0 ? '↗ +' : '↘ ' }}{{ v }}%</span>
+      }
+    </div>
+    <div class="kpi-card__footer">margen {{ margenNeto() }}%</div>
+  </article>
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Gastos</span>
+      <div class="kpi-card__icon kpi-card__icon--red">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+      <polyline points="17 18 23 18 23 12" />
+      </svg>
+      </div>
+    </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">S/ {{ montoCorto(gastosPeriodo()) }}</strong>
+      @if (variacionGastos() !== null) {
+        @let v = variacionGastos()!;
+        <span class="kpi-card__trend" [class.kpi-card__trend--up]="v <= 0" [class.kpi-card__trend--down]="v > 0">{{ v >= 0 ? '↗ +' : '↘ ' }}{{ v }}%</span>
+      }
+    </div>
+    <div class="kpi-card__footer">{{ gastosSobreVentas() }}% de las ventas</div>
+  </article>
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Ticket promedio</span>
+      <div class="kpi-card__icon kpi-card__icon--amber">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <rect x="4" y="2" width="16" height="20" rx="2" />
+      <line x1="8" y1="8" x2="16" y2="8" />
+      <line x1="8" y1="12" x2="16" y2="12" />
+      <line x1="8" y1="16" x2="12" y2="16" />
+      </svg>
+      </div>
+    </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">S/ {{ ticketPromedio() | number: '1.2-2' }}</strong>
+      
+    </div>
+    <div class="kpi-card__footer">{{ pedidosPeriodo() }} pedidos en el periodo</div>
+  </article>
+</section>
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <main class="main-content">
-    <div
-      *ngIf="toastMensaje() as toast"
-      class="toast-banner"
-      [class.toast-banner--error]="toast.tipo === 'error'"
-    >
-      {{ toast.texto }}
+<!-- FILTROS -->
+<section class="toolbar-row">
+  <div class="toolbar-row__left">
+    <div class="date-range-pill">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+      <label class="date-range-pill__campo">
+        <span class="sr-only">Desde</span>
+        <input type="date" [value]="desde()" [max]="hasta()" (change)="cambiarRango('desde', $event)" />
+      </label>
+      <span aria-hidden="true">—</span>
+      <label class="date-range-pill__campo">
+        <span class="sr-only">Hasta</span>
+        <input type="date" [value]="hasta()" [min]="desde()" [max]="hoy" (change)="cambiarRango('hasta', $event)" />
+      </label>
     </div>
 
-    <!-- HEADER SUPERIOR -->
-    <header class="topbar">
-      <div class="topbar__titles">
-        <h1 class="topbar__title">Finanzas</h1>
-        <p class="topbar__subtitle">Ingresos, gastos y rentabilidad del negocio</p>
-      </div>
+    <select class="filter-select" aria-label="Tipo de movimiento" (change)="filtroTipo.set($any(valor($event)))">
+      <option value="">Ingresos y gastos</option>
+      <option value="INGRESO">Solo ingresos</option>
+      <option value="EGRESO">Solo gastos</option>
+    </select>
 
-      <div class="topbar__actions">
-        <button type="button" class="btn-export-top" (click)="exportarReportePDF()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="12" y1="18" x2="12" y2="12" />
-            <polyline points="9 15 12 18 15 15" />
-          </svg>
-          <span>Exportar reporte</span>
-        </button>
+    <div class="segmented-control" role="group" aria-label="Agrupar ventas por">
+      @for (g of ['DIA', 'SEMANA', 'MES']; track g) {
+        <button type="button" [class.segmented-control__btn--active]="granularidad() === g" [attr.aria-pressed]="granularidad() === g"
+          (click)="granularidad.set($any(g))">{{ g === 'DIA' ? 'Día' : g === 'SEMANA' ? 'Semana' : 'Mes' }}</button>
+      }
+    </div>
+  </div>
 
-        <div class="topbar__date-pill">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          <span>{{ fechaHoraActual() }}</span>
-        </div>
-
-        <button type="button" class="topbar__bell-btn" aria-label="Notificaciones">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 01-3.46 0" />
-          </svg>
-          <span class="topbar__bell-badge" *ngIf="notificacionesNoLeidas() > 0"></span>
-        </button>
-
-        <div class="topbar__profile">
-          <div class="topbar__avatar">{{ usuario().iniciales }}</div>
-          <div class="topbar__user-info">
-            <span class="topbar__user-name">{{ usuario().nombres }} {{ usuario().apellidos }}</span>
-            <span class="topbar__user-role">{{ usuario().rolEtiqueta }}</span>
-          </div>
-          <svg class="topbar__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-      </div>
-    </header>
-
-    <!-- FILA 1: 5 TARJETAS KPI -->
-    <section class="kpi-grid-5">
-      <!-- KPI 1: Ventas del día -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Ventas del día</span>
-          <div class="kpi-card__icon kpi-card__icon--green">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <rect x="2" y="6" width="20" height="12" rx="2" />
-              <circle cx="12" cy="12" r="2" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">S/ {{ ventasDia() | number : '1.0-0' }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ +12.8%</span>
-        </div>
-        <div class="kpi-card__footer">{{ transaccionesDia() }} transacciones</div>
-      </article>
-
-      <!-- KPI 2: Ventas del mes -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Ventas del mes</span>
-          <div class="kpi-card__icon kpi-card__icon--green">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <rect x="3" y="4" width="18" height="18" rx="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">S/ {{ formatearMontoCorto(ventasMes()) }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ +9.6%</span>
-        </div>
-        <div class="kpi-card__footer">vs. mes anterior</div>
-      </article>
-
-      <!-- KPI 3: Ganancia neta -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Ganancia neta</span>
-          <div class="kpi-card__icon kpi-card__icon--green">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-              <polyline points="17 6 23 6 23 12" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">S/ {{ formatearMontoCorto(gananciaNeta()) }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ +7.2%</span>
-        </div>
-        <div class="kpi-card__footer">margen {{ margenNetoPorcentaje() }}%</div>
-      </article>
-
-      <!-- KPI 4: Gastos -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Gastos</span>
-          <div class="kpi-card__icon kpi-card__icon--red">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
-              <polyline points="17 18 23 18 23 12" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">S/ {{ formatearMontoCorto(gastosMes()) }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ -3.4%</span>
-        </div>
-        <div class="kpi-card__footer">{{ porcentajeGastosSobreVentas() }}% de ventas</div>
-      </article>
-
-      <!-- KPI 5: Ticket promedio -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Ticket promedio</span>
-          <div class="kpi-card__icon kpi-card__icon--amber">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <rect x="4" y="2" width="16" height="20" rx="2" />
-              <line x1="8" y1="8" x2="16" y2="8" />
-              <line x1="8" y1="12" x2="16" y2="12" />
-              <line x1="8" y1="16" x2="12" y2="16" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">S/ {{ ticketPromedio() | number : '1.2-2' }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ +5.2%</span>
-        </div>
-        <div class="kpi-card__footer">meta S/ 45.00</div>
-      </article>
-    </section>
-
-    <!-- FILA 2: BARRA DE FILTROS Y REPORTES -->
-    <section class="toolbar-row">
-      <div class="toolbar-row__left">
-        <div class="date-range-pill">
-          <span>01 oct — 31 oct 2026</span>
-          <input type="date" [(ngModel)]="fechaDesde" (change)="cargarDatosFinancieros()" aria-label="Desde" />
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-        </div>
-
-        <select
-          class="filter-select"
-          [ngModel]="filtroTipoMovimiento()"
-          (ngModelChange)="filtroTipoMovimiento.set($event)"
-        >
-          <option value="">Todos los tipos</option>
-          <option value="VENTA">Venta</option>
-          <option value="DELIVERY">Delivery</option>
-          <option value="COMPRA_INSUMOS">Compra de insumos</option>
-          <option value="PAGO_EMPLEADOS">Pago a empleados</option>
-          <option value="OTROS_GASTOS">Otros gastos</option>
-        </select>
-
-        <div class="segmented-control">
-          <button
-            type="button"
-            [class.segmented-control__btn--active]="granularidad() === 'DIA'"
-            (click)="cambiarGranularidad('DIA')"
-          >
-            Día
-          </button>
-          <button
-            type="button"
-            [class.segmented-control__btn--active]="granularidad() === 'SEMANA'"
-            (click)="cambiarGranularidad('SEMANA')"
-          >
-            Semana
-          </button>
-          <button
-            type="button"
-            [class.segmented-control__btn--active]="granularidad() === 'MES'"
-            (click)="cambiarGranularidad('MES')"
-          >
-            Mes
-          </button>
-        </div>
-      </div>
-
-      <div class="toolbar-row__right">
-        <button type="button" class="btn-csv" (click)="descargarCSV()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+  <div class="toolbar-row__right">
+    <button type="button" class="btn-csv" (click)="descargarCSV()" [disabled]="!movimientosFiltrados().length">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <rect x="3" y="3" width="18" height="18" rx="2" />
             <line x1="3" y1="9" x2="21" y2="9" />
             <line x1="3" y1="15" x2="21" y2="15" />
             <line x1="9" y1="9" x2="9" y2="21" />
           </svg>
-          <span>Descargar CSV</span>
-        </button>
-
-        <button type="button" class="btn-report-red" (click)="exportarReportePDF()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <span>Descargar CSV</span>
+    </button>
+    <button type="button" class="btn-report-red" (click)="abrirModalMovimiento()">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
             <polyline points="14 2 14 8 20 8" />
           </svg>
-          <span>Generar reporte</span>
-        </button>
+      <span>Registrar movimiento</span>
+    </button>
+  </div>
+</section>
+
+<!-- ANALÍTICA -->
+<section class="analytics-grid-3">
+  <article class="panel-card">
+    <div class="panel-card__header">
+      <h2 class="panel-card__title">Ventas por {{ granularidad() === 'DIA' ? 'día' : granularidad() === 'SEMANA' ? 'semana' : 'mes' }}</h2>
+      <span class="panel-card__meta">{{ etiquetaPeriodo() }}</span>
+    </div>
+    <div class="sales-summary-row">
+      <strong class="sales-summary-row__amount">S/ {{ totalGrafico() | number: '1.0-0' }}</strong>
+      @if (barras().length > 1) {
+        <span class="meta-badge">Últimos {{ barras().length }}</span>
+      }
+    </div>
+    <div class="bars-chart">
+      @for (b of barras(); track b.detalle; let ultimo = $last) {
+        <div class="bar-col">
+          <div class="bar-col__track" [title]="b.detalle + ': S/ ' + (b.total | number: '1.2-2') + ' · ' + b.pedidos + ' pedidos'">
+            <div class="bar-col__fill" [class.bar-col__fill--highlight]="ultimo" [style.height.%]="b.altura"></div>
+          </div>
+          <span class="bar-col__label" [class.bar-col__label--active]="ultimo">{{ b.etiqueta }}</span>
+        </div>
+      } @empty {
+        <app-estado-vacio [cargando]="cargando()" [icono]="Iconos.Grafico" [compacto]="true" titulo="Sin ventas"
+          mensaje="No hubo ventas en este periodo." />
+      }
+    </div>
+  </article>
+
+  <article class="panel-card">
+    <div class="panel-card__header">
+      <h2 class="panel-card__title">Métodos de pago</h2>
+      <span class="panel-card__meta">Por monto vendido</span>
+    </div>
+    <div class="donut-wrapper">
+      <div class="donut-ring" [style.background]="donutGradient()" role="img"
+        [attr.aria-label]="metodosPago().length ? 'Reparto de ventas por método de pago' : 'Sin ventas'">
+        <div class="donut-ring__hole">{{ transacciones() }}<small>{{ transacciones() === 1 ? 'pago' : 'pagos' }}</small></div>
       </div>
-    </section>
+      <ul class="donut-legend">
+        @for (m of metodosPago(); track m.etiqueta) {
+          <li>
+            <span class="donut-legend__dot" [style.background-color]="m.color"></span>
+            <span class="donut-legend__name">{{ m.etiqueta }}</span>
+            <strong class="donut-legend__pct">{{ m.porcentaje }}%</strong>
+          </li>
+        } @empty {
+          <li class="sin-marca"><app-estado-vacio [compacto]="true" [icono]="Iconos.Tarjeta" titulo="Sin pagos aprobados" /></li>
+        }
+      </ul>
+    </div>
+  </article>
 
-    <!-- FILA 3: 3 TARJETAS DE ANALÍTICA -->
-    <section class="analytics-grid-3">
-      <!-- CARD 1: Ventas por día -->
-      <article class="panel-card">
-        <div class="panel-card__header">
-          <h2 class="panel-card__title">Ventas por día</h2>
-          <span class="panel-card__meta">Octubre 2026</span>
-        </div>
-
-        <div class="sales-summary-row">
-          <strong class="sales-summary-row__amount">
-            S/ {{ totalVentasPeriodoGrafico() | number : '1.0-0' }}
-          </strong>
-          <span class="meta-badge">● Meta 92%</span>
-        </div>
-
-        <div class="bars-chart">
-          <div class="bar-col" *ngFor="let b of barrasVentas()">
-            <div class="bar-col__track" [title]="b.fecha + ': S/ ' + b.total">
-              <div
-                class="bar-col__fill"
-                [class.bar-col__fill--highlight]="b.destacada"
-                [style.height.%]="b.alturaPorcentaje"
-              ></div>
-            </div>
-            <span class="bar-col__label" [class.bar-col__label--active]="b.destacada">
-              {{ b.diaNumero }}
-            </span>
+  <article class="panel-card">
+    <div class="panel-card__header">
+      <h2 class="panel-card__title">Mayor ingreso por pizza</h2>
+      <span class="panel-card__meta">En el periodo</span>
+    </div>
+    <div class="top-pizzas-list">
+      @for (p of topPizzas(); track p.nombre; let i = $index) {
+        <div class="pizza-bar-item">
+          <div class="pizza-bar-item__top">
+            <strong>{{ p.nombre }}</strong>
+            <span class="pizza-bar-item__amount">S/ {{ montoCorto(p.ingresos) }}</span>
+          </div>
+          <div class="pizza-bar-item__track">
+            <div class="pizza-bar-item__fill" [class.pizza-bar-item__fill--primary]="i === 0" [style.width.%]="p.porcentaje"></div>
           </div>
         </div>
-      </article>
+      } @empty {
+        <app-estado-vacio [cargando]="cargando()" [icono]="Iconos.Pizza" [compacto]="true" titulo="Sin ventas"
+          mensaje="No hay productos vendidos en este periodo." />
+      }
+    </div>
+  </article>
+</section>
 
-      <!-- CARD 2: Métodos de pago (Donut) -->
-      <article class="panel-card">
-        <div class="panel-card__header">
-          <h2 class="panel-card__title">Métodos de pago</h2>
-          <span class="panel-card__meta">Por ventas</span>
-        </div>
-
-        <div class="donut-wrapper">
-          <div class="donut-ring" [style.background]="donutGradient()">
-            <div class="donut-ring__hole">100%</div>
-          </div>
-
-          <ul class="donut-legend">
-            <li *ngFor="let m of metodosPago()">
-              <span class="donut-legend__dot" [style.background-color]="m.color"></span>
-              <span class="donut-legend__name">{{ m.etiqueta }}</span>
-              <strong class="donut-legend__pct">{{ m.porcentaje }}%</strong>
-            </li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- CARD 3: Mayor ingreso por pizza -->
-      <article class="panel-card">
-        <div class="panel-card__header">
-          <h2 class="panel-card__title">Mayor ingreso por pizza</h2>
-          <span class="panel-card__meta">Este mes</span>
-        </div>
-
-        <div class="top-pizzas-list">
-          <div class="pizza-bar-item" *ngFor="let p of topPizzasIngresos(); let i = index">
-            <div class="pizza-bar-item__top">
-              <strong>{{ p.nombre }}</strong>
-              <span class="pizza-bar-item__amount">S/ {{ formatearMontoCorto(p.ingresos) }}</span>
-            </div>
-            <div class="pizza-bar-item__track">
-              <div
-                class="pizza-bar-item__fill"
-                [class.pizza-bar-item__fill--primary]="i === 0"
-                [style.width.%]="p.porcentaje"
-              ></div>
-            </div>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <!-- FILA 4: TABLA MOVIMIENTOS RECIENTES -->
-    <section class="panel-card">
-      <div class="panel-card__header">
-        <h2 class="panel-card__title">Movimientos recientes</h2>
-        <span class="panel-card__meta">
-          Saldo disponible: S/ {{ saldoDisponible() | number : '1.2-2' }}
-        </span>
+<!-- MENÚ Y MOTORIZADOS -->
+<section class="crud">
+  <div class="crud-columnas">
+    <article class="crud-card">
+      <div class="crud-card__cabecera">
+        <h2 class="crud-card__titulo">Menos vendidos</h2>
+        <span class="crud-card__meta">Candidatos a renovar en el menú</span>
       </div>
+      @if (menosVendidos().length) {
+        <div class="crud-tabla-wrap">
+          <table class="crud-tabla crud-tabla--compacta">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Unidades</th>
+                <th class="der">Ingresos</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of menosVendidos(); track p.nombre) {
+                <tr>
+                  <td><strong>{{ p.nombre }}</strong></td>
+                  <td>
+                    <span class="crud-badge" [class.crud-badge--off]="p.cantidad === 0">{{ p.cantidad === 0 ? 'Sin ventas' : p.cantidad + ' unid.' }}</span>
+                  </td>
+                  <td class="der num">S/ {{ p.ingresos | number: '1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-estado-vacio [cargando]="cargando()" [icono]="Iconos.Menos" [compacto]="true" titulo="Sin datos de ranking"
+          mensaje="Aún no hay productos en el menú para comparar." />
+      }
+    </article>
 
-      <div class="table-responsive">
-        <table class="movements-table">
-          <thead>
-            <tr>
-              <th>FECHA</th>
-              <th>TIPO</th>
-              <th>DESCRIPCIÓN</th>
-              <th>MÉTODO DE PAGO</th>
-              <th>INGRESO</th>
-              <th>GASTO</th>
-              <th class="text-right">TOTAL</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let mov of movimientosFiltrados()">
-              <td class="movements-table__date">{{ mov.fechaHora }}</td>
-              <td>
-                <span
-                  class="mov-badge"
-                  [class.mov-badge--income]="mov.esIngreso"
-                  [class.mov-badge--expense]="!mov.esIngreso"
-                >
-                  <span>{{ mov.esIngreso ? '↙' : '↗' }}</span>
-                  {{ etiquetaTipoMovimiento(mov.tipo) }}
-                </span>
-              </td>
-              <td class="movements-table__desc">{{ mov.descripcion }}</td>
-              <td>{{ mov.metodoPago }}</td>
-              <td class="movements-table__income">
-                {{ mov.ingreso !== null ? ('S/ ' + (mov.ingreso | number : '1.2-2')) : '—' }}
-              </td>
-              <td class="movements-table__expense">
-                {{ mov.gasto !== null ? ('S/ ' + (mov.gasto | number : '1.2-2')) : '—' }}
-              </td>
-              <td
-                class="text-right movements-table__total"
-                [class.movements-table__total--income]="mov.esIngreso"
-                [class.movements-table__total--expense]="!mov.esIngreso"
-              >
-                {{ mov.esIngreso ? ('S/ ' + (mov.total | number : '1.2-2')) : ('- S/ ' + (mov.gasto | number : '1.2-2')) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <article class="crud-card">
+      <div class="crud-card__cabecera">
+        <h2 class="crud-card__titulo">Pagos pendientes a motorizados</h2>
+        <span class="crud-card__meta">Por pagar: S/ {{ totalPendiente() | number: '1.2-2' }}</span>
       </div>
-    </section>
-  </main>
+      @if (pendientes().length) {
+        <div class="crud-tabla-wrap">
+          <table class="crud-tabla crud-tabla--compacta">
+            <thead>
+              <tr>
+                <th>Motorizado</th>
+                <th>Periodo</th>
+                <th>Monto</th>
+                <th class="der"><span class="sr-only">Acción</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of pendientes(); track p.id) {
+                <tr>
+                  <td>
+                    <strong>{{ p.motorizadoNombre }}</strong>
+                    <small class="detalle-pago">{{ p.totalEntregas }} entregas · base S/ {{ p.montoBase | number: '1.2-2' }} + bonos S/ {{ p.montoBonos | number: '1.2-2' }}</small>
+                  </td>
+                  <td class="num">{{ fecha(p.periodoDesde + 'T12:00:00') }} – {{ fecha(p.periodoHasta + 'T12:00:00') }}</td>
+                  <td class="num"><strong>S/ {{ p.montoTotal | number: '1.2-2' }}</strong></td>
+                  <td class="der">
+                    <div class="crud-acciones">
+                      <button type="button" class="crud-btn crud-btn--sm crud-btn--primario" [disabled]="pagandoId() === p.id" (click)="marcarPagado(p)">
+                        {{ pagandoId() === p.id ? 'Guardando…' : 'Marcar pagado' }}
+                      </button>
+                      <button type="button" class="crud-icono-btn crud-icono-btn--peligro" title="Eliminar liquidación"
+                        [attr.aria-label]="'Eliminar liquidación de ' + p.motorizadoNombre" [disabled]="pagandoId() !== null" (click)="abrirEliminar(p)">
+                        <lucide-icon [img]="Trash2" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-estado-vacio [cargando]="cargandoPendientes()" [icono]="Iconos.Moto" [compacto]="true" titulo="Nada pendiente"
+          mensaje="No hay liquidaciones por pagar. Se generan desde Resumen › Liquidar periodo." />
+      }
+
+      @if (paraEliminar(); as p) {
+        <app-panel-modal titulo="¿Eliminar liquidación?" (cerrar)="cerrarEliminar()"
+          [descripcion]="'Se eliminará la liquidación de ' + p.motorizadoNombre + ' por S/ ' + (p.montoTotal | number: '1.2-2') + '. Las entregas y turnos no se borran: puedes volver a liquidar ese periodo.'">
+          <div acciones>
+            <button type="button" class="crud-btn" (click)="cerrarEliminar()" [disabled]="pagandoId() !== null">Cancelar</button>
+            <button type="button" class="crud-btn crud-btn--peligro" (click)="eliminarLiquidacion()" [disabled]="pagandoId() !== null">
+              {{ pagandoId() !== null ? 'Eliminando…' : 'Eliminar' }}
+            </button>
+          </div>
+        </app-panel-modal>
+      }
+    </article>
+  </div>
+</section>
+
+<!-- MOVIMIENTOS -->
+<section class="panel-card">
+  <div class="panel-card__header">
+    <h2 class="panel-card__title">Movimientos</h2>
+    <span class="panel-card__meta">Balance del periodo: S/ {{ gananciaNeta() | number: '1.2-2' }}</span>
+  </div>
+  <div class="table-responsive">
+    <table class="movements-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Tipo</th>
+          <th>Concepto</th>
+          <th>Pedido</th>
+          <th class="text-right">Monto</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (mov of movimientosFiltrados(); track mov.id) {
+          <tr>
+            <td class="movements-table__date">{{ fechaHora(mov.ocurridoEn) }}</td>
+            <td>
+              <span class="mov-badge" [class.mov-badge--income]="mov.tipo === 'INGRESO'" [class.mov-badge--expense]="mov.tipo === 'EGRESO'">
+                <span aria-hidden="true">{{ mov.tipo === 'INGRESO' ? '↙' : '↗' }}</span>
+                {{ mov.tipo === 'INGRESO' ? 'Ingreso' : 'Gasto' }}
+              </span>
+            </td>
+            <td class="movements-table__desc">{{ mov.concepto }}</td>
+            <td>{{ mov.numeroPedido ? '#' + mov.numeroPedido : '—' }}</td>
+            <td class="text-right movements-table__total" [class.movements-table__total--income]="mov.tipo === 'INGRESO'" [class.movements-table__total--expense]="mov.tipo === 'EGRESO'">
+              {{ mov.tipo === 'INGRESO' ? '' : '- ' }}S/ {{ mov.monto | number: '1.2-2' }}
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">
+              <app-estado-vacio [cargando]="cargandoMovimientos()" [icono]="Iconos.Recibo" titulo="Sin movimientos"
+                mensaje="No hay ingresos ni gastos registrados en este periodo." />
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (hayMasMovimientos()) {
+    <div class="cargar-mas">
+      <button type="button" class="btn-csv" (click)="cargarMovimientos()" [disabled]="cargandoMovimientos()">
+        {{ cargandoMovimientos() ? 'Cargando…' : 'Ver más movimientos' }}
+      </button>
+    </div>
+  }
+</section>
 </div>
+
+<!-- MODAL REGISTRAR MOVIMIENTO -->
+@if (modalGastoAbierto()) {
+  <div class="modal-backdrop" (click)="modalGastoAbierto.set(false)">
+    <form class="modal-card" role="dialog" aria-modal="true" aria-labelledby="titulo-mov" novalidate
+      [formGroup]="formMovimiento" (ngSubmit)="registrarMovimiento()" (click)="$event.stopPropagation()">
+      <h3 id="titulo-mov">Registrar movimiento</h3>
+      <p class="modal-card__desc">Compras de insumos, servicios u otros ingresos que no salen de un pedido.</p>
+      <app-select-field label="Tipo" [opciones]="opcionesTipo" [required]="true" formControlName="tipo" />
+      <app-select-field label="Sede" [opciones]="opcionesSucursal()" [required]="true" formControlName="sucursalId" />
+      <app-text-field label="Concepto" placeholder="Ej. Compra de queso mozzarella" [maxlength]="160" [required]="true" formControlName="concepto" />
+      <app-text-field label="Monto (S/)" type="number" inputmode="numeric" [min]="'0'" [required]="true" formControlName="monto" />
+      <label class="form-field-fecha">
+        <span>Fecha y hora *</span>
+        <input type="datetime-local" formControlName="ocurridoEn" [max]="ahoraLocal()" />
+      </label>
+      <div class="modal-card__actions">
+        <button type="button" class="btn-csv" (click)="modalGastoAbierto.set(false)" [disabled]="guardando()">Cancelar</button>
+        <button type="submit" class="btn-report-red" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Registrar' }}</button>
+      </div>
+    </form>
+  </div>
+}

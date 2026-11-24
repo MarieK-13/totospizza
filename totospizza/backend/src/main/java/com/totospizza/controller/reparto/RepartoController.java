@@ -18,8 +18,10 @@ import lombok.RequiredArgsConstructor;
 import com.totospizza.dto.request.operacion.ConfirmarEntregaRequest;
 import com.totospizza.dto.response.operacion.EntregaAsignadaResponse;
 import com.totospizza.dto.response.operacion.EntregaResponse;
+import com.totospizza.dto.response.operacion.ResumenRepartoResponse;
 import com.totospizza.security.userdetails.UsuarioAutenticado;
 import com.totospizza.service.operacion.RepartoService;
+import com.totospizza.dto.request.operacion.MotivoRequest;
 
 /** Entregas del motorizado: salir a ruta y confirmar con el PIN del cliente. */
 @RestController
@@ -35,9 +37,21 @@ public class RepartoController {
         return repartoService.misEntregas(usuario.id());
     }
 
+    @GetMapping("/resumen")
+    public ResumenRepartoResponse resumen(@AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return repartoService.resumen(usuario.id());
+    }
+
     @PostMapping("/entregas/{id}/iniciar-ruta")
     public EntregaResponse iniciarRuta(@AuthenticationPrincipal UsuarioAutenticado usuario, @PathVariable Long id) {
         return repartoService.iniciarRuta(usuario.id(), id);
+    }
+
+    @PostMapping("/entregas/{id}/no-entregada")
+    public EntregaResponse reportarFallida(@AuthenticationPrincipal UsuarioAutenticado usuario,
+                                           @PathVariable Long id,
+                                           @Valid @RequestBody MotivoRequest request) {
+        return repartoService.reportarFallida(usuario.id(), id, request);
     }
 
     @PostMapping("/entregas/{id}/confirmar")

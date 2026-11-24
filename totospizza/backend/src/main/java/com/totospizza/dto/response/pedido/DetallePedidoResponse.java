@@ -4,7 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Línea de un pedido.
+ * Línea de un pedido. {@code productoId} es nulo en pizzas personalizadas y promociones;
+ * con él el cliente califica cada producto en su reseña.
  */
 public record DetallePedidoResponse(
         Long id,
@@ -14,6 +15,7 @@ public record DetallePedidoResponse(
         BigDecimal precioUnitario,
         BigDecimal subtotal,
         String notas,
-        List<AdicionalResponse> adicionales
+        List<AdicionalResponse> adicionales,
+        Long productoId
 ) {
 }

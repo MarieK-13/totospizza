@@ -1,6 +1,7 @@
 package com.totospizza.repository.operacion;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,9 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
 
     /** Turno de un empleado en un estado, por ejemplo el que está en curso. */
     Optional<Turno> findFirstByEmpleadoIdAndEstado(Long empleadoId, EstadoTurno estado);
+
+    /** Turnos que aún no terminan (programados o en curso) hasta una fecha. Para avanzar su estado con el reloj. */
+    List<Turno> findByEstadoInAndFechaLessThanEqual(Collection<EstadoTurno> estados, LocalDate hasta);
 
     /** Turnos de un empleado en un estado y rango de fechas (ambos extremos incluidos). Base del pago por turno. */
     long countByEmpleadoIdAndEstadoAndFechaBetween(Long empleadoId, EstadoTurno estado,

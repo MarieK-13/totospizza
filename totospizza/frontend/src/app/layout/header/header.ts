@@ -18,10 +18,11 @@ import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { ToastService } from '../../core/services/toast.service';
 import { formatearSoles } from '../../core/utils/money';
+import { CampanaNotificaciones } from '../../shared/components/campana-notificaciones/campana-notificaciones';
 
 @Component({
   selector: 'app-site-header',
-  imports: [RouterLink, RouterLinkActive, LucideAngularModule],
+  imports: [RouterLink, RouterLinkActive, LucideAngularModule, CampanaNotificaciones],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

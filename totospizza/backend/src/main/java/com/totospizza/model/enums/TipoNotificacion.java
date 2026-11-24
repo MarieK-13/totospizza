@@ -10,7 +10,9 @@ public enum TipoNotificacion {
     ENTREGA_ASIGNADA("Entrega asignada"),
     STOCK_BAJO("Stock bajo"),
     ALERTA_OFERTA_FLASH("Alerta de oferta flash"),
-    SISTEMA("Sistema");
+    SISTEMA("Sistema"),
+    PEDIDO_EN_CAMINO("Pedido en camino"),
+    ENTREGA_FALLIDA("Entrega fallida");
 
     private final String etiqueta;
 

@@ -6,6 +6,7 @@ package com.totospizza.dto.response.catalogo;
 public record PromocionItemResponse(
         Long productoId,
         String productoNombre,
+        Long tamanoId,
         String tamanoNombre,
         Integer cantidad
 ) {

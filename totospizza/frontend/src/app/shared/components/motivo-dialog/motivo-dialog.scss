@@ -1,0 +1,87 @@
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use '../../../../styles/panel/paleta' as panel;
+
+.opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.opcion {
+  padding: 8px 12px;
+  border: 1px solid panel.$border-soft;
+  border-radius: $radius-pill;
+  background: panel.$bg-card;
+  color: panel.$text-primary;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: $weight-semibold;
+  cursor: pointer;
+  @include transition((border-color, background-color, color));
+  @include focus-ring;
+
+  &:hover {
+    border-color: panel.$border-strong;
+  }
+
+  &.is-elegida {
+    border-color: panel.$brand-red;
+    background: panel.$red-bg;
+    color: panel.$brand-red;
+  }
+}
+
+.campo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__etiqueta {
+    color: panel.$text-secondary;
+    font-size: 12.5px;
+    font-weight: $weight-semibold;
+  }
+
+  &__texto {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid panel.$border-soft;
+    border-radius: 12px;
+    color: panel.$text-primary;
+    font: inherit;
+    font-size: 13.5px;
+    resize: vertical;
+    @include transition((border-color, box-shadow));
+
+    &:focus {
+      border-color: panel.$border-strong;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(panel.$shadow-ink, 0.05);
+    }
+  }
+
+  &__contador {
+    align-self: flex-end;
+    color: panel.$text-muted;
+    font-size: 11px;
+  }
+}
+
+.error {
+  margin: 8px 0 0;
+  color: panel.$brand-red;
+  font-size: 12.5px;
+  font-weight: $weight-semibold;
+}
+
+// El pie va fuera del tablero: se reusa `.op` para los botones, pero en fila.
+.acciones {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
+}

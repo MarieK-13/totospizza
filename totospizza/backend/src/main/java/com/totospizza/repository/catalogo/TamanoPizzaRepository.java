@@ -13,4 +13,11 @@ public interface TamanoPizzaRepository extends JpaRepository<TamanoPizza, Long> 
 
     /** Todos los tamaños, del más pequeño al más grande. */
     List<TamanoPizza> findAllByOrderByOrdenAsc();
+
+    /** Tamaños que se ofrecen al armar pizzas. */
+    List<TamanoPizza> findByActivoTrueOrderByOrdenAsc();
+
+    boolean existsByNombreIgnoreCase(String nombre);
+
+    boolean existsByNombreIgnoreCaseAndIdNot(String nombre, Long id);
 }

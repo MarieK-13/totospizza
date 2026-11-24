@@ -79,6 +79,10 @@ export class RestablecerContrasena {
   private alFallar(error: unknown): void {
     if (esApiException(error)) {
       if (error.codigo === 'TOKEN_INVALIDO') this.tokenVencido.set(true);
+      if (error.codigo === 'CONTRASENA_REPETIDA') {
+        aplicarErroresDeCampo(this.form, [{ campo: 'nuevaContrasena', mensaje: error.message }]);
+        return;
+      }
       if (error.errores.length > 0) {
         const sueltos = aplicarErroresDeCampo(this.form, error.errores);
         if (sueltos.length > 0) this.error.set(sueltos.join(' '));

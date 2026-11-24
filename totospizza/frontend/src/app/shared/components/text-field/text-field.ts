@@ -22,7 +22,7 @@ const DEFAULT_MESSAGES: Record<string, (error: any) => string> = {
 })
 export class TextField implements ControlValueAccessor {
   readonly label = input.required<string>();
-  readonly type = input<'text' | 'email' | 'password' | 'tel' | 'number' | 'date'>('text');
+  readonly type = input<'text' | 'email' | 'password' | 'tel' | 'number' | 'date' | 'time'>('text');
   readonly placeholder = input('');
   readonly icon = input<LucideIconData>();
   readonly hint = input<string>();

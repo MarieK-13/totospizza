@@ -20,12 +20,15 @@ import com.totospizza.model.entity.pedido.PedidoEstadoHistorial;
 @Mapper(config = MapperBaseConfig.class, imports = MapeoUtils.class, uses = {AdicionalMapper.class, DireccionMapper.class})
 public interface PedidoMapper {
 
+    @Mapping(target = "productoId", source = "producto.id")
     DetallePedidoResponse toDetalle(DetallePedido detalle);
 
     @Mapping(target = "fecha", source = "creadoEn")
     HistorialEstadoResponse toHistorial(PedidoEstadoHistorial historial);
 
     @Mapping(target = "cantidadItems", expression = "java(MapeoUtils.cantidadItems(pedido))")
+    @Mapping(target = "nombreCliente", expression = "java(MapeoUtils.nombreCompleto(pedido.getCliente()))")
+    @Mapping(target = "telefonoCliente", source = "cliente.telefono")
     PedidoResumenResponse toResumen(Pedido pedido);
 
     List<PedidoResumenResponse> toResumenes(List<Pedido> pedidos);
@@ -47,5 +50,6 @@ public interface PedidoMapper {
     @Mapping(target = "montos", expression = "java(MapeoUtils.montos(pedido))")
     @Mapping(target = "pago", source = "pago")
     @Mapping(target = "historial", source = "historial")
-    PedidoResponse toResponse(Pedido pedido, PagoResponse pago, List<PedidoEstadoHistorial> historial);
+    @Mapping(target = "resenado", source = "resenado")
+    PedidoResponse toResponse(Pedido pedido, PagoResponse pago, List<PedidoEstadoHistorial> historial, boolean resenado);
 }

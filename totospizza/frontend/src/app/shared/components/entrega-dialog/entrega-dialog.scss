@@ -444,3 +444,99 @@ $marron-hover: $color-cafe-tostado;
     animation: none;
   }
 }
+
+// Direcciones guardadas en el perfil del cliente
+.guardadas {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  &__titulo {
+    margin: 0;
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__lista {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__o {
+    margin: $space-1 0 0;
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+    text-align: center;
+  }
+
+  &__ayuda {
+    margin: 0;
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+    text-align: center;
+
+    a {
+      color: $color-rojo-tomate;
+      font-weight: $weight-semibold;
+    }
+  }
+}
+
+.guardada {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  width: 100%;
+  padding: $space-3 $space-4;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-lg;
+  background-color: $color-background-raised;
+  color: $marron;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  @include transition((border-color, background-color, box-shadow));
+  @include focus-ring;
+
+  &:hover:not(:disabled) {
+    border-color: $marron;
+  }
+
+  &.is-activa {
+    border-color: $color-rojo-tomate;
+    background-color: $tint-rojo-8;
+    color: $color-rojo-tomate;
+    box-shadow: 0 0 0 3px $tint-rojo-8;
+  }
+
+  &:disabled {
+    cursor: progress;
+    opacity: 0.75;
+  }
+
+  &__texto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+
+  &__etiqueta {
+    color: $color-text-primary;
+    font-size: 0.9375rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__direccion {
+    overflow: hidden;
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

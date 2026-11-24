@@ -98,6 +98,8 @@ export interface DetallePedidoResponse {
   readonly subtotal: number;
   readonly notas: string | null;
   readonly adicionales: readonly AdicionalResponse[];
+  /** Nulo en pizzas personalizadas y promociones. Sirve para calificar el producto. */
+  readonly productoId: number | null;
 }
 
 export interface HistorialEstadoResponse {
@@ -135,6 +137,8 @@ export interface PedidoResponse {
   readonly garantiaAplicada: boolean;
   readonly pago: PagoResponse | null;
   readonly historial: readonly HistorialEstadoResponse[];
+  /** El cliente ya dejó su reseña de este pedido. */
+  readonly resenado: boolean;
 }
 
 export interface PedidoResumenResponse {
@@ -145,6 +149,8 @@ export interface PedidoResumenResponse {
   readonly total: number;
   readonly cantidadItems: number;
   readonly creadoEn: Instante;
+  readonly nombreCliente: string;
+  readonly telefonoCliente: string | null;
 }
 
 export interface EtapaSeguimientoResponse {

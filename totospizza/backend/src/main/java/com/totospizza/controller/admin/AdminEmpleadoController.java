@@ -78,6 +78,11 @@ public class AdminEmpleadoController {
         return empleadoService.asignarHorario(id, request);
     }
 
+    @PostMapping("/{id}/turnos/{turnoId}/cancelar")
+    public TurnoResponse cancelarTurno(@PathVariable Long id, @PathVariable Long turnoId) {
+        return empleadoService.cancelarTurno(id, turnoId);
+    }
+
     @GetMapping("/{id}/turnos")
     public List<TurnoResponse> turnos(@PathVariable Long id,
                                       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,

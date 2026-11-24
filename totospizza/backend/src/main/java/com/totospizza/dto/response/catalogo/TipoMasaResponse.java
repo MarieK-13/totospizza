@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 public record TipoMasaResponse(
         Long id,
         String nombre,
-        BigDecimal recargo
+        BigDecimal recargo,
+        boolean activa
 ) {
 }

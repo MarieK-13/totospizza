@@ -129,6 +129,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ReglaNegocioException("TOKEN_INVALIDO",
                         "El enlace de recuperación no es válido o ya venció"));
         Usuario usuario = recuperacion.getUsuario();
+        validarContrasenaDistinta(usuario, request.nuevaContrasena());
         usuario.setContrasenaHash(passwordEncoder.encode(request.nuevaContrasena()));
         recuperacion.setUsadoEn(ahora);
         refreshTokenRepository.revocarTodosDelUsuario(usuario.getId(), ahora);
@@ -142,6 +143,7 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(request.contrasenaActual(), usuario.getContrasenaHash())) {
             throw new ReglaNegocioException("CONTRASENA_ACTUAL_INCORRECTA", "La contraseña actual no es correcta");
         }
+        validarContrasenaDistinta(usuario, request.nuevaContrasena());
         usuario.setContrasenaHash(passwordEncoder.encode(request.nuevaContrasena()));
         refreshTokenRepository.revocarTodosDelUsuario(usuarioId, Instant.now(clock));
     }
@@ -157,7 +159,15 @@ public class AuthServiceImpl implements AuthService {
                 jwtService.getExpiracionSegundos(), usuarioMapper.toResponse(usuario));
     }
 
-    private static void confirmarContrasena(String contrasena, String confirmacion) {
+    /** La contraseña nueva no puede ser la misma que ya tiene la cuenta. */
+    private void validarContrasenaDistinta(Usuario usuario, String nuevaContrasena) {
+        if (passwordEncoder.matches(nuevaContrasena, usuario.getContrasenaHash())) {
+            throw new ReglaNegocioException("CONTRASENA_REPETIDA",
+                    "La nueva contraseña debe ser distinta a la que ya usas");
+        }
+    }
+
+        private static void confirmarContrasena(String contrasena, String confirmacion) {
         if (!contrasena.equals(confirmacion)) {
             throw new ReglaNegocioException("CONTRASENAS_NO_COINCIDEN", "Las contraseñas no coinciden");
         }

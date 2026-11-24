@@ -1,0 +1,113 @@
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use '../../../../styles/panel/paleta' as panel;
+@use '../../../../styles/panel/comun' as *;
+
+.fondo {
+  @include modal-backdrop;
+  animation: fondo-entrada $duration-base $ease-out both;
+}
+
+.tarjeta {
+  @include modal-card(460px);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  outline: none;
+  animation: tarjeta-entrada $duration-base $ease-out both;
+
+  &--lg {
+    max-width: 640px;
+  }
+
+  &--xl {
+    max-width: 860px;
+  }
+
+  &__cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $space-3;
+    padding: 22px 24px 12px;
+    background: panel.$bg-card;
+  }
+
+  &__desc {
+    margin: 0;
+    color: panel.$text-secondary;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  &__cerrar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    background: panel.$bg-soft;
+    color: panel.$text-secondary;
+    cursor: pointer;
+    @include transition((background-color, color));
+    @include focus-ring;
+
+    &:hover {
+      background: panel.$red-bg;
+      color: panel.$brand-red;
+    }
+  }
+
+  &__cuerpo {
+    padding: 8px 24px 4px;
+  }
+
+  &__acciones {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 24px 20px;
+    border-top: 1px solid panel.$bg-cream;
+    background: panel.$bg-card;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  @media (max-width: 560px) {
+    &__cabecera,
+    &__cuerpo,
+    &__acciones {
+      padding-inline: 16px;
+    }
+  }
+}
+
+@keyframes fondo-entrada {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes tarjeta-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+}
+
+@include reduced-motion {
+  .fondo,
+  .tarjeta {
+    animation: none;
+  }
+}

@@ -1,6 +1,9 @@
 package com.totospizza.service.impl.seguridad;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -53,6 +56,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     private final EmpleadoMapper empleadoMapper;
     private final TurnoMapper turnoMapper;
     private final PasswordEncoder passwordEncoder;
+    private final Clock clock;
 
     @Override
     @Transactional(readOnly = true)
@@ -154,6 +158,48 @@ public class EmpleadoServiceImpl implements EmpleadoService {
             throw new ReglaNegocioException("RANGO_INVALIDO", "La fecha inicial no puede ser posterior a la final");
         }
         return turnoMapper.toResponses(turnoRepository.findByEmpleadoIdAndFechaBetweenOrderByFechaAsc(empleadoId, desde, hasta));
+    }
+
+    @Override
+    public int actualizarTurnos() {
+        LocalDateTime ahora = LocalDateTime.now(clock);
+        List<Turno> abiertos = turnoRepository.findByEstadoInAndFechaLessThanEqual(
+                EnumSet.of(EstadoTurno.PROGRAMADO, EstadoTurno.EN_CURSO), ahora.toLocalDate());
+        int cambiados = 0;
+        for (Turno turno : abiertos) {
+            EstadoTurno nuevo = estadoSegunHora(turno, ahora);
+            if (nuevo != turno.getEstado()) {
+                turno.setEstado(nuevo);
+                cambiados++;
+            }
+        }
+        return cambiados;
+    }
+
+    @Override
+    public TurnoResponse cancelarTurno(Long empleadoId, Long turnoId) {
+        Turno turno = turnoRepository.findById(turnoId)
+                .filter(t -> t.getEmpleado().getId().equals(empleadoId))
+                .orElseThrow(() -> new RecursoNoEncontradoException("Turno", turnoId));
+        if (turno.getEstado() == EstadoTurno.CANCELADO) {
+            throw new ReglaNegocioException("TURNO_CANCELADO", "Este turno ya estaba cancelado");
+        }
+        turno.setEstado(EstadoTurno.CANCELADO);
+        return turnoMapper.toResponse(turno);
+    }
+
+    /** Un turno nocturno (fin menor o igual que inicio, p. ej. 18:00–02:00) termina al día siguiente. */
+    private static EstadoTurno estadoSegunHora(Turno turno, LocalDateTime ahora) {
+        RangoHorario horario = turno.getHorario();
+        LocalDateTime inicio = turno.getFecha().atTime(horario.getHoraInicio());
+        LocalDateTime fin = turno.getFecha().atTime(horario.getHoraFin());
+        if (!fin.isAfter(inicio)) {
+            fin = fin.plusDays(1);
+        }
+        if (!ahora.isBefore(fin)) {
+            return EstadoTurno.FINALIZADO;
+        }
+        return ahora.isBefore(inicio) ? EstadoTurno.PROGRAMADO : EstadoTurno.EN_CURSO;
     }
 
     private static long cantidad(List<EmpleadosPorEstado> porEstado, EstadoEmpleado estado) {

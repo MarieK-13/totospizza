@@ -1,0 +1,22 @@
+<div class="fondo" (click)="cerrar.emit()">
+  <section #tarjeta class="tarjeta" [class]="'tarjeta tarjeta--' + ancho()" role="dialog" aria-modal="true"
+    [attr.aria-labelledby]="idTitulo" tabindex="-1" (click)="$event.stopPropagation()">
+    <header class="tarjeta__cabecera">
+      <div>
+        <h3 [id]="idTitulo">{{ titulo() }}</h3>
+        @if (descripcion()) {
+          <p class="tarjeta__desc">{{ descripcion() }}</p>
+        }
+      </div>
+      <button type="button" class="tarjeta__cerrar" aria-label="Cerrar" (click)="cerrar.emit()">
+        <lucide-icon [img]="CloseIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      </button>
+    </header>
+    <div class="tarjeta__cuerpo">
+      <ng-content />
+    </div>
+    <footer class="tarjeta__acciones">
+      <ng-content select="[acciones]" />
+    </footer>
+  </section>
+</div>

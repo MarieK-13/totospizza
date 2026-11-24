@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, Component, ElementRef, computed, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core';
-import { Bike, Clock, LoaderCircle, LocateFixed, LucideAngularModule, MapPin, MapPinned, Store, Wallet, X } from 'lucide-angular';
+import { RouterLink } from '@angular/router';
+import { Bike, Clock, Home, LoaderCircle, LocateFixed, LucideAngularModule, MapPin, MapPinned, Star, Store, Wallet, X } from 'lucide-angular';
 import { Observable, delay, of } from 'rxjs';
 import { environment } from '../../../core/config/environment';
 import { peticionSilenciosa } from '../../../core/interceptors/http-context';
-import type { CoberturaResponse, SucursalResponse, TipoEntrega } from '../../../core/models/api';
+import type { CoberturaResponse, DireccionClienteResponse, SucursalResponse, TipoEntrega } from '../../../core/models/api';
+import { AuthService } from '../../../core/services/auth.service';
+import { ClienteApi } from '../../../core/services/api/cliente.api';
 import { PublicoApi } from '../../../core/services/api/publico.api';
 import { EntregaService, type Entrega } from '../../../core/services/entrega.service';
 import { LocalesService } from '../../../core/services/locales.service';
@@ -36,7 +39,7 @@ const MAX_REFERENCIA = 200;
 
 @Component({
   selector: 'app-entrega-dialog',
-  imports: [LucideAngularModule],
+  imports: [LucideAngularModule, RouterLink],
   templateUrl: './entrega-dialog.html',
   styleUrl: './entrega-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,6 +48,8 @@ export class EntregaDialog {
   private readonly api = inject(PublicoApi);
   private readonly entrega = inject(EntregaService);
   private readonly localesService = inject(LocalesService);
+  private readonly auth = inject(AuthService);
+  private readonly clienteApi = inject(ClienteApi);
 
   readonly accion = input<AccionEntrega | null>(null);
   readonly confirmado = output<Entrega>();
@@ -59,6 +64,10 @@ export class EntregaDialog {
   protected readonly referencia = signal('');
   protected readonly localId = signal<number | null>(null);
   protected readonly intentoConfirmar = signal(false);
+  /** Direcciones que el cliente guardó en su perfil (solo con sesión de cliente). */
+  protected readonly guardadas = signal<readonly DireccionClienteResponse[]>([]);
+  protected readonly guardadaId = signal<number | null>(null);
+  protected readonly esCliente = this.auth.esCliente;
 
   protected readonly buscando = computed(() => this.consulta().tipo === 'buscando');
   protected readonly cobertura = computed(() => {
@@ -93,6 +102,8 @@ export class EntregaDialog {
   protected readonly ClockIcon = Clock;
   protected readonly WalletIcon = Wallet;
   protected readonly StoreIcon = Store;
+  protected readonly HomeIcon = Home;
+  protected readonly StarIcon = Star;
 
   constructor() {
     effect(() => {
@@ -114,7 +125,19 @@ export class EntregaDialog {
     this.intentoConfirmar.set(false);
   }
 
+  /** Usa una dirección del perfil: llena los campos y consulta la cobertura con sus coordenadas. */
+  protected elegirGuardada(guardada: DireccionClienteResponse): void {
+    const d = guardada.direccion;
+    this.guardadaId.set(guardada.id);
+    this.direccion.set(d.direccion);
+    this.distrito.set(d.distrito);
+    this.referencia.set(d.referencia ?? '');
+    this.consulta.set({ tipo: 'buscando' });
+    this.consultarCobertura(d.latitud, d.longitud);
+  }
+
   protected ubicar(): void {
+    this.guardadaId.set(null);
     if (!('geolocation' in navigator)) {
       this.consulta.set({ tipo: 'error', mensaje: 'Tu navegador no permite detectar la ubicación.' });
       return;
@@ -179,6 +202,8 @@ export class EntregaDialog {
 
   private restaurar(): void {
     const previa = this.entrega.actual();
+    this.guardadaId.set(null);
+    this.cargarGuardadas(previa === null);
     this.intentoConfirmar.set(false);
     this.tipo.set(previa?.tipo ?? 'DELIVERY');
     this.localId.set(previa?.tipo === 'RECOJO' ? previa.sucursalId : null);
@@ -203,6 +228,23 @@ export class EntregaDialog {
     } else {
       this.consulta.set({ tipo: 'inicial' });
     }
+  }
+
+  /** Trae las direcciones del perfil; si aún no eligió una entrega, propone la favorita. */
+  private cargarGuardadas(proponerFavorita: boolean): void {
+    if (!this.auth.esCliente()) {
+      this.guardadas.set([]);
+      return;
+    }
+    this.clienteApi.direcciones({ context: peticionSilenciosa() }).subscribe({
+      next: (lista) => {
+        const ordenadas = [...lista].sort((a, b) => Number(b.favorita) - Number(a.favorita));
+        this.guardadas.set(ordenadas);
+        const favorita = ordenadas.find((d) => d.favorita) ?? (ordenadas.length === 1 ? ordenadas[0] : undefined);
+        if (proponerFavorita && favorita && this.tipo() === 'DELIVERY' && this.consulta().tipo === 'inicial') this.elegirGuardada(favorita);
+      },
+      error: () => this.guardadas.set([]),
+    });
   }
 
   private consultarCobertura(latitud: number, longitud: number): void {

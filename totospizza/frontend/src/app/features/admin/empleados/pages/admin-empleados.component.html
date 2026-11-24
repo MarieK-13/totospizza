@@ -1,697 +1,405 @@
-<div class="admin-layout" (click)="menuFilaAbiertoId.set(null)">
-  <!-- SIDEBAR IZQUIERDO -->
-  <aside class="sidebar">
-    <div class="sidebar__brand">
-      <div class="sidebar__logo-badge">
-        <span class="sidebar__logo-top">TOTO'S</span>
-        <span class="sidebar__logo-sub">PIZZA</span>
-      </div>
-      <span class="sidebar__brand-title">TOTO'S PIZZA</span>
-    </div>
+<ng-template appPanelAcciones>
+  @if (sucursales().length > 1) {
+    <select class="branch-select" aria-label="Sede" (change)="cambiarSucursal($event)">
+      @for (s of sucursales(); track s.id) {
+        <option [value]="s.id" [selected]="s.id === sucursalId()">{{ s.nombre }}</option>
+      }
+    </select>
+  }
+  <button type="button" class="btn-new-employee" (click)="abrirNuevo()">+ Nuevo empleado</button>
+</ng-template>
 
-    <nav class="sidebar__nav">
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('resumen')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="3" width="7" height="7" rx="1.5" />
-          <rect x="14" y="3" width="7" height="7" rx="1.5" />
-          <rect x="3" y="14" width="7" height="7" rx="1.5" />
-          <rect x="14" y="14" width="7" height="7" rx="1.5" />
-        </svg>
-        <span>Resumen</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('pedidos')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-          <rect x="9" y="3" width="6" height="4" rx="1" />
-          <path d="M9 12h6M9 16h4" />
-        </svg>
-        <span>Pedidos</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item sidebar__nav-item--active" (click)="navegarA('empleados')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+<div class="empleados-page" [attr.aria-busy]="cargando()" (click)="menuFilaAbiertoId.set(null)">
+<!-- FILA 1: 4 TARJETAS KPI -->
+<section class="kpi-grid">
+  <!-- KPI 1: Empleados activos -->
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Empleados activos</span>
+      <div class="kpi-card__icon kpi-card__icon--green">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
           <circle cx="9" cy="7" r="4" />
           <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
         </svg>
-        <span>Empleados</span>
-        <span class="sidebar__active-pill"></span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('finanzas')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-          <polyline points="17 6 23 6 23 12" />
-        </svg>
-        <span>Finanzas</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('configuracion')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="3" />
-          <path
-            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
-          />
-        </svg>
-        <span>Configuración</span>
-      </button>
-    </nav>
-
-    <div class="sidebar__shift-card">
-      <div class="sidebar__shift-status">
-        <span class="status-dot status-dot--green"></span>
-        <span>TURNO ACTIVO</span>
       </div>
-      <div class="sidebar__shift-hours">12:00 — 22:30</div>
-      <div class="sidebar__shift-location">Sede Miraflores · Caja principal</div>
     </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">{{ resumen().activos }}</strong>
+          </div>
+    <div class="kpi-card__footer">de {{ resumen().total }} empleados registrados</div>
+  </article>
 
-    <button
-      type="button"
-      class="sidebar__help-btn"
-      (click)="mostrarToast('ok', 'Soporte técnico Toto\'s Pizza disponible.')"
-    >
-      <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-        <line x1="12" y1="17" x2="12.01" y2="17" />
+  <!-- KPI 2: Empleados inactivos -->
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Empleados inactivos</span>
+      <div class="kpi-card__icon kpi-card__icon--red">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+          <circle cx="8.5" cy="7" r="4" />
+          <line x1="18" y1="8" x2="23" y2="13" />
+          <line x1="23" y1="8" x2="18" y2="13" />
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">{{ resumen().inactivos }}</strong>
+      <span class="kpi-card__trend">{{ porcentajeInactivos() }}% del total</span>
+    </div>
+    <div class="kpi-card__footer">{{ resumen().conLicencia }} con licencia temporal</div>
+  </article>
+
+  <!-- KPI 3: Motorizados disponibles -->
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Motorizados disponibles</span>
+      <div class="kpi-card__icon kpi-card__icon--blue">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="5.5" cy="17.5" r="3.5" />
+          <circle cx="18.5" cy="17.5" r="3.5" />
+          <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2" />
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">{{ resumen().disponibles }}</strong>
+          </div>
+    <div class="kpi-card__footer">listos para salir a reparto</div>
+  </article>
+
+  <!-- KPI 4: Empleados en turno -->
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Empleados en turno</span>
+      <div class="kpi-card__icon kpi-card__icon--amber">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">{{ resumen().enTurno }}</strong>
+          </div>
+    <div class="kpi-card__footer">{{ porcentajeEnTurno() }}% del personal activo</div>
+  </article>
+</section>
+
+
+<!-- BÚSQUEDA, FILTROS Y ACCIONES -->
+<section class="toolbar-row">
+  <div class="toolbar-row__left">
+    <div class="search-box">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
       </svg>
-      <span>Ayuda y soporte</span>
+      <input type="search" placeholder="Buscar por nombre o documento" aria-label="Buscar por nombre o documento"
+        [value]="filtroTexto()" (input)="filtroTexto.set(valor($event))" (keyup.enter)="aplicarFiltros()" />
+    </div>
+
+    <select class="filter-select" aria-label="Cargo" (change)="filtroRol.set($any(valor($event))); aplicarFiltros()">
+      <option value="">Todos los cargos</option>
+      <option value="ADMINISTRADOR">Administrador</option>
+      @for (r of opcionesRol; track r.valor) {
+        <option [value]="r.valor">{{ r.etiqueta }}</option>
+      }
+    </select>
+
+    <select class="filter-select" aria-label="Estado" (change)="filtroEstado.set($any(valor($event))); aplicarFiltros()">
+      <option value="">Todos los estados</option>
+      @for (e of estados; track e) {
+        <option [value]="e">{{ etiquetaEstado(e) }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="toolbar-row__right">
+    <button type="button" class="btn-toolbar" (click)="exportarCSV()" [disabled]="!empleados().length">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      <span>Exportar CSV</span>
     </button>
-  </aside>
+  </div>
+</section>
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <main class="main-content">
-    <div
-      *ngIf="toastMensaje() as toast"
-      class="toast-banner"
-      [class.toast-banner--error]="toast.tipo === 'error'"
-    >
-      {{ toast.texto }}
-    </div>
+<!-- DIRECTORIO -->
+<section class="panel-card">
+  <div class="panel-card__header">
+    <h2 class="panel-card__title">Directorio del equipo</h2>
+    <span class="panel-card__meta">{{ totalElementos() }} empleados</span>
+  </div>
 
-    <!-- HEADER SUPERIOR -->
-    <header class="topbar">
-      <div class="topbar__titles">
-        <h1 class="topbar__title">Empleados</h1>
-        <p class="topbar__subtitle">Equipo, turnos y disponibilidad de la sede</p>
-      </div>
-
-      <div class="topbar__actions">
-        <button type="button" class="btn-new-employee" (click)="abrirModalNuevoEmpleado()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-            <circle cx="8.5" cy="7" r="4" />
-            <line x1="20" y1="8" x2="20" y2="14" />
-            <line x1="23" y1="11" x2="17" y2="11" />
-          </svg>
-          <span>Nuevo empleado</span>
-        </button>
-
-        <div class="topbar__date-pill">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          <span>{{ fechaHoraActual() }}</span>
-        </div>
-
-        <button type="button" class="topbar__bell-btn" aria-label="Notificaciones">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 01-3.46 0" />
-          </svg>
-          <span class="topbar__bell-badge" *ngIf="notificacionesNoLeidas() > 0"></span>
-        </button>
-
-        <div class="topbar__profile">
-          <div class="topbar__avatar">{{ usuario().iniciales }}</div>
-          <div class="topbar__user-info">
-            <span class="topbar__user-name">{{ usuario().nombres }} {{ usuario().apellidos }}</span>
-            <span class="topbar__user-role">{{ usuario().rolEtiqueta }}</span>
-          </div>
-          <svg class="topbar__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-      </div>
-    </header>
-
-    <!-- FILA 1: 4 TARJETAS KPI -->
-    <section class="kpi-grid">
-      <!-- KPI 1: Empleados activos -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Empleados activos</span>
-          <div class="kpi-card__icon kpi-card__icon--green">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">{{ resumen().activos }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ +2 este mes</span>
-        </div>
-        <div class="kpi-card__footer">de {{ resumen().total }} empleados registrados</div>
-      </article>
-
-      <!-- KPI 2: Empleados inactivos -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Empleados inactivos</span>
-          <div class="kpi-card__icon kpi-card__icon--red">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-              <circle cx="8.5" cy="7" r="4" />
-              <line x1="18" y1="8" x2="23" y2="13" />
-              <line x1="23" y1="8" x2="18" y2="13" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">{{ resumen().inactivos }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ {{ porcentajeInactivos() }}%</span>
-        </div>
-        <div class="kpi-card__footer">{{ resumen().conLicencia }} con licencia temporal</div>
-      </article>
-
-      <!-- KPI 3: Motorizados disponibles -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Motorizados disponibles</span>
-          <div class="kpi-card__icon kpi-card__icon--blue">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <circle cx="5.5" cy="17.5" r="3.5" />
-              <circle cx="18.5" cy="17.5" r="3.5" />
-              <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">{{ resumen().disponibles }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ +1 ahora</span>
-        </div>
-        <div class="kpi-card__footer">2 pedidos en camino</div>
-      </article>
-
-      <!-- KPI 4: Empleados en turno -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Empleados en turno</span>
-          <div class="kpi-card__icon kpi-card__icon--amber">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">{{ resumen().enTurno }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ {{ porcentajeEnTurno() }}%</span>
-        </div>
-        <div class="kpi-card__footer">próximo relevo 18:00</div>
-      </article>
-    </section>
-
-    <!-- FILA 2: BARRA DE BÚSQUEDA, FILTROS Y BOTONES DERECHOS -->
-    <section class="toolbar-row">
-      <div class="toolbar-row__left">
-        <div class="search-box">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Buscar por nombre o DNI"
-            [ngModel]="filtroTexto()"
-            (ngModelChange)="filtroTexto.set($event)"
-            (keyup.enter)="aplicarFiltros()"
-          />
-          <span class="search-box__kbd">⌘K</span>
-        </div>
-
-        <select
-          class="filter-select"
-          [ngModel]="filtroRol()"
-          (ngModelChange)="filtroRol.set($event); aplicarFiltros()"
-        >
-          <option value="">Todos los cargos</option>
-          <option value="ADMINISTRADOR">Administrador</option>
-          <option value="PIZZERO">Cocinero / Pizzero</option>
-          <option value="DESPACHADOR">Vendedor / Despachador</option>
-          <option value="MOTORIZADO">Motorizado / Repartidor</option>
-        </select>
-
-        <select
-          class="filter-select"
-          [ngModel]="filtroEstado()"
-          (ngModelChange)="filtroEstado.set($event); aplicarFiltros()"
-        >
-          <option value="">Todos los estados</option>
-          <option value="ACTIVO">Activo</option>
-          <option value="EN_TURNO">En turno</option>
-          <option value="DISPONIBLE">Disponible</option>
-          <option value="INACTIVO">Inactivo</option>
-          <option value="CON_LICENCIA">Con licencia</option>
-        </select>
-      </div>
-
-      <div class="toolbar-row__right">
-        <button type="button" class="btn-toolbar" (click)="abrirModalHistorial()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          <span>Horarios</span>
-        </button>
-
-        <button type="button" class="btn-toolbar" (click)="exportarCSV()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          <span>Exportar</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- FILA 3: PANEL DIRECTORIO DEL EQUIPO -->
-    <section class="panel-card">
-      <div class="panel-card__header">
-        <h2 class="panel-card__title">Directorio del equipo</h2>
-        <span class="panel-card__meta">{{ totalElementos() }} empleados</span>
-      </div>
-
-      <div class="table-responsive">
-        <table class="team-table">
-          <thead>
-            <tr>
-              <th>EMPLEADO</th>
-              <th>DNI</th>
-              <th>CARGO</th>
-              <th>TELÉFONO</th>
-              <th>HORARIO</th>
-              <th>ESTADO</th>
-              <th>ÚLTIMO ACCESO</th>
-              <th class="text-right">ACCIONES</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="let emp of empleados()"
-              [class.team-table__row--selected]="empleadoSeleccionado()?.id === emp.id"
-              (click)="seleccionarEmpleado(emp)"
-            >
-              <td>
-                <div class="emp-cell">
-                  <div
-                    class="emp-cell__avatar"
-                    [class.emp-cell__avatar--green]="emp.estado === 'EN_TURNO' && emp.rol === 'PIZZERO'"
-                  >
-                    {{ obtenerIniciales(emp.nombreCompleto) }}
-                  </div>
-                  <div class="emp-cell__info">
-                    <strong>{{ emp.nombreCompleto }}</strong>
-                    <span>{{ emp.correo }}</span>
-                  </div>
+  <div class="table-responsive">
+    <table class="team-table">
+      <thead>
+        <tr>
+          <th>Empleado</th>
+          <th>Documento</th>
+          <th>Cargo</th>
+          <th>Teléfono</th>
+          <th>Horario</th>
+          <th>Estado</th>
+          <th class="text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (emp of empleados(); track emp.id) {
+          <tr [class.team-table__row--selected]="seleccionado()?.id === emp.id" (click)="seleccionar(emp)">
+            <td>
+              <div class="emp-cell">
+                <div class="emp-cell__avatar" [class.emp-cell__avatar--green]="emp.estado === 'EN_TURNO'" aria-hidden="true">{{ inicialesDe(emp) }}</div>
+                <div class="emp-cell__info">
+                  <strong>{{ emp.nombreCompleto }}</strong>
+                  <span>{{ emp.correo }}</span>
                 </div>
-              </td>
-
-              <td class="team-table__mono">{{ emp.numeroDocumentoUI || '—' }}</td>
-
-              <td>
-                <span class="role-badge" [ngClass]="claseRol(emp)">
-                  {{ etiquetaRol(emp) }}
-                </span>
-              </td>
-
-              <td>{{ emp.telefono }}</td>
-
-              <td>{{ emp.horaInicio }}–{{ emp.horaFin }}</td>
-
-              <td>
-                <span class="status-badge" [ngClass]="'status-badge--' + emp.estado.toLowerCase()">
-                  <span class="status-badge__icon">
-                    {{ emp.estado === 'INACTIVO' ? '✕' : '✓' }}
-                  </span>
-                  {{ etiquetaEstado(emp.estado) }}
-                </span>
-              </td>
-
-              <td class="team-table__access">{{ emp.ultimoAccesoUI || 'Registrado' }}</td>
-
-              <td class="text-right action-cell" (click)="$event.stopPropagation()">
-                <div class="row-actions">
-                  <button
-                    type="button"
-                    class="icon-action-btn"
-                    title="Ver perfil"
-                    (click)="abrirModalPerfil(emp)"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </button>
-
-                  <button
-                    type="button"
-                    class="icon-action-btn"
-                    title="Más opciones"
-                    (click)="toggleMenuFila(emp.id, $event)"
-                  >
-                    •••
-                  </button>
+              </div>
+            </td>
+            <td class="team-table__mono">{{ emp.numeroDocumento || '—' }}</td>
+            <td><span class="role-badge" [ngClass]="claseRol(emp.rol)">{{ etiquetaRol(emp.rol) }}</span></td>
+            <td><a class="tel-link" [href]="'tel:' + emp.telefono" (click)="$event.stopPropagation()">{{ emp.telefono }}</a></td>
+            <td>{{ emp.horaInicio.slice(0, 5) }}–{{ emp.horaFin.slice(0, 5) }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="'status-badge--' + emp.estado.toLowerCase()">
+                <span class="status-badge__icon" aria-hidden="true">{{ emp.estado === 'INACTIVO' || emp.estado === 'CON_LICENCIA' ? '✕' : '✓' }}</span>
+                {{ etiquetaEstado(emp.estado) }}
+              </span>
+            </td>
+            <td class="text-right action-cell" (click)="$event.stopPropagation()">
+              <div class="row-actions">
+                <button type="button" class="icon-action-btn" [attr.aria-label]="'Ver perfil de ' + emp.nombreCompleto" title="Ver perfil" (click)="abrirPerfil(emp)">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+                <button type="button" class="icon-action-btn" [attr.aria-label]="'Más opciones de ' + emp.nombreCompleto"
+                  [attr.aria-expanded]="menuFilaAbiertoId() === emp.id" (click)="alternarMenuFila(emp.id, $event)">•••</button>
+              </div>
+              @if (menuFilaAbiertoId() === emp.id) {
+                <div class="row-dropdown">
+                  @if (emp.rol !== 'ADMINISTRADOR') {
+                    <button type="button" (click)="abrirEdicion(emp)">Editar empleado</button>
+                  }
+                  <button type="button" (click)="abrirEstado(emp)">Cambiar estado</button>
+                  <button type="button" (click)="abrirHorario(emp)">Asignar turno</button>
+                  <button type="button" (click)="abrirHistorial(emp)">Ver turnos</button>
                 </div>
-
-                <div class="row-dropdown" *ngIf="menuFilaAbiertoId() === emp.id">
-                  <button type="button" (click)="abrirModalEditarEmpleado(emp)">Editar empleado</button>
-                  <button type="button" (click)="abrirModalEstado(emp)">Cambiar estado</button>
-                  <button type="button" (click)="abrirModalHorario(emp)">Asignar horario</button>
-                  <button type="button" (click)="abrirModalHistorial(emp)">Ver historial</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- BARRA INFERIOR DE ACCIONES DEL EMPLEADO SELECCIONADO -->
-      <div class="selected-bar" *ngIf="empleadoSeleccionado() as sel">
-        <div class="selected-bar__info">
-          <span class="selected-bar__dot"></span>
-          <strong>{{ sel.nombreCompleto }} seleccionado</strong>
-        </div>
-
-        <div class="selected-bar__buttons">
-          <button type="button" class="action-chip" (click)="abrirModalPerfil(sel)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            <span>Ver perfil</span>
-          </button>
-
-          <button type="button" class="action-chip" (click)="abrirModalEditarEmpleado(sel)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-            <span>Editar empleado</span>
-          </button>
-
-          <button type="button" class="action-chip" (click)="abrirModalEstado(sel)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <polyline points="23 4 23 10 17 10" />
-              <polyline points="1 20 1 14 7 14" />
-              <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
-            </svg>
-            <span>Cambiar estado</span>
-          </button>
-
-          <button type="button" class="action-chip" (click)="abrirModalHorario(sel)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <rect x="3" y="4" width="18" height="18" rx="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
-            <span>Asignar horario</span>
-          </button>
-
-          <button type="button" class="action-chip" (click)="abrirModalHistorial(sel)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-            <span>Ver historial</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- PAGINACIÓN -->
-      <div class="pagination-footer">
-        <span class="pagination-footer__info">
-          Mostrando {{ paginaActual() * tamanoPagina() + 1 }}–{{
-            paginaActual() * tamanoPagina() + empleados().length
-          }}
-          de {{ totalElementos() }} empleados
-        </span>
-
-        <div class="pagination-footer__controls">
-          <button
-            type="button"
-            class="page-btn"
-            [disabled]="paginaActual() === 0"
-            (click)="irAPagina(paginaActual())"
-          >
-            ‹
-          </button>
-
-          <button
-            *ngFor="let p of paginasVisibles()"
-            type="button"
-            class="page-btn"
-            [class.page-btn--active]="paginaActual() + 1 === p"
-            (click)="irAPagina(p)"
-          >
-            {{ p }}
-          </button>
-
-          <button
-            type="button"
-            class="page-btn"
-            [disabled]="paginaActual() + 1 >= totalPaginas()"
-            (click)="irAPagina(paginaActual() + 2)"
-          >
-            ›
-          </button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- MODAL 1: CREAR / EDITAR EMPLEADO (POST / PUT /api/v1/admin/empleados) -->
-  <div class="modal-backdrop" *ngIf="modalFormularioAbierto()" (click)="modalFormularioAbierto.set(false)">
-    <div class="modal-card modal-card--lg" (click)="$event.stopPropagation()">
-      <h3>{{ modoEdicion() ? 'Editar empleado' : 'Registrar nuevo empleado' }}</h3>
-      <p class="modal-card__desc">
-        Según el contrato del backend, el personal operativo se registra como Pizzero, Despachador o Motorizado.
-      </p>
-
-      <div class="form-grid-2">
-        <label class="form-field">
-          <span>Nombres</span>
-          <input type="text" maxlength="80" [(ngModel)]="formEmpleado().nombres" />
-        </label>
-        <label class="form-field">
-          <span>Apellidos</span>
-          <input type="text" maxlength="80" [(ngModel)]="formEmpleado().apellidos" />
-        </label>
-
-        <label class="form-field">
-          <span>Tipo documento</span>
-          <select [(ngModel)]="formEmpleado().tipoDocumento">
-            <option value="DNI">DNI</option>
-            <option value="CE">Carné de extranjería</option>
-            <option value="PASAPORTE">Pasaporte</option>
-          </select>
-        </label>
-        <label class="form-field">
-          <span>N° Documento (8-20 caracteres)</span>
-          <input type="text" maxlength="20" [(ngModel)]="formEmpleado().numeroDocumento" />
-        </label>
-
-        <label class="form-field">
-          <span>Celular (9 dígitos, empieza con 9)</span>
-          <input type="text" maxlength="9" [(ngModel)]="formEmpleado().telefono" />
-        </label>
-        <label class="form-field">
-          <span>Correo electrónico</span>
-          <input type="email" maxlength="120" [(ngModel)]="formEmpleado().correo" />
-        </label>
-
-        <label class="form-field">
-          <span>Cargo / Rol operativo</span>
-          <select [(ngModel)]="formEmpleado().rol">
-            <option value="PIZZERO">Cocinero (Pizzero)</option>
-            <option value="DESPACHADOR">Vendedor / Despachador</option>
-            <option value="MOTORIZADO">Motorizado / Repartidor</option>
-          </select>
-        </label>
-        <label class="form-field">
-          <span>Sede</span>
-          <select [(ngModel)]="formEmpleado().sucursalId">
-            <option *ngFor="let s of sucursales()" [value]="s.id">{{ s.nombre }}</option>
-          </select>
-        </label>
-
-        <label class="form-field">
-          <span>Hora inicio turno</span>
-          <input type="time" [(ngModel)]="formEmpleado().horaInicio" />
-        </label>
-        <label class="form-field">
-          <span>Hora fin turno</span>
-          <input type="time" [(ngModel)]="formEmpleado().horaFin" />
-        </label>
-
-        <label class="form-field">
-          <span>Fecha de ingreso</span>
-          <input type="date" [(ngModel)]="formEmpleado().fechaIngreso" />
-        </label>
-        <label class="form-field" *ngIf="!modoEdicion()">
-          <span>Contraseña inicial (mín. 8 car., letras y números)</span>
-          <input type="password" [(ngModel)]="formEmpleado().contrasenaInicial" />
-        </label>
-
-        <label class="form-field">
-          <span>Pago base por turno (S/)</span>
-          <input type="number" step="0.01" min="0" [(ngModel)]="formEmpleado().pagoBaseTurno" />
-        </label>
-        <label class="form-field" *ngIf="formEmpleado().rol === 'MOTORIZADO'">
-          <span>Bono por entrega (S/)</span>
-          <input type="number" step="0.01" min="0" [(ngModel)]="formEmpleado().bonoPorEntrega" />
-        </label>
-      </div>
-
-      <div class="modal-card__actions">
-        <button type="button" class="btn-outline" (click)="modalFormularioAbierto.set(false)">
-          Cancelar
-        </button>
-        <button type="button" class="btn-primary" (click)="guardarEmpleado()">
-          {{ modoEdicion() ? 'Guardar cambios' : 'Registrar empleado' }}
-        </button>
-      </div>
-    </div>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7">
+              <app-estado-vacio [cargando]="cargando()" [icono]="IconoEquipo" titulo="No hay empleados"
+                mensaje="No hay personal con estos filtros. Registra a tu equipo con “Nuevo empleado”." />
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
   </div>
 
-  <!-- MODAL 2: VER PERFIL (GET /api/v1/admin/empleados/{id}) -->
-  <div class="modal-backdrop" *ngIf="modalPerfilAbierto()" (click)="modalPerfilAbierto.set(false)">
-    <div class="modal-card" *ngIf="empleadoSeleccionado() as emp" (click)="$event.stopPropagation()">
-      <h3>Perfil de {{ emp.nombreCompleto }}</h3>
-      <p class="modal-card__desc">{{ emp.sucursalNombre }} · Ingreso: {{ emp.fechaIngreso }}</p>
-
-      <div class="profile-details-grid">
-        <div><span>Cargo:</span> <strong>{{ etiquetaRol(emp) }}</strong></div>
-        <div><span>Estado:</span> <strong>{{ etiquetaEstado(emp.estado) }}</strong></div>
-        <div><span>Correo:</span> <strong>{{ emp.correo }}</strong></div>
-        <div><span>Teléfono:</span> <strong>{{ emp.telefono }}</strong></div>
-        <div><span>Horario base:</span> <strong>{{ emp.horaInicio }} – {{ emp.horaFin }}</strong></div>
-        <div><span>Pago base turno:</span> <strong>S/ {{ emp.pagoBaseTurno | number : '1.2-2' }}</strong></div>
-        <div *ngIf="emp.rol === 'MOTORIZADO'">
-          <span>Bono por entrega:</span> <strong>S/ {{ emp.bonoPorEntrega | number : '1.2-2' }}</strong>
-        </div>
+  @if (seleccionado(); as sel) {
+    <div class="selected-bar">
+      <div class="selected-bar__info">
+        <span class="selected-bar__dot"></span>
+        <strong>{{ sel.nombreCompleto }}</strong>
       </div>
-
-      <div class="modal-card__actions">
-        <button type="button" class="btn-primary" (click)="modalPerfilAbierto.set(false)">Cerrar</button>
+      <div class="selected-bar__buttons">
+        <button type="button" class="action-chip" (click)="abrirPerfil(sel)">Ver perfil</button>
+        @if (sel.rol !== 'ADMINISTRADOR') {
+          <button type="button" class="action-chip" (click)="abrirEdicion(sel)">Editar</button>
+        }
+        <button type="button" class="action-chip" (click)="abrirEstado(sel)">Cambiar estado</button>
+        <button type="button" class="action-chip" (click)="abrirHorario(sel)">Asignar turno</button>
+        <button type="button" class="action-chip" (click)="abrirHistorial(sel)">Ver turnos</button>
       </div>
     </div>
-  </div>
+  }
 
-  <!-- MODAL 3: CAMBIAR ESTADO (PATCH /api/v1/admin/empleados/{id}/estado) -->
-  <div class="modal-backdrop" *ngIf="modalEstadoAbierto()" (click)="modalEstadoAbierto.set(false)">
-    <div class="modal-card" *ngIf="empleadoSeleccionado() as emp" (click)="$event.stopPropagation()">
-      <h3>Cambiar estado de {{ emp.nombreCompleto }}</h3>
-      <p class="modal-card__desc">Actualiza la disponibilidad operativa del empleado.</p>
-
-      <label class="form-field">
-        <span>Estado del empleado</span>
-        <select [ngModel]="estadoSeleccionado()" (ngModelChange)="estadoSeleccionado.set($event)">
-          <option value="ACTIVO">Activo</option>
-          <option value="EN_TURNO">En turno</option>
-          <option value="DISPONIBLE">Disponible</option>
-          <option value="INACTIVO">Inactivo</option>
-          <option value="CON_LICENCIA">Con licencia</option>
-        </select>
-      </label>
-
-      <div class="modal-card__actions">
-        <button type="button" class="btn-outline" (click)="modalEstadoAbierto.set(false)">Cancelar</button>
-        <button type="button" class="btn-primary" (click)="confirmarCambioEstado()">Actualizar</button>
-      </div>
+  @if (totalElementos() > 0) {
+    <div class="pagination-footer">
+      <span class="pagination-footer__info">
+        Mostrando {{ paginaActual() * 8 + 1 }}–{{ paginaActual() * 8 + empleados().length }} de {{ totalElementos() }} empleados
+      </span>
+      <nav class="pagination-footer__controls" aria-label="Paginación">
+        <button type="button" class="page-btn" aria-label="Página anterior" [disabled]="paginaActual() === 0" (click)="irAPagina(paginaActual())">‹</button>
+        @for (p of paginasVisibles(); track p) {
+          <button type="button" class="page-btn" [class.page-btn--active]="paginaActual() + 1 === p"
+            [attr.aria-current]="paginaActual() + 1 === p ? 'page' : null" (click)="irAPagina(p)">{{ p }}</button>
+        }
+        <button type="button" class="page-btn" aria-label="Página siguiente" [disabled]="paginaActual() + 1 >= totalPaginas()" (click)="irAPagina(paginaActual() + 2)">›</button>
+      </nav>
     </div>
-  </div>
-
-  <!-- MODAL 4: ASIGNAR HORARIO (POST /api/v1/admin/empleados/{id}/turnos) -->
-  <div class="modal-backdrop" *ngIf="modalHorarioAbierto()" (click)="modalHorarioAbierto.set(false)">
-    <div class="modal-card" *ngIf="empleadoSeleccionado() as emp" (click)="$event.stopPropagation()">
-      <h3>Asignar turno a {{ emp.nombreCompleto }}</h3>
-      <p class="modal-card__desc">Programa un turno específico (fecha actual o futura).</p>
-
-      <label class="form-field">
-        <span>Fecha del turno</span>
-        <input type="date" [(ngModel)]="formHorario().fecha" />
-      </label>
-
-      <div class="form-grid-2">
-        <label class="form-field">
-          <span>Hora inicio</span>
-          <input type="time" [(ngModel)]="formHorario().horaInicio" />
-        </label>
-        <label class="form-field">
-          <span>Hora fin</span>
-          <input type="time" [(ngModel)]="formHorario().horaFin" />
-        </label>
-      </div>
-
-      <label class="form-field">
-        <span>Puesto asignado (opcional)</span>
-        <input type="text" maxlength="60" [(ngModel)]="formHorario().puesto" />
-      </label>
-
-      <div class="modal-card__actions">
-        <button type="button" class="btn-outline" (click)="modalHorarioAbierto.set(false)">Cancelar</button>
-        <button type="button" class="btn-primary" (click)="confirmarAsignacionHorario()">
-          Asignar turno
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 5: HISTORIAL DE TURNOS (GET /api/v1/admin/empleados/{id}/turnos) -->
-  <div class="modal-backdrop" *ngIf="modalHistorialAbierto()" (click)="modalHistorialAbierto.set(false)">
-    <div class="modal-card modal-card--lg" *ngIf="empleadoSeleccionado() as emp" (click)="$event.stopPropagation()">
-      <h3>Historial de turnos · {{ emp.nombreCompleto }}</h3>
-      <p class="modal-card__desc">Consulta los turnos programados, en curso y finalizados.</p>
-
-      <div class="form-grid-2">
-        <label class="form-field">
-          <span>Desde</span>
-          <input type="date" [(ngModel)]="filtroTurnosDesde" (change)="consultarTurnosEmpleado()" />
-        </label>
-        <label class="form-field">
-          <span>Hasta</span>
-          <input type="date" [(ngModel)]="filtroTurnosHasta" (change)="consultarTurnosEmpleado()" />
-        </label>
-      </div>
-
-      <div class="turnos-list">
-        <div *ngFor="let t of turnosHistorial()" class="turno-row">
-          <div>
-            <strong>{{ t.fecha }}</strong> · {{ t.horaInicio }} – {{ t.horaFin }}
-            <div class="turno-row__sub">{{ t.puesto || 'Turno operativo' }}</div>
-          </div>
-          <span class="status-badge status-badge--activo">{{ t.estado }}</span>
-        </div>
-        <p *ngIf="turnosHistorial().length === 0" class="modal-card__desc">
-          No se encontraron turnos en el rango seleccionado.
-        </p>
-      </div>
-
-      <div class="modal-card__actions">
-        <button type="button" class="btn-primary" (click)="modalHistorialAbierto.set(false)">Cerrar</button>
-      </div>
-    </div>
-  </div>
+  }
+</section>
 </div>
+
+@switch (modal()) {
+  @case ('formulario') {
+    <div class="modal-backdrop" (click)="cerrarModal()">
+      <form class="modal-card modal-card--lg" role="dialog" aria-modal="true" aria-labelledby="titulo-form" novalidate
+        [formGroup]="form" (ngSubmit)="guardarEmpleado()" (click)="$event.stopPropagation()">
+        <h3 id="titulo-form">{{ modoEdicion() ? 'Editar empleado' : 'Registrar empleado' }}</h3>
+        <p class="modal-card__desc">Con este correo y contraseña el empleado entra a su panel ({{ etiquetaRol(rolFormulario()) }}).</p>
+
+        @if (errorFormulario(); as error) {
+          <p class="form-error" role="alert">{{ error }}</p>
+        }
+
+        <div class="form-grid-2">
+          <app-text-field label="Nombres" [required]="true" autocomplete="off" formControlName="nombres" />
+          <app-text-field label="Apellidos" [required]="true" autocomplete="off" formControlName="apellidos" />
+          <app-select-field label="Tipo de documento" [opciones]="opcionesDocumento" [required]="true" formControlName="tipoDocumento" />
+          <app-text-field label="N° de documento" [required]="true" [maxlength]="12" formControlName="numeroDocumento" />
+          <app-text-field label="Celular" type="tel" inputmode="tel" [maxlength]="9" placeholder="9XXXXXXXX" [required]="true" formControlName="telefono" />
+          <app-text-field label="Correo" type="email" autocomplete="off" [required]="true" formControlName="correo" />
+          <app-select-field label="Cargo" [opciones]="opcionesRol" [required]="true" formControlName="rol" />
+          <app-select-field label="Sede" [opciones]="opcionesSucursal()" [required]="true" formControlName="sucursalId" />
+          <app-text-field label="Inicio de turno" type="time" [required]="true" formControlName="horaInicio" />
+          <app-text-field label="Fin de turno" type="time" [required]="true" formControlName="horaFin" />
+          <app-text-field label="Fecha de ingreso" type="date" [max]="hoy" [required]="true" formControlName="fechaIngreso" />
+          <app-text-field label="Pago base por turno (S/)" type="number" inputmode="numeric" [min]="'0'" formControlName="pagoBaseTurno" />
+          @if (rolFormulario() === 'MOTORIZADO') {
+            <app-text-field label="Bono por entrega (S/)" type="number" inputmode="numeric" [min]="'0'" formControlName="bonoPorEntrega" />
+          }
+          <app-text-field
+            [label]="modoEdicion() ? 'Nueva contraseña (opcional)' : 'Contraseña inicial'"
+            type="password" autocomplete="new-password" hint="Mínimo 8 caracteres, con letras y números"
+            [required]="!modoEdicion()" formControlName="contrasenaInicial" />
+        </div>
+
+        <div class="modal-card__actions">
+          <button type="button" class="btn-outline" (click)="cerrarModal()" [disabled]="guardando()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando…' : modoEdicion() ? 'Guardar cambios' : 'Registrar empleado' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @case ('perfil') {
+    @if (seleccionado(); as emp) {
+      <div class="modal-backdrop" (click)="cerrarModal()">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="titulo-perfil" (click)="$event.stopPropagation()">
+          <h3 id="titulo-perfil">{{ emp.nombreCompleto }}</h3>
+          <p class="modal-card__desc">{{ emp.sucursalNombre }} · Ingresó el {{ fecha(emp.fechaIngreso) }}</p>
+          <dl class="profile-details-grid">
+            <div><dt>Cargo</dt> <dd>{{ etiquetaRol(emp.rol) }}</dd></div>
+            <div><dt>Estado</dt> <dd>{{ etiquetaEstado(emp.estado) }}</dd></div>
+            <div><dt>Documento</dt> <dd>{{ emp.tipoDocumento }} {{ emp.numeroDocumento }}</dd></div>
+            <div><dt>Teléfono</dt> <dd>{{ emp.telefono }}</dd></div>
+            <div><dt>Correo</dt> <dd>{{ emp.correo }}</dd></div>
+            <div><dt>Horario base</dt> <dd>{{ emp.horaInicio.slice(0, 5) }} – {{ emp.horaFin.slice(0, 5) }}</dd></div>
+            <div><dt>Pago base por turno</dt> <dd>S/ {{ emp.pagoBaseTurno ?? 0 | number: '1.2-2' }}</dd></div>
+            @if (emp.rol === 'MOTORIZADO') {
+              <div><dt>Bono por entrega</dt> <dd>S/ {{ emp.bonoPorEntrega ?? 0 | number: '1.2-2' }}</dd></div>
+            }
+          </dl>
+          <div class="modal-card__actions">
+            <button type="button" class="btn-primary" (click)="cerrarModal()">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  @case ('estado') {
+    @if (seleccionado(); as emp) {
+      <div class="modal-backdrop" (click)="cerrarModal()">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="titulo-estado" (click)="$event.stopPropagation()">
+          <h3 id="titulo-estado">Estado de {{ emp.nombreCompleto }}</h3>
+          <p class="modal-card__desc">Un empleado inactivo o con licencia no puede entrar a su panel ni recibir pedidos.</p>
+          <label class="form-field">
+            <span>Estado</span>
+            <select (change)="estadoElegido.set($any(valor($event)))">
+              @for (e of estados; track e) {
+                <option [value]="e" [selected]="estadoElegido() === e">{{ etiquetaEstado(e) }}</option>
+              }
+            </select>
+          </label>
+          <div class="modal-card__actions">
+            <button type="button" class="btn-outline" (click)="cerrarModal()" [disabled]="guardando()">Cancelar</button>
+            <button type="button" class="btn-primary" (click)="confirmarEstado()" [disabled]="guardando() || estadoElegido() === emp.estado">
+              {{ guardando() ? 'Guardando…' : 'Actualizar estado' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  @case ('horario') {
+    @if (seleccionado(); as emp) {
+      <div class="modal-backdrop" (click)="cerrarModal()">
+        <form class="modal-card" role="dialog" aria-modal="true" aria-labelledby="titulo-horario" novalidate
+          [formGroup]="formHorario" (ngSubmit)="asignarHorario()" (click)="$event.stopPropagation()">
+          <h3 id="titulo-horario">Asignar turno a {{ emp.nombreCompleto }}</h3>
+          <p class="modal-card__desc">Programa un turno para hoy o una fecha futura.</p>
+          <app-text-field label="Fecha" type="date" [min]="hoy" [required]="true" formControlName="fecha" />
+          <div class="form-grid-2">
+            <app-text-field label="Hora de inicio" type="time" [required]="true" formControlName="horaInicio" />
+            <app-text-field label="Hora de fin" type="time" [required]="true" formControlName="horaFin" />
+          </div>
+          <app-text-field label="Puesto (opcional)" placeholder="Ej. Horno principal" [maxlength]="60" formControlName="puesto" />
+          <div class="modal-card__actions">
+            <button type="button" class="btn-outline" (click)="cerrarModal()" [disabled]="guardando()">Cancelar</button>
+            <button type="submit" class="btn-primary" [disabled]="guardando()">{{ guardando() ? 'Asignando…' : 'Asignar turno' }}</button>
+          </div>
+        </form>
+      </div>
+    }
+  }
+
+  @case ('historial') {
+    @if (seleccionado(); as emp) {
+      <div class="modal-backdrop" (click)="cerrarModal()">
+        <div class="modal-card modal-card--lg" role="dialog" aria-modal="true" aria-labelledby="titulo-turnos" (click)="$event.stopPropagation()">
+          <h3 id="titulo-turnos">Turnos de {{ emp.nombreCompleto }}</h3>
+          <div class="form-grid-2">
+            <label class="form-field">
+              <span>Desde</span>
+              <input type="date" [value]="turnosDesde()" (change)="turnosDesde.set(valor($event)); consultarTurnos()" />
+            </label>
+            <label class="form-field">
+              <span>Hasta</span>
+              <input type="date" [value]="turnosHasta()" (change)="turnosHasta.set(valor($event)); consultarTurnos()" />
+            </label>
+          </div>
+          <div class="turnos-list" [attr.aria-busy]="cargandoTurnos()">
+            @for (t of turnos(); track t.id) {
+              <div class="turno-row">
+                <div>
+                  <strong>{{ fecha(t.fecha) }}</strong> · {{ t.horaInicio.slice(0, 5) }} – {{ t.horaFin.slice(0, 5) }}
+                  <div class="turno-row__sub">{{ t.puesto || etiquetaRol(emp.rol) }}</div>
+                </div>
+                <div class="turno-row__lado">
+                  <span class="status-badge" [class.status-badge--activo]="t.estado === 'PROGRAMADO' || t.estado === 'EN_CURSO'"
+                    [class.status-badge--finalizado]="t.estado === 'FINALIZADO'" [class.status-badge--cancelado]="t.estado === 'CANCELADO'">{{ etiquetaTurno(t.estado) }}</span>
+                  @if (t.estado !== 'CANCELADO') {
+                    <button type="button" class="turno-row__cancelar" [disabled]="cancelandoTurnoId() !== null" (click)="cancelarTurno(t)"
+                      [attr.aria-label]="'Cancelar el turno del ' + fecha(t.fecha)" title="Si no asistió, el turno deja de contar para el pago base">
+                      {{ cancelandoTurnoId() === t.id ? 'Cancelando…' : 'No asistió' }}
+                    </button>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <p class="modal-card__desc">{{ cargandoTurnos() ? 'Buscando turnos…' : 'No hay turnos en este rango de fechas.' }}</p>
+            }
+          </div>
+          <div class="modal-card__actions">
+            <button type="button" class="btn-outline" (click)="abrirHorario(emp)">Asignar turno</button>
+            <button type="button" class="btn-primary" (click)="cerrarModal()">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+}

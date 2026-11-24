@@ -1,0 +1,49 @@
+@use 'sass:color';
+@use '../tokens/variables' as *;
+
+// Paleta de los paneles del personal (admin, cocina, despacho, reparto).
+// Todos los colores salen de los tokens de la marca; aquí solo se nombran por su uso en el panel.
+
+// Fondos
+$bg-sidebar: color.mix($color-cafe-tostado, $color-marron-suave, 82%);
+$bg-sidebar-card: $color-cafe-tostado;
+$bg-canvas: color.mix($color-crema-masa, $color-crema-claro, 50%);
+$bg-card: $color-blanco;
+$bg-cream: $color-crema-claro;
+$bg-cream-pill: $color-crema-claro;
+$bg-col: $color-crema-claro;
+$bg-bar-track: $color-crema-claro;
+$bg-soft: color.mix($color-crema-claro, $color-blanco, 50%);
+$bg-beige: $color-beige-horno;
+$bg-row-selected: color.mix($color-rojo-tomate, $color-blanco, 8%);
+
+// Texto
+$text-primary: $color-cafe-tostado;
+$text-secondary: $color-marron-suave;
+$text-muted: color.mix($color-marron-suave, $color-blanco, 72%);
+$text-on-dark: $color-crema-claro;
+$text-on-dark-muted: color.mix($color-arena, $color-marron-suave, 60%);
+
+// Bordes
+$border-soft: color.mix($color-arena, $color-blanco, 55%);
+$border-strong: $color-arena;
+
+// Marca
+$brand-red: $color-rojo-tomate;
+$brand-red-hover: $color-rojo-profundo;
+$brand-coral: color.mix($color-rojo-tomate, $color-blanco, 65%);
+$red-bg: color.mix($color-rojo-tomate, $color-blanco, 9%);
+$red-border: color.mix($color-rojo-tomate, $color-blanco, 28%);
+
+// Estados
+$green-text: $color-verde-albahaca;
+$green-live: color.mix($color-verde-albahaca, $color-blanco, 72%);
+$green-bg: color.mix($color-verde-albahaca, $color-blanco, 11%);
+$amber-text: color.mix($color-amarillo-queso, $color-cafe-tostado, 58%);
+$amber-bg: color.mix($color-amarillo-queso, $color-blanco, 22%);
+$info-text: $color-marron-suave;
+$info-bg: color.mix($color-marron-suave, $color-blanco, 12%);
+
+// Sombras y velos
+$shadow-ink: $color-cafe-tostado;
+$scrim: rgba($color-cafe-tostado, 0.45);

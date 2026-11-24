@@ -13,6 +13,7 @@ public record ResenaResponse(
         String comentario,
         Instant creadoEn,
         boolean destacada,
+        boolean visible,
         List<CalificacionProductoResponse> calificaciones
 ) {
 }

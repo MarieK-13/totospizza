@@ -1,41 +1,35 @@
 @use '../../../styles/tokens/variables' as *;
 @use '../../../styles/mixins' as *;
+@use '../../../styles/panel/paleta' as panel;
 
 :host {
   display: block;
-  position: sticky;
-  top: 0;
-  z-index: $z-header;
 }
 
 .topbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: $space-3;
-  height: 4rem;
-  padding-inline: $container-gutter;
-  border-bottom: $border-width solid $color-border-default;
-  background-color: $color-background-raised;
+  justify-content: space-between;
+  gap: $space-4;
+
+  &__titles {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
 
   &__menu {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: $control-height-md;
-    height: $control-height-md;
-    margin-left: -$space-2;
-    padding: 0;
-    border: 0;
-    border-radius: $radius-sm;
-    background: none;
-    color: $color-text-primary;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid panel.$border-soft;
+    border-radius: 50%;
+    background: panel.$bg-card;
+    color: panel.$text-primary;
     cursor: pointer;
-    @include transition((background-color));
     @include focus-ring;
-
-    &:hover {
-      background-color: $color-background-alt;
-    }
 
     @include up(lg) {
       display: none;
@@ -44,16 +38,143 @@
 
   &__title {
     margin: 0;
-    color: $color-text-primary;
-    font-size: 1rem;
-    font-weight: $weight-semibold;
-    line-height: 1.5rem;
+    color: panel.$text-primary;
+    font-family: $font-titulos;
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 1.1;
   }
 
-  &__actions {
+  &__subtitle {
+    margin: 0.125rem 0 0;
+    color: panel.$text-secondary;
+    font-size: 0.8125rem;
+  }
+
+  &__actions,
+  &__page-actions {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__date-pill {
+    display: none;
     align-items: center;
     gap: $space-2;
-    margin-left: auto;
+    margin: 0;
+    padding: 0.5625rem 0.875rem;
+    border: 1px solid panel.$border-soft;
+    border-radius: $radius-md;
+    background-color: panel.$bg-cream-pill;
+    color: panel.$text-primary;
+    font-size: 0.8125rem;
+    font-weight: $weight-medium;
+    text-transform: capitalize;
+
+    lucide-icon {
+      color: panel.$brand-red;
+    }
+
+    @include up(xl) {
+      display: flex;
+    }
+  }
+
+  &__user {
+    position: relative;
+  }
+
+  &__profile {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.3125rem 0.875rem 0.3125rem 0.375rem;
+    border: 1px solid panel.$border-soft;
+    border-radius: $radius-pill;
+    background-color: panel.$bg-card;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    @include focus-ring;
+  }
+
+  &__avatar {
+    display: grid;
+    place-items: center;
+    width: 2.125rem;
+    height: 2.125rem;
+    border-radius: 50%;
+    background-color: panel.$red-bg;
+    color: panel.$brand-red;
+    font-size: 0.8125rem;
+    font-weight: $weight-bold;
+  }
+
+  &__user-info {
+    display: none;
+    flex-direction: column;
+    line-height: 1.2;
+    text-align: left;
+
+    @include up(md) {
+      display: flex;
+    }
+  }
+
+  &__user-name {
+    color: panel.$text-primary;
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__user-role {
+    color: panel.$text-secondary;
+    font-size: 0.6875rem;
+  }
+
+  &__chevron {
+    color: panel.$text-secondary;
+  }
+}
+
+.user-menu {
+  position: absolute;
+  top: calc(100% + #{$space-2});
+  right: 0;
+  z-index: $z-dropdown;
+  border: 1px solid panel.$border-soft;
+  border-radius: $radius-lg;
+  background: panel.$bg-card;
+  box-shadow: 0 16px 40px -16px rgba(panel.$shadow-ink, 0.35);
+}
+
+.user-menu {
+  min-width: 12rem;
+  padding: $space-2;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    width: 100%;
+    padding: 0.625rem $space-3;
+    border: 0;
+    border-radius: $radius-md;
+    background: none;
+    color: panel.$text-primary;
+    font: inherit;
+    font-size: 0.875rem;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: panel.$bg-soft;
+    }
+
+    &--salir {
+      color: panel.$brand-red;
+    }
   }
 }

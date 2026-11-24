@@ -1,0 +1,200 @@
+<ng-template appPanelAcciones>
+  <button type="button" class="panel-cta" (click)="abrirNueva()">
+    <lucide-icon [img]="Icons.Plus" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+    Nueva promoción
+  </button>
+</ng-template>
+
+<div class="crud" [attr.aria-busy]="cargando()">
+  <section class="crud-kpis">
+    <app-panel-kpi etiqueta="Promociones" [valor]="promociones().length" [icono]="Icons.Megaphone" tono="rojo" pie="registradas" />
+    <app-panel-kpi etiqueta="Activas" [valor]="activas()" [icono]="Icons.Tag" tono="verde" [pie]="vigentes() + ' vigentes ahora'" />
+    <app-panel-kpi etiqueta="En pérdida" [valor]="perdidas()" [icono]="Icons.TrendingDown" [tono]="perdidas() ? 'rojo' : 'verde'"
+      pie="ofertas flash bajo su costo" />
+    <app-panel-kpi etiqueta="Vencidas" [valor]="vencidas()" [icono]="Icons.CalendarClock" tono="azul" pie="ya no se muestran" />
+  </section>
+
+  <section class="crud-toolbar">
+    <div class="crud-toolbar__grupo">
+      <div class="crud-segmento" role="group" aria-label="Ver">
+        <button type="button" [class.is-activo]="vista() === 'todas'" [attr.aria-pressed]="vista() === 'todas'" (click)="vista.set('todas')">Todas</button>
+        <button type="button" [class.is-activo]="vista() === 'activas'" [attr.aria-pressed]="vista() === 'activas'" (click)="vista.set('activas')">Activas</button>
+        <button type="button" [class.is-activo]="vista() === 'perdida'" [attr.aria-pressed]="vista() === 'perdida'" (click)="vista.set('perdida')">
+          Por sobreproducción ({{ perdidas() }})
+        </button>
+      </div>
+    </div>
+    <label class="crud-buscar">
+      <lucide-icon [img]="Icons.Search" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      <input type="search" placeholder="Buscar promoción" aria-label="Buscar promoción" [value]="busqueda()" (input)="busqueda.set(valor($event))" />
+    </label>
+  </section>
+
+  <section class="crud-card">
+    <div class="crud-card__cabecera">
+      <h2 class="crud-card__titulo">{{ vista() === 'perdida' ? 'Ofertas que dan pérdida' : 'Promociones' }}</h2>
+      <span class="crud-card__meta">
+        {{ vista() === 'perdida' ? 'Útiles para mover la sobreproducción del día; vigila cuánto pierdes' : 'Solo las activas y vigentes se muestran en la tienda' }}
+      </span>
+    </div>
+
+    @if (filtradas().length) {
+      <div class="crud-tabla-wrap">
+        <table class="crud-tabla">
+          <thead>
+            <tr>
+              <th>Promoción</th>
+              <th>Precio</th>
+              <th>Margen</th>
+              <th>Vigencia</th>
+              <th>Activa</th>
+              <th class="der"><span class="sr-only">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of filtradas(); track p.id) {
+              <tr [class.is-apagado]="!p.activa">
+                <td>
+                  <div class="crud-celda">
+                    @if (p.imagenUrl) {
+                      <img class="crud-celda__img" [src]="p.imagenUrl" alt="" loading="lazy" />
+                    } @else {
+                      <span class="crud-celda__img muestra" [class]="'crud-celda__img muestra muestra--' + p.colorFondo.toLowerCase()" aria-hidden="true"></span>
+                    }
+                    <div class="crud-celda__texto">
+                      <strong>{{ p.titulo }}</strong>
+                      <span>{{ tipos[p.tipo] }}{{ p.etiqueta ? ' · ' + p.etiqueta : '' }} · {{ p.items.length }} {{ p.items.length === 1 ? 'producto' : 'productos' }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="num">
+                  <strong>S/ {{ p.precioPromocional | number: '1.2-2' }}</strong>
+                  @if (p.precioAnterior) {
+                    <s class="antes">S/ {{ p.precioAnterior | number: '1.2-2' }}</s>
+                  }
+                </td>
+                <td class="num">
+                  @if (margen(p); as m) {
+                    <span class="crud-badge" [class.crud-badge--off]="m < 0" [class.crud-badge--ok]="m >= 0">
+                      {{ m >= 0 ? '+' : '−' }} S/ {{ (m < 0 ? -m : m) | number: '1.2-2' }}
+                    </span>
+                  } @else if (margen(p) === 0) {
+                    <span class="crud-badge crud-badge--aviso">S/ 0.00</span>
+                  } @else {
+                    <span class="sin-dato">Sin costo</span>
+                  }
+                </td>
+                <td>
+                  <span class="crud-badge" [class.crud-badge--ok]="vigencia(p) === 'Vigente'" [class.crud-badge--info]="vigencia(p) === 'Programada'">{{ vigencia(p) }}</span>
+                  <small class="fechas">{{ fechaHora(p.vigenteDesde) }} → {{ fechaHora(p.vigenteHasta) }}</small>
+                </td>
+                <td>
+                  <button type="button" class="crud-switch" role="switch" [attr.aria-checked]="p.activa"
+                    [attr.aria-label]="(p.activa ? 'Pausar ' : 'Activar ') + p.titulo" (click)="alternarActiva(p)"></button>
+                </td>
+                <td class="der">
+                  <button type="button" class="crud-icono-btn" title="Editar" [attr.aria-label]="'Editar ' + p.titulo" (click)="abrirEdicion(p)">
+                    <lucide-icon [img]="Icons.Pencil" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <app-estado-vacio [cargando]="cargando()" [icono]="vista() === 'perdida' ? Icons.TrendingDown : Icons.Megaphone"
+        [titulo]="vista() === 'perdida' ? 'Ninguna oferta da pérdida' : promociones().length ? 'Sin coincidencias' : 'Aún no hay promociones'"
+        [mensaje]="vista() === 'perdida' ? 'Las ofertas flash con precio menor a su costo estimado aparecerán aquí.' : promociones().length ? 'Cambia la búsqueda o el filtro.' : 'Lanza un combo o una oferta flash para la sobreproducción del día.'">
+        @if (!promociones().length) {
+          <button type="button" class="crud-btn crud-btn--primario crud-btn--sm" (click)="abrirNueva()">Crear promoción</button>
+        }
+      </app-estado-vacio>
+    }
+  </section>
+
+  @if (modalAbierto()) {
+    <app-panel-modal [titulo]="editando() ? 'Editar promoción' : 'Nueva promoción'" ancho="xl" (cerrar)="cerrar()"
+      descripcion="Con el costo estimado el panel te avisa si una oferta flash se vende en pérdida.">
+      <form id="form-promocion" class="crud-form" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        @if (errorFormulario(); as error) {
+          <p class="crud-aviso" role="alert">{{ error }}</p>
+        }
+        <div class="promo-form">
+          <div>
+            <p class="crud-subtitulo">Contenido</p>
+            <app-text-field label="Título" [required]="true" [maxlength]="120" placeholder="Ej. Dúo familiar" formControlName="titulo" />
+            <div class="crud-grid-2">
+              <app-select-field label="Tipo" [opciones]="opcionesTipo" [required]="true" formControlName="tipo" />
+              <app-text-field label="Etiqueta corta" [maxlength]="40" placeholder="Ej. -30%" formControlName="etiqueta" />
+            </div>
+            <label class="crud-campo">
+              Descripción
+              <textarea formControlName="descripcion" maxlength="500" rows="2"></textarea>
+            </label>
+            <label class="crud-campo">
+              Condiciones
+              <textarea formControlName="condiciones" maxlength="500" rows="2" placeholder="Ej. Válido solo delivery"></textarea>
+            </label>
+            <div class="crud-grid-2">
+              <app-select-field label="Color de fondo" [opciones]="opcionesColor" [required]="true" formControlName="colorFondo" />
+              <app-text-field label="Orden" type="number" inputmode="numeric" [min]="'0'" formControlName="orden" />
+            </div>
+            <app-imagen-field etiqueta="Imagen" carpeta="PROMOCIONES" formControlName="imagenUrl" />
+          </div>
+
+          <div>
+            <p class="crud-subtitulo">Precio y vigencia</p>
+            <div class="crud-grid-3">
+              <app-text-field label="Precio promo (S/)" type="number" inputmode="numeric" [min]="'0'" [required]="true" formControlName="precioPromocional" />
+              <app-text-field label="Precio antes (S/)" type="number" inputmode="numeric" [min]="'0'" formControlName="precioAnterior" />
+              <app-text-field label="Costo estimado (S/)" type="number" inputmode="numeric" [min]="'0'" formControlName="costoEstimado" />
+            </div>
+            <div class="crud-grid-2">
+              <label class="crud-campo">
+                Desde *
+                <input type="datetime-local" formControlName="vigenteDesde" [class.is-invalido]="form.controls.vigenteDesde.invalid && form.controls.vigenteDesde.touched" />
+              </label>
+              <label class="crud-campo">
+                Hasta *
+                <input type="datetime-local" formControlName="vigenteHasta" [class.is-invalido]="(form.controls.vigenteHasta.invalid || form.errors?.['vigencia']) && form.controls.vigenteHasta.touched" />
+                @if (form.errors?.['vigencia'] && form.controls.vigenteHasta.touched) {
+                  <small class="crud-error">Debe terminar después de que empieza</small>
+                }
+              </label>
+            </div>
+            <div class="crud-fila-switch">
+              <span>Activa<small>Pausada = no se muestra aunque esté vigente.</small></span>
+              <button type="button" class="crud-switch" role="switch" aria-label="Activa" [attr.aria-checked]="form.controls.activa.value"
+                (click)="form.controls.activa.setValue(!form.controls.activa.value)"></button>
+            </div>
+
+            <p class="crud-subtitulo">Productos incluidos</p>
+            <div class="crud-lista-editable" formArrayName="items">
+              @for (item of items.controls; track item; let i = $index) {
+                <div class="crud-lista-editable__fila" [formGroupName]="i">
+                  <div class="crud-grid-3 item-promo">
+                    <app-select-field label="Producto" [opciones]="opcionesProducto()" [required]="true" formControlName="productoId" />
+                    <app-select-field label="Tamaño" [opciones]="opcionesTamano()" formControlName="tamanoId" />
+                    <app-text-field label="Cantidad" type="number" inputmode="numeric" [min]="'1'" [max]="'20'" [required]="true" formControlName="cantidad" />
+                  </div>
+                  <button type="button" class="crud-icono-btn crud-icono-btn--peligro" [attr.aria-label]="'Quitar producto ' + (i + 1)"
+                    [disabled]="items.length === 1" (click)="quitarItem(i)">
+                    <lucide-icon [img]="Icons.Trash2" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                  </button>
+                </div>
+              }
+            </div>
+            <button type="button" class="crud-btn crud-btn--sm" (click)="agregarItem()" [disabled]="items.length >= 20">+ Agregar producto</button>
+          </div>
+        </div>
+      </form>
+      <div acciones>
+        <button type="button" class="crud-btn" (click)="cerrar()" [disabled]="guardando()">Cancelar</button>
+        <button type="submit" form="form-promocion" class="crud-btn crud-btn--primario" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : editando() ? 'Guardar cambios' : 'Crear promoción' }}
+        </button>
+      </div>
+    </app-panel-modal>
+  }
+</div>

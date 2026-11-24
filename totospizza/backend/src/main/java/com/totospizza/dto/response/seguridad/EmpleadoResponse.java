@@ -6,6 +6,7 @@ import java.time.LocalTime;
 
 import com.totospizza.model.enums.EstadoEmpleado;
 import com.totospizza.model.enums.Rol;
+import com.totospizza.model.enums.TipoDocumento;
 
 /**
  * Empleado con su información laboral.
@@ -24,6 +25,10 @@ public record EmpleadoResponse(
         LocalTime horaFin,
         LocalDate fechaIngreso,
         BigDecimal pagoBaseTurno,
-        BigDecimal bonoPorEntrega
+        BigDecimal bonoPorEntrega,
+        String nombres,
+        String apellidos,
+        TipoDocumento tipoDocumento,
+        String numeroDocumento
 ) {
 }

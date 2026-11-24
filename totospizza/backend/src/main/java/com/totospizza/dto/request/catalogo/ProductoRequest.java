@@ -25,6 +25,7 @@ public record ProductoRequest(
         boolean disponible,
         boolean destacado,
         @NotNull @Size(max = 10) Set<Long> etiquetaIds,
-        @NotNull @Valid @Size(max = 10) List<ProductoTamanoRequest> precios
+        @NotNull @Valid @Size(max = 10) List<ProductoTamanoRequest> precios,
+        @Size(max = 30) Set<Long> ingredienteIds
 ) {
 }

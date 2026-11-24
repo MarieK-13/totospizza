@@ -14,6 +14,12 @@ public interface PedidoEstadoService {
 
     Pedido avanzar(Long pedidoId, EstadoPedido nuevo, Long usuarioId, String comentario);
 
+    /**
+     * Un delivery que no se pudo entregar vuelve de EN_CAMINO a LISTO sin crear otra entrega,
+     * para que el despachador lo reasigne o lo cancele.
+     */
+    Pedido devolverAlMostrador(Long pedidoId, Long usuarioId, String comentario);
+
     Pedido cancelar(Long pedidoId, Long usuarioId, String motivo);
 
     PedidoResponse cambiarEstado(Long pedidoId, Long usuarioId, CambiarEstadoPedidoRequest request);

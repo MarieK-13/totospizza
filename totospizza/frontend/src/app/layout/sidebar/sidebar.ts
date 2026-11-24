@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { LogOut, LucideAngularModule, X } from 'lucide-angular';
+import { House, LogOut, LucideAngularModule, X } from 'lucide-angular';
 import type { NavItem } from '../../core/models/nav-item.model';
+import { iniciales } from '../../core/utils/roles';
 
+/** Menú lateral oscuro del panel. Reutilizable: recibe los enlaces del rol. */
 @Component({
   selector: 'app-sidebar',
   imports: [RouterLink, RouterLinkActive, LucideAngularModule],
@@ -20,15 +22,12 @@ export class Sidebar {
   readonly closed = output<void>();
   readonly logout = output<void>();
 
-  protected readonly initials = computed(() =>
-    this.userName()
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0].toUpperCase())
-      .join(''),
-  );
+  protected readonly initials = computed(() => {
+    const [nombre = '', apellido = ''] = this.userName().split(' ').filter(Boolean);
+    return iniciales(nombre, apellido);
+  });
 
   protected readonly LogoutIcon = LogOut;
+  protected readonly HomeIcon = House;
   protected readonly CloseIcon = X;
 }

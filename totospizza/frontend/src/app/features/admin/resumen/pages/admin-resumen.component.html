@@ -1,506 +1,362 @@
-<div class="admin-layout" (click)="menuFilaAbiertoId.set(null)">
-  <!-- SIDEBAR IZQUIERDO -->
-  <aside class="sidebar">
-    <div class="sidebar__brand">
-      <div class="sidebar__logo-badge">
-        <span class="sidebar__logo-top">TOTO'S</span>
-        <span class="sidebar__logo-sub">PIZZA</span>
-      </div>
-      <span class="sidebar__brand-title">TOTO'S PIZZA</span>
-    </div>
+<ng-template appPanelAcciones>
+  <select class="branch-select" aria-label="Filtrar por sucursal" (change)="cambiarSucursal($event)">
+    <option value="">Todas las sedes</option>
+    @for (s of sucursales(); track s.id) {
+      <option [value]="s.id" [selected]="s.id === sucursalId()">{{ s.nombre }}</option>
+    }
+  </select>
+</ng-template>
 
-    <nav class="sidebar__nav">
-      <button
-        type="button"
-        class="sidebar__nav-item"
-        [class.sidebar__nav-item--active]="rutaActiva() === 'resumen'"
-        (click)="navegarA('resumen')"
-      >
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="3" width="7" height="7" rx="1.5" />
-          <rect x="14" y="3" width="7" height="7" rx="1.5" />
-          <rect x="3" y="14" width="7" height="7" rx="1.5" />
-          <rect x="14" y="14" width="7" height="7" rx="1.5" />
+<div class="resumen" [attr.aria-busy]="cargando()" (click)="menuFilaAbiertoId.set(null)">
+<!-- BANNER DE BIENVENIDA -->
+<section class="welcome-banner">
+  <div>
+    <h2 class="welcome-banner__title">{{ saludo }}</h2>
+    <p class="welcome-banner__text">
+      Hoy van {{ pedidosEntregados() }} pedidos entregados y {{ pedidosEnCurso() }} en curso.
+    </p>
+  </div>
+  <div class="welcome-banner__live">
+    <span class="status-dot status-dot--green"></span>
+    <span>Operación en tiempo real</span>
+  </div>
+</section>
+
+<!-- FILA 1: 4 TARJETAS KPI -->
+<section class="kpi-grid">
+  <!-- KPI 1: Pedidos de hoy -->
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Pedidos de hoy</span>
+      <div class="kpi-card__icon kpi-card__icon--red">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 01-8 0" />
         </svg>
-        <span>Resumen</span>
-        <span class="sidebar__active-pill" *ngIf="rutaActiva() === 'resumen'"></span>
-      </button>
-
-      <button
-        type="button"
-        class="sidebar__nav-item"
-        [class.sidebar__nav-item--active]="rutaActiva() === 'pedidos'"
-        (click)="navegarA('pedidos')"
-      >
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-          <rect x="9" y="3" width="6" height="4" rx="1" />
-          <path d="M9 12h6M9 16h4" />
-        </svg>
-        <span>Pedidos</span>
-      </button>
-
-      <button
-        type="button"
-        class="sidebar__nav-item"
-        [class.sidebar__nav-item--active]="rutaActiva() === 'empleados'"
-        (click)="navegarA('empleados')"
-      >
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-        </svg>
-        <span>Empleados</span>
-      </button>
-
-      <button
-        type="button"
-        class="sidebar__nav-item"
-        [class.sidebar__nav-item--active]="rutaActiva() === 'finanzas'"
-        (click)="navegarA('finanzas')"
-      >
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-          <polyline points="17 6 23 6 23 12" />
-        </svg>
-        <span>Finanzas</span>
-      </button>
-
-      <button
-        type="button"
-        class="sidebar__nav-item"
-        [class.sidebar__nav-item--active]="rutaActiva() === 'configuracion'"
-        (click)="rutaActiva.set('configuracion')"
-      >
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="3" />
-          <path
-            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
-          />
-        </svg>
-        <span>Configuración</span>
-      </button>
-    </nav>
-
-    <!-- Tarjeta Turno Activo -->
-    <div class="sidebar__shift-card">
-      <div class="sidebar__shift-status">
-        <span class="status-dot status-dot--green"></span>
-        <span>TURNO ACTIVO</span>
-      </div>
-      <div class="sidebar__shift-hours">
-        {{ sucursalActual()?.horarios?.[0]?.horaApertura || '12:00' }} —
-        {{ sucursalActual()?.horarios?.[0]?.horaCierre || '22:30' }}
-      </div>
-      <div class="sidebar__shift-location">
-        {{ sucursalActual()?.nombre || 'Sede Miraflores' }} · Caja principal
       </div>
     </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">{{ pedidosHoy() }}</strong>
+      @if (variacionPedidosHoy() !== null) {
+        @let v = variacionPedidosHoy()!;
+        <span class="kpi-card__trend" [class.kpi-card__trend--up]="v >= 0" [class.kpi-card__trend--down]="v < 0">{{ v >= 0 ? '↗ +' : '↘ ' }}{{ v }}%</span>
+      }
+    </div>
+    <div class="kpi-card__footer">vs. el {{ diaComparado() }} anterior</div>
+  </article>
 
-    <button
-      type="button"
-      class="sidebar__help-btn"
-      (click)="mostrarToast('ok', 'Soporte técnico Toto\'s Pizza disponible.')"
-    >
-      <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-        <line x1="12" y1="17" x2="12.01" y2="17" />
-      </svg>
-      <span>Ayuda y soporte</span>
-    </button>
-  </aside>
+  <!-- KPI 2: Ganancia del día -->
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Ganancia del día</span>
+      <div class="kpi-card__icon kpi-card__icon--green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="2" y="6" width="20" height="12" rx="2" />
+          <circle cx="12" cy="12" r="2" />
+          <path d="M6 12h.01M18 12h.01" />
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">S/ {{ gananciaDia() | number : '1.0-0' }}</strong>
+      </div>
+    <div class="kpi-card__footer">margen neto {{ margenNetoDia() }}% · ventas S/ {{ ventasHoy() | number: '1.0-0' }}</div>
+  </article>
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <main class="main-content">
-    <!-- Toast de feedback -->
-    <div
-      *ngIf="toastMensaje() as toast"
-      class="toast-banner"
-      [class.toast-banner--error]="toast.tipo === 'error'"
-    >
-      {{ toast.texto }}
+  <!-- KPI 3: Ticket promedio -->
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Ticket promedio</span>
+      <div class="kpi-card__icon kpi-card__icon--amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <path d="M12 8v8M9.5 10.5c0-1.1 1.1-2 2.5-2s2.5.9 2.5 2-1.1 1.5-2.5 1.5-2.5.9-2.5 2 1.1 2 2.5 2 2.5-.9 2.5-2" />
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">S/ {{ ticketPromedio() | number : '1.2-2' }}</strong>
+      </div>
+    <div class="kpi-card__footer">promedio de la semana S/ {{ ticketSemana() | number: '1.2-2' }}</div>
+  </article>
+
+  <!-- KPI 4: Motorizados activos -->
+  <article class="kpi-card">
+    <div class="kpi-card__top">
+      <span class="kpi-card__label">Motorizados activos</span>
+      <div class="kpi-card__icon kpi-card__icon--blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="5.5" cy="17.5" r="3.5" />
+          <circle cx="18.5" cy="17.5" r="3.5" />
+          <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2" />
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-card__middle">
+      <strong class="kpi-card__value">
+        {{ conteoMotorizados().enOperacion }}
+        <span class="kpi-card__subvalue">/ {{ conteoMotorizados().total }}</span>
+      </strong>
+    </div>
+    <div class="kpi-card__footer">
+      {{ conteoMotorizados().disponibles }} disponibles ahora
+    </div>
+  </article>
+</section>
+
+<!-- GANANCIAS ACUMULADAS Y PENDIENTES -->
+<section class="crud resumen-extra">
+  <div class="crud-kpis">
+    <app-panel-kpi etiqueta="Ganancia de la semana" [valor]="'S/ ' + ((resumen()?.gananciaSemanal ?? 0) | number: '1.0-0')" [icono]="Iconos.Semana" tono="verde" pie="ingresos menos gastos" />
+    <app-panel-kpi etiqueta="Ganancia del mes" [valor]="'S/ ' + ((resumen()?.gananciaMensual ?? 0) | number: '1.0-0')" [icono]="Iconos.Mes" tono="verde" pie="ingresos menos gastos" />
+    <app-panel-kpi etiqueta="Ganancia del año" [valor]="'S/ ' + ((resumen()?.gananciaAnual ?? 0) | number: '1.0-0')" [icono]="Iconos.Anio" tono="azul" pie="acumulado del año" />
+    <app-panel-kpi etiqueta="Deuda a motorizados" [valor]="'S/ ' + ((resumen()?.deudaMotorizados ?? 0) | number: '1.2-2')" [icono]="Iconos.Deuda" tono="ambar" pie="liquidaciones por pagar" />
+  </div>
+  @if ((resumen()?.alertasStockBajo ?? 0) > 0) {
+    <a class="alerta-stock" routerLink="/admin/inventario">
+      <lucide-icon [img]="Iconos.Alerta" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      <span><strong>{{ resumen()?.alertasStockBajo }}</strong> {{ resumen()?.alertasStockBajo === 1 ? 'ingrediente tiene' : 'ingredientes tienen' }} stock bajo.</span>
+      <span class="alerta-stock__accion">Revisar inventario →</span>
+    </a>
+  }
+</section>
+
+<!-- FILA 2: GRÁFICO SEMANAL Y PIZZAS MÁS VENDIDAS -->
+<section class="analytics-grid">
+  <!-- Pedidos por día -->
+  <article class="panel-card">
+    <div class="panel-card__header">
+      <h3 class="panel-card__title">Pedidos por día</h3>
+      <span class="panel-card__meta">Últimos 7 días</span>
     </div>
 
-    <!-- HEADER SUPERIOR -->
-    <header class="topbar">
-      <div class="topbar__titles">
-        <h1 class="topbar__title">Resumen</h1>
-        <div class="topbar__subtitle">
-          <span>Visión general del negocio ·</span>
-          <select
-            class="topbar__branch-select"
-            [ngModel]="sucursalSeleccionadaId()"
-            (ngModelChange)="cambiarSucursal($event)"
-            aria-label="Seleccionar sucursal"
-          >
-            <option *ngFor="let s of sucursales()" [value]="s.id">
-              {{ s.nombre }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <div class="topbar__actions">
-        <div class="topbar__date-pill">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          <span>{{ fechaHoraActual() }}</span>
-        </div>
-
-        <!-- Notificaciones (GET /api/v1/notificaciones) -->
-        <div class="notif-wrapper" (click)="$event.stopPropagation()">
-          <button
-            type="button"
-            class="topbar__bell-btn"
-            (click)="toggleNotificaciones()"
-            aria-label="Notificaciones"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 01-3.46 0" />
-            </svg>
-            <span class="topbar__bell-badge" *ngIf="notificacionesNoLeidas() > 0">
-              {{ notificacionesNoLeidas() }}
-            </span>
-          </button>
-
-          <div class="notif-popover" *ngIf="panelNotificacionesAbierto()">
-            <div class="notif-popover__header">
-              <strong>Notificaciones</strong>
-              <span>{{ notificacionesNoLeidas() }} sin leer</span>
-            </div>
-            <div
-              *ngFor="let n of notificaciones()"
-              class="notif-popover__item"
-              [class.notif-popover__item--unread]="!n.leida"
-              (click)="marcarNotificacionLeida(n)"
-            >
-              <div class="notif-popover__title">{{ n.titulo }}</div>
-              <div class="notif-popover__msg">{{ n.mensaje }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Perfil Administradora -->
-        <div class="topbar__profile">
-          <div class="topbar__avatar">{{ usuario().iniciales }}</div>
-          <div class="topbar__user-info">
-            <span class="topbar__user-name">{{ usuario().nombres }} {{ usuario().apellidos }}</span>
-            <span class="topbar__user-role">{{ usuario().rolEtiqueta }}</span>
-          </div>
-          <svg class="topbar__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-      </div>
-    </header>
-
-    <!-- BANNER DE BIENVENIDA -->
-    <section class="welcome-banner">
+    <div class="chart-summary-row">
       <div>
-        <h2 class="welcome-banner__title">Buenas tardes, {{ usuario().nombres }}</h2>
-        <p class="welcome-banner__text">
-          La operación marcha bien: 18 pedidos completados en la última hora.
-        </p>
+        <strong class="chart-summary-row__total">{{ totalPedidosSemana() }}</strong>
+        <span class="chart-summary-row__label"> pedidos esta semana</span>
       </div>
-      <div class="welcome-banner__live">
-        <span class="status-dot status-dot--green"></span>
-        <span>Operación en tiempo real</span>
-      </div>
-    </section>
+      @if (variacionSemanal() !== null) {
+        @let v = variacionSemanal()!;
+        <span class="badge-pill" [class.badge-pill--green]="v >= 0" [class.badge-pill--red]="v < 0">{{ v >= 0 ? '↗ +' : '↘ ' }}{{ v }}% vs. semana anterior</span>
+      }
+    </div>
 
-    <!-- FILA 1: 4 TARJETAS KPI -->
-    <section class="kpi-grid">
-      <!-- KPI 1: Pedidos de hoy -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Pedidos de hoy</span>
-          <div class="kpi-card__icon kpi-card__icon--red">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <path d="M16 10a4 4 0 01-8 0" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">{{ pedidosHoy() }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ +12.8%</span>
-        </div>
-        <div class="kpi-card__footer">vs. viernes anterior</div>
-      </article>
+    <div class="bar-chart">
+      @for (barra of barrasSemana(); track $index; let i = $index) {
+      <button type="button" class="bar-chart__col" [attr.aria-label]="barra.diaCompleto + ' ' + barra.numeroDia + ': ' + barra.pedidos + ' pedidos'"
+        (mouseenter)="barraSeleccionadaIdx.set(i)" (focus)="barraSeleccionadaIdx.set(i)" (click)="barraSeleccionadaIdx.set(i)">
+        <div class="bar-chart__track">
+          <!-- Tooltip oscuro sobre barra activa -->
+          @if (barraSeleccionadaIdx() === i) {
+            <div class="bar-chart__tooltip">
+              <div class="bar-chart__tooltip-day">{{ barra.diaCompleto }} {{ barra.numeroDia }}</div>
+              <div class="bar-chart__tooltip-val">{{ barra.pedidos }} pedidos · S/ {{ barra.total | number: '1.0-0' }}</div>
+            </div>
+          }
 
-      <!-- KPI 2: Ganancia del día -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Ganancia del día</span>
-          <div class="kpi-card__icon kpi-card__icon--green">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <rect x="2" y="6" width="20" height="12" rx="2" />
-              <circle cx="12" cy="12" r="2" />
-              <path d="M6 12h.01M18 12h.01" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">S/ {{ gananciaDia() | number : '1.0-0' }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ +8.4%</span>
-        </div>
-        <div class="kpi-card__footer">margen neto {{ margenNetoDia() }}%</div>
-      </article>
-
-      <!-- KPI 3: Ticket promedio -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Ticket promedio</span>
-          <div class="kpi-card__icon kpi-card__icon--amber">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <rect x="3" y="4" width="18" height="16" rx="2" />
-              <path d="M12 8v8M9.5 10.5c0-1.1 1.1-2 2.5-2s2.5.9 2.5 2-1.1 1.5-2.5 1.5-2.5.9-2.5 2 1.1 2 2.5 2 2.5-.9 2.5-2" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">S/ {{ ticketPromedio() | number : '1.2-2' }}</strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ +5.2%</span>
-        </div>
-        <div class="kpi-card__footer">+ S/ 2.10 por pedido</div>
-      </article>
-
-      <!-- KPI 4: Motorizados activos -->
-      <article class="kpi-card">
-        <div class="kpi-card__top">
-          <span class="kpi-card__label">Motorizados activos</span>
-          <div class="kpi-card__icon kpi-card__icon--blue">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <circle cx="5.5" cy="17.5" r="3.5" />
-              <circle cx="18.5" cy="17.5" r="3.5" />
-              <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2" />
-            </svg>
-          </div>
-        </div>
-        <div class="kpi-card__middle">
-          <strong class="kpi-card__value">
-            {{ usandoDatosDemo() ? 8 : conteoMotorizados().activos }}
-            <span class="kpi-card__subvalue">/ {{ usandoDatosDemo() ? 11 : conteoMotorizados().total }}</span>
-          </strong>
-          <span class="kpi-card__trend kpi-card__trend--up">↗ +2</span>
-        </div>
-        <div class="kpi-card__footer">
-          {{ conteoMotorizados().disponibles }} disponibles ahora
-        </div>
-      </article>
-    </section>
-
-    <!-- FILA 2: GRÁFICO SEMANAL Y PIZZAS MÁS VENDIDAS -->
-    <section class="analytics-grid">
-      <!-- Pedidos por día -->
-      <article class="panel-card">
-        <div class="panel-card__header">
-          <h3 class="panel-card__title">Pedidos por día</h3>
-          <span class="panel-card__meta">Últimos 7 días</span>
-        </div>
-
-        <div class="chart-summary-row">
-          <div>
-            <strong class="chart-summary-row__total">{{ totalPedidosSemana() }}</strong>
-            <span class="chart-summary-row__label"> pedidos esta semana</span>
-          </div>
-          <span class="badge-pill badge-pill--green">↗ +14.2% semanal</span>
-        </div>
-
-        <div class="bar-chart">
           <div
-            *ngFor="let barra of barrasSemana(); let i = index"
-            class="bar-chart__col"
-            (mouseenter)="seleccionarBarra(i)"
-            (click)="seleccionarBarra(i)"
-          >
-            <div class="bar-chart__track">
-              <!-- Tooltip oscuro sobre barra activa -->
-              <div class="bar-chart__tooltip" *ngIf="barraSeleccionadaIdx() === i">
-                <div class="bar-chart__tooltip-day">
-                  {{ barra.diaCompleto }} {{ barra.numeroDia }}
-                </div>
-                <div class="bar-chart__tooltip-val">{{ barra.pedidos }} pedidos</div>
-              </div>
+            class="bar-chart__fill"
+            [class.bar-chart__fill--active]="barraSeleccionadaIdx() === i"
+            [style.height.%]="barra.porcentajeAltura"
+          ></div>
+        </div>
+        <span
+          class="bar-chart__label"
+          [class.bar-chart__label--active]="barraSeleccionadaIdx() === i"
+        >
+          {{ barra.diaCorto }}
+        </span>
+      </button>
+    } @empty {
+      <app-estado-vacio [cargando]="cargando()" [icono]="Iconos.Grafico" [compacto]="true" titulo="Sin ventas esta semana"
+        mensaje="Cuando entren pedidos verás aquí cuántos hubo cada día." />
+    }
+    </div>
+  </article>
 
-              <div
-                class="bar-chart__fill"
-                [class.bar-chart__fill--active]="barraSeleccionadaIdx() === i"
-                [style.height.%]="barra.porcentajeAltura"
-              ></div>
+  <!-- Pizzas más vendidas -->
+  <article class="panel-card">
+    <div class="panel-card__header">
+      <h3 class="panel-card__title">Pizzas más vendidas</h3>
+      <span class="panel-card__meta">Ingresos · 14 días</span>
+    </div>
+
+    <div class="ranking-list">
+      @for (pizza of topPizzas(); track pizza.nombre; let i = $index) {
+      <div class="ranking-item">
+        <div class="ranking-item__rank" [class.ranking-item__rank--top]="i === 0">
+          {{ i + 1 }}
+        </div>
+
+        <div class="ranking-item__body">
+          <div class="ranking-item__row">
+            <span class="ranking-item__name">{{ pizza.nombre }}</span>
+            <span class="ranking-item__amount">S/ {{ pizza.ingresos | number : '1.0-0' }}</span>
+            <span class="ranking-item__count">{{ pizza.cantidad }} unid.</span>
+          </div>
+          <div class="ranking-item__bar-bg">
+            <div
+              class="ranking-item__bar-fill"
+              [class.ranking-item__bar-fill--top]="i === 0"
+              [style.width.%]="pizza.porcentaje"
+            ></div>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <app-estado-vacio [cargando]="cargando()" [icono]="Iconos.Pizza" [compacto]="true" titulo="Sin ranking todavía"
+        mensaje="Aún no hay ventas en los últimos 14 días." />
+    }
+    </div>
+  </article>
+</section>
+
+<!-- FILA 3: TABLA PAGOS A MOTORIZADOS -->
+<section class="panel-card">
+  <div class="panel-card__header">
+    <h3 class="panel-card__title">Pagos a motorizados</h3>
+    <div class="panel-card__header-actions">
+      @if (actualizadoEn(); as hora) {
+        <span class="panel-card__meta">Actualizado {{ hora.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }) }}</span>
+      }
+      <button type="button" class="btn-outline-sm" (click)="abrirModalLiquidacion()">
+        + Liquidar periodo
+      </button>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Motorizado</th>
+          <th>Sede</th>
+          <th>Entregas</th>
+          <th>Pago del periodo</th>
+          <th>Estado</th>
+          <th class="text-right">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (pago of pagosMotorizados(); track pago.id) {
+        <tr>
+          <td>
+            <div class="driver-cell">
+              <span class="driver-cell__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="5.5" cy="17.5" r="3.5" />
+                  <circle cx="18.5" cy="17.5" r="3.5" />
+                  <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2" />
+                </svg>
+              </span>
+              <strong>{{ pago.motorizadoNombre }}</strong>
             </div>
+          </td>
+          <td>{{ pago.sucursalNombre }}</td>
+          <td>{{ pago.totalEntregas }}</td>
+          <td class="data-table__money">S/ {{ pago.montoTotal | number : '1.2-2' }}</td>
+          <td>
             <span
-              class="bar-chart__label"
-              [class.bar-chart__label--active]="barraSeleccionadaIdx() === i"
+              class="status-pill"
+              [class.status-pill--pending]="pago.estado === 'PENDIENTE'"
+              [class.status-pill--paid]="pago.estado === 'PAGADO'"
             >
-              {{ barra.diaCorto }}
+              <span class="status-pill__icon">
+                {{ pago.estado === 'PAGADO' ? '✓' : '◷' }}
+              </span>
+              {{ pago.estado === 'PAGADO' ? 'Pagado' : 'Pendiente' }}
             </span>
-          </div>
-        </div>
-      </article>
+          </td>
+          <td class="text-right action-cell">
+            <button
+              type="button"
+              class="action-dots-btn"
+              (click)="alternarMenuFila(pago.id, $event)"
+              aria-label="Acciones de pago"
+            >
+              •••
+            </button>
 
-      <!-- Pizzas más vendidas -->
-      <article class="panel-card">
-        <div class="panel-card__header">
-          <h3 class="panel-card__title">Pizzas más vendidas</h3>
-          <span class="panel-card__meta">Unidades · semana</span>
-        </div>
-
-        <div class="ranking-list">
-          <div *ngFor="let pizza of topPizzas(); let i = index" class="ranking-item">
-            <div class="ranking-item__rank" [class.ranking-item__rank--top]="i === 0">
-              {{ i + 1 }}
+            @if (menuFilaAbiertoId() === pago.id) {
+            <div class="action-dropdown" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                [disabled]="pago.estado === 'PAGADO'"
+                (click)="marcarComoPagado(pago)"
+              >
+                {{ pago.estado === 'PAGADO' ? 'Ya liquidado y pagado' : 'Marcar como pagado' }}
+              </button>
+              @if (pago.estado === 'PENDIENTE') {
+                <button type="button" class="action-dropdown__peligro" (click)="abrirEliminar(pago)">Eliminar liquidación</button>
+              }
             </div>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="6">
+          <app-estado-vacio [cargando]="cargando()" [icono]="Iconos.Moto" titulo="Sin liquidaciones"
+            mensaje="No hay pagos a motorizados en los últimos 14 días. Usa “Liquidar periodo” para generar uno." />
+        </td></tr>
+      }
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
 
-            <div class="ranking-item__body">
-              <div class="ranking-item__row">
-                <span class="ranking-item__name">{{ pizza.nombre }}</span>
-                <span class="ranking-item__amount">S/ {{ pizza.ingresos | number : '1.0-0' }}</span>
-                <span class="ranking-item__count">{{ pizza.cantidad }} pedidos</span>
-              </div>
-              <div class="ranking-item__bar-bg">
-                <div
-                  class="ranking-item__bar-fill"
-                  [class.ranking-item__bar-fill--top]="i === 0"
-                  [style.width.%]="pizza.porcentaje"
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <!-- FILA 3: TABLA PAGOS A MOTORIZADOS -->
-    <section class="panel-card">
-      <div class="panel-card__header">
-        <h3 class="panel-card__title">Pagos a motorizados</h3>
-        <div class="panel-card__header-actions">
-          <span class="panel-card__meta">
-            Actualizado hace {{ minutosUltimaActualizacion() || 3 }} min
-          </span>
-          <button type="button" class="btn-outline-sm" (click)="abrirModalLiquidacion()">
-            + Liquidar periodo
-          </button>
-        </div>
-      </div>
-
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>MOTORIZADO</th>
-              <th>ZONA</th>
-              <th>PEDIDOS</th>
-              <th>PAGO ACUMULADO</th>
-              <th>ESTADO</th>
-              <th class="text-right">ACCIÓN</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let pago of pagosMotorizadosUI()">
-              <td>
-                <div class="driver-cell">
-                  <span class="driver-cell__icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                      <circle cx="5.5" cy="17.5" r="3.5" />
-                      <circle cx="18.5" cy="17.5" r="3.5" />
-                      <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2" />
-                    </svg>
-                  </span>
-                  <strong>{{ pago.motorizadoNombre }}</strong>
-                </div>
-              </td>
-              <td>{{ pago.sucursalNombre }}</td>
-              <td>{{ pago.totalEntregas }}</td>
-              <td class="data-table__money">S/ {{ pago.montoTotal | number : '1.2-2' }}</td>
-              <td>
-                <span
-                  class="status-pill"
-                  [class.status-pill--pending]="pago.estado === 'PENDIENTE'"
-                  [class.status-pill--paid]="pago.estado === 'PAGADO'"
-                >
-                  <span class="status-pill__icon">
-                    {{ pago.estado === 'PAGADO' ? '✓' : '◷' }}
-                  </span>
-                  {{ pago.estado === 'PAGADO' ? 'Pagado' : 'Pendiente' }}
-                </span>
-              </td>
-              <td class="text-right action-cell">
-                <button
-                  type="button"
-                  class="action-dots-btn"
-                  (click)="toggleMenuFila(pago.id, $event)"
-                  aria-label="Acciones de pago"
-                >
-                  •••
-                </button>
-
-                <div
-                  class="action-dropdown"
-                  *ngIf="menuFilaAbiertoId() === pago.id"
-                  (click)="$event.stopPropagation()"
-                >
-                  <button
-                    type="button"
-                    [disabled]="pago.estado === 'PAGADO'"
-                    (click)="marcarComoPagado(pago)"
-                  >
-                    {{ pago.estado === 'PAGADO' ? 'Ya liquidado y pagado' : 'Marcar como pagado' }}
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-
-  <!-- MODAL LIQUIDAR PERIODO (POST /api/v1/admin/finanzas/pagos-motorizado) -->
-  <div class="modal-backdrop" *ngIf="modalLiquidacionAbierto()" (click)="modalLiquidacionAbierto.set(false)">
-    <div class="modal-card" (click)="$event.stopPropagation()">
-      <h3>Generar liquidación de motorizado</h3>
+<!-- MODAL LIQUIDAR PERIODO -->
+@if (modalLiquidacionAbierto()) {
+  <div class="modal-backdrop" (click)="modalLiquidacionAbierto.set(false)">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="titulo-liquidar" (click)="$event.stopPropagation()">
+      <h3 id="titulo-liquidar">Generar liquidación de motorizado</h3>
       <p class="modal-card__desc">
-        Calcula tarifa base por turnos finalizados + bono por entrega realizada.
+        Pago base × turnos terminados en esas fechas + bono × entregas confirmadas con PIN.
+        Un turno cuenta cuando pasa su hora de fin, así que liquida periodos que ya cerraron.
       </p>
 
       <label class="form-field">
         <span>Motorizado</span>
-        <select [(ngModel)]="formLiquidacion().empleadoId">
-          <option *ngFor="let m of motorizados()" [value]="m.id">
-            {{ m.nombreCompleto }} ({{ m.sucursalNombre }})
-          </option>
+        <select (change)="liqEmpleadoId.set(+valor($event))">
+          @for (m of motorizados(); track m.id) {
+            <option [value]="m.id" [selected]="m.id === liqEmpleadoId()">{{ m.nombreCompleto }} ({{ m.sucursalNombre }})</option>
+          } @empty {
+            <option value="" disabled selected>No hay motorizados registrados</option>
+          }
         </select>
       </label>
 
       <div class="form-row-2">
         <label class="form-field">
           <span>Desde</span>
-          <input type="date" [(ngModel)]="formLiquidacion().periodoDesde" />
+          <input type="date" [value]="liqDesde()" (change)="liqDesde.set(valor($event))" />
         </label>
         <label class="form-field">
           <span>Hasta</span>
-          <input type="date" [(ngModel)]="formLiquidacion().periodoHasta" />
+          <input type="date" [value]="liqHasta()" (change)="liqHasta.set(valor($event))" />
         </label>
       </div>
 
       <div class="modal-card__actions">
-        <button type="button" class="btn-outline-sm" (click)="modalLiquidacionAbierto.set(false)">
-          Cancelar
-        </button>
-        <button type="button" class="btn-primary-sm" (click)="registrarLiquidacion()">
-          Generar liquidación
+        <button type="button" class="btn-outline-sm" (click)="modalLiquidacionAbierto.set(false)">Cancelar</button>
+        <button type="button" class="btn-primary-sm" (click)="registrarLiquidacion()" [disabled]="guardando() || !liqEmpleadoId()">
+          {{ guardando() ? 'Generando…' : 'Generar liquidación' }}
         </button>
       </div>
     </div>
   </div>
-</div>
+}
+
+<!-- CONFIRMAR ELIMINACIÓN DE LIQUIDACIÓN -->
+@if (paraEliminar(); as pago) {
+  <app-panel-modal titulo="¿Eliminar liquidación?" (cerrar)="cerrarEliminar()"
+    [descripcion]="'Se eliminará la liquidación de ' + pago.motorizadoNombre + ' por S/ ' + (pago.montoTotal | number: '1.2-2') + '. Las entregas y turnos no se borran: puedes volver a liquidar ese periodo.'">
+    <div acciones class="modal-card__actions">
+      <button type="button" class="btn-outline-sm" (click)="cerrarEliminar()" [disabled]="guardando()">Cancelar</button>
+      <button type="button" class="btn-primary-sm" (click)="eliminarLiquidacion()" [disabled]="guardando()">
+        {{ guardando() ? 'Eliminando…' : 'Eliminar' }}
+      </button>
+    </div>
+  </app-panel-modal>
+}

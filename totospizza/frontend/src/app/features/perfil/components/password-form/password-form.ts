@@ -67,6 +67,10 @@ export class PasswordForm {
           this.cancelar();
         },
         error: (error: unknown) => {
+          if (esApiException(error) && error.codigo === 'CONTRASENA_REPETIDA') {
+            aplicarErroresDeCampo(this.form, [{ campo: 'nuevaContrasena', mensaje: error.message }]);
+            return;
+          }
           if (esApiException(error) && error.errores.length > 0) {
             const sueltos = aplicarErroresDeCampo(this.form, error.errores);
             this.error.set(sueltos.length > 0 ? sueltos.join(' ') : 'Revisa los campos marcados.');

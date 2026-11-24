@@ -1,0 +1,29 @@
+<button type="button" class="campana" [class.campana--sitio]="variante() === 'sitio'" (click)="alternar()"
+  [attr.aria-label]="'Notificaciones, ' + noLeidas() + ' sin leer'" [attr.aria-expanded]="abierta()" aria-haspopup="dialog">
+  <lucide-icon [img]="BellIcon" [size]="variante() === 'sitio' ? 20 : 18" [strokeWidth]="variante() === 'sitio' ? 1.5 : 1.8" aria-hidden="true"></lucide-icon>
+  @if (noLeidas() > 0) {
+    <span class="campana__badge" aria-hidden="true">{{ noLeidas() > 9 ? '9+' : noLeidas() }}</span>
+  }
+</button>
+
+@if (abierta()) {
+  <div class="notif" role="dialog" aria-label="Notificaciones">
+    <div class="notif__cabecera">
+      <strong>Notificaciones</strong>
+      @if (noLeidas() > 0) {
+        <button type="button" class="notif__todas" (click)="leerTodas()">Marcar todas como leídas</button>
+      } @else {
+        <span>Todo al día</span>
+      }
+    </div>
+    @for (n of notificaciones(); track n.id) {
+      <button type="button" class="notif__item" [class.is-nueva]="!n.leida" (click)="leer(n)">
+        <span class="notif__titulo">{{ n.titulo }}</span>
+        <span class="notif__mensaje">{{ n.mensaje }}</span>
+        <span class="notif__hora">{{ fechaHora(n.creadoEn) }}</span>
+      </button>
+    } @empty {
+      <p class="notif__vacio">{{ cargando() ? 'Cargando…' : 'No tienes notificaciones.' }}</p>
+    }
+  </div>
+}

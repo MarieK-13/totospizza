@@ -6,6 +6,8 @@ package com.totospizza.dto.response.catalogo;
 public record CategoriaResponse(
         Long id,
         String nombre,
-        String slug
+        String slug,
+        Integer orden,
+        boolean activa
 ) {
 }

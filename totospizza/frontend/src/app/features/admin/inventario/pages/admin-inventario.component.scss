@@ -1,0 +1,53 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/panel/paleta' as panel;
+
+.solo-bajo {
+  margin: 0;
+  padding: 7px 12px;
+  background: panel.$bg-card;
+}
+
+.marca-masa {
+  margin-left: 8px;
+}
+
+.nivel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 120px;
+
+  &__barra {
+    display: block;
+    height: 6px;
+    overflow: hidden;
+    border-radius: $radius-pill;
+    background: panel.$bg-bar-track;
+  }
+
+  &__relleno {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: panel.$green-text;
+    transition: width 400ms cubic-bezier(0, 0, 0.2, 1);
+
+    &.is-bajo {
+      background: panel.$brand-red;
+    }
+  }
+}
+
+.resultado {
+  margin: 4px 0 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: panel.$green-bg;
+  color: panel.$green-text;
+  font-size: 13px;
+
+  &.is-negativo {
+    background: panel.$red-bg;
+    color: panel.$brand-red;
+  }
+}

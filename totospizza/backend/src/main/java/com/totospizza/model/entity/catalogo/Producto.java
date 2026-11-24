@@ -80,6 +80,14 @@ public class Producto extends AuditableEntity {
             inverseJoinColumns = @JoinColumn(name = "etiqueta_id"))
     private Set<Etiqueta> etiquetas = new HashSet<>();
 
+    /** Ingredientes que lleva el producto (se muestran en su ficha). */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "producto_ingredientes",
+            joinColumns = @JoinColumn(name = "producto_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingrediente_id"))
+    private Set<Ingrediente> ingredientes = new HashSet<>();
+
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductoTamano> precios = new ArrayList<>();
 }

@@ -24,11 +24,13 @@ import com.totospizza.exception.RecursoNoEncontradoException;
 import com.totospizza.exception.ReglaNegocioException;
 import com.totospizza.mapper.catalogo.ProductoMapper;
 import com.totospizza.model.entity.catalogo.Etiqueta;
+import com.totospizza.model.entity.catalogo.Ingrediente;
 import com.totospizza.model.entity.catalogo.Producto;
 import com.totospizza.model.entity.catalogo.ProductoTamano;
 import com.totospizza.model.entity.catalogo.TamanoPizza;
 import com.totospizza.repository.catalogo.CategoriaRepository;
 import com.totospizza.repository.catalogo.EtiquetaRepository;
+import com.totospizza.repository.catalogo.IngredienteRepository;
 import com.totospizza.repository.catalogo.ProductoRepository;
 import com.totospizza.repository.catalogo.TamanoPizzaRepository;
 import com.totospizza.service.catalogo.ProductoService;
@@ -43,6 +45,7 @@ public class ProductoServiceImpl implements ProductoService {
     private final CategoriaRepository categoriaRepository;
     private final EtiquetaRepository etiquetaRepository;
     private final TamanoPizzaRepository tamanoRepository;
+    private final IngredienteRepository ingredienteRepository;
     private final ProductoMapper productoMapper;
     private final CatalogoDetalleAssembler detalleAssembler;
 
@@ -85,6 +88,7 @@ public class ProductoServiceImpl implements ProductoService {
         producto.setCategoria(categoriaRepository.findById(request.categoriaId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Categoría", request.categoriaId())));
         producto.setEtiquetas(etiquetas(request.etiquetaIds()));
+        producto.setIngredientes(ingredientes(request.ingredienteIds()));
         sincronizarPrecios(producto, request);
     }
 
@@ -94,6 +98,17 @@ public class ProductoServiceImpl implements ProductoService {
             throw new RecursoNoEncontradoException("Etiqueta", ids);
         }
         return new HashSet<>(encontradas);
+    }
+
+    private Set<Ingrediente> ingredientes(Set<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new HashSet<>();
+        }
+        List<Ingrediente> encontrados = ingredienteRepository.findAllById(ids);
+        if (encontrados.size() != ids.size()) {
+            throw new RecursoNoEncontradoException("Ingrediente", ids);
+        }
+        return new HashSet<>(encontrados);
     }
 
     private void sincronizarPrecios(Producto producto, ProductoRequest request) {

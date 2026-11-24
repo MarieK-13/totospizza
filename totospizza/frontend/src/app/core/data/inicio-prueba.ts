@@ -3,7 +3,7 @@ import { MENU_PRUEBA } from './menu-prueba';
 
 const vigencia = null;
 
-const item = (productoId: number, productoNombre: string, tamanoNombre: string | null = null, cantidad = 1) => ({ productoId, productoNombre, tamanoNombre, cantidad });
+const item = (productoId: number, productoNombre: string, tamanoNombre: string | null = null, cantidad = 1) => ({ productoId, productoNombre, tamanoId: null, tamanoNombre, cantidad });
 
 const PROMOCIONES: readonly PromocionResponse[] = [
   {

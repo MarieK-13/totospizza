@@ -1,209 +1,309 @@
-<div class="staff-shell">
-  <div *ngIf="toastMensaje() as msg" class="toast-banner">{{ msg }}</div>
-
-  <!-- TOPBAR -->
-  <header class="staff-topbar">
-    <div class="staff-topbar__left">
-      <div class="brand-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M12 2L2 19h20L12 2z" />
-          <circle cx="12" cy="13" r="1.4" />
-          <circle cx="9.5" cy="16" r="1" />
-          <circle cx="14.5" cy="16" r="1" />
-        </svg>
-        <div>
-          <strong>TOTO'S</strong>
-          <span>PIZZA</span>
-        </div>
-      </div>
-
-      <span class="staff-topbar__divider"></span>
-
-      <div class="staff-topbar__module">
-        <strong>MOSTRADOR</strong>
-        <span>{{ pedidos().length }} pedidos listos para entregar</span>
-      </div>
+<div class="op">
+  <section class="op-cabecera">
+    <div>
+      <span class="op-cabecera__eyebrow">
+        <span class="op-vivo" [class.is-caido]="sinConexion()" aria-hidden="true"></span>
+        {{ sinConexion() ? 'Sin conexión con el servidor' : textoActualizado() }}
+      </span>
+      <h2 class="op-cabecera__titulo">{{ saludo }}</h2>
+      <p class="op-cabecera__subtitulo">
+        Asigna un motorizado a cada delivery y entrega los recojos en el mostrador.
+        @if (resumen(); as r) {
+          @if (r.enCocina) {
+            Vienen <strong>{{ r.enCocina }}</strong> {{ r.enCocina === 1 ? 'pedido' : 'pedidos' }} de cocina.
+          }
+        }
+      </p>
     </div>
 
-    <div class="staff-topbar__right">
-      <span class="shift-live">
-        <span class="shift-live__dot"></span>
-        Turno activo
-      </span>
+    <ul class="op-resumen" aria-label="Resumen del mostrador">
+      <li class="op-resumen__item tono-rojo" [class.is-cero]="!porDespachar()">
+        <lucide-icon [img]="Icons.Send" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <strong>{{ porDespachar() }}</strong>
+        <span>por despachar</span>
+      </li>
+      <li class="op-resumen__item tono-amarillo">
+        <lucide-icon [img]="Icons.ChefHat" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <strong>{{ resumen()?.enCocina ?? '—' }}</strong>
+        <span>en cocina</span>
+      </li>
+      <li class="op-resumen__item tono-beige">
+        <lucide-icon [img]="Icons.Bike" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <strong>{{ resumen()?.motorizadosDisponibles ?? '—' }}</strong>
+        <span>motorizados</span>
+      </li>
+      <li class="op-resumen__item tono-verde">
+        <lucide-icon [img]="Icons.PackageCheck" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <strong>{{ resumen()?.entregadosHoy ?? '—' }}</strong>
+        <span>entregados hoy</span>
+      </li>
+    </ul>
+  </section>
 
-      <div class="clock-block">
-        <strong>{{ horaReloj() }}</strong>
-        <span>{{ fechaActualTexto() }}</span>
-      </div>
-
-      <button type="button" class="btn-logout" (click)="cerrarSesion()">
-        Cerrar sesión
+  @if (sinConexion()) {
+    <div class="op-aviso" role="alert">
+      No pudimos actualizar el mostrador. Se reintentará solo cada 15 segundos.
+      <button type="button" (click)="reintentar()">
+        <lucide-icon [img]="Icons.RefreshCw" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+        Reintentar ahora
       </button>
     </div>
-  </header>
+  }
 
-  <main class="staff-main">
-    <!-- CABECERA Y KPI DERECHOS -->
-    <section class="page-hero">
-      <div>
-        <span class="page-hero__eyebrow">DESPACHO Y RECOJO</span>
-        <h1 class="page-hero__title">Pedidos listos para entregar</h1>
-        <p class="page-hero__subtitle">
-          Verifica cada pedido antes de entregarlo al cliente o asignarlo a reparto.
-        </p>
-      </div>
-
-      <div class="kpi-mini-pair">
-        <div class="kpi-mini-box">
-          <strong>{{ totalDelivery() }}</strong>
-          <span>Delivery</span>
-        </div>
-        <div class="kpi-mini-box">
-          <strong>{{ totalRecojo() }}</strong>
-          <span>Recojo</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- FILTROS Y LEYENDA DE ACCIONES -->
-    <section class="filter-bar">
-      <div class="filter-pills">
-        <button
-          type="button"
-          [class.active]="filtroTipo() === 'TODOS'"
-          (click)="filtroTipo.set('TODOS')"
-        >
-          Todos
-        </button>
-        <button
-          type="button"
-          [class.active]="filtroTipo() === 'DELIVERY'"
-          (click)="filtroTipo.set('DELIVERY')"
-        >
-          Delivery
-        </button>
-        <button
-          type="button"
-          [class.active]="filtroTipo() === 'RECOJO'"
-          (click)="filtroTipo.set('RECOJO')"
-        >
-          Recojo
-        </button>
-      </div>
-
-      <div class="action-legend">
-        <span>✕ Cancelar pedido</span>
-        <span>✓ Confirmar entrega / despacho</span>
-      </div>
-    </section>
-
-    <!-- TABLA PRINCIPAL -->
-    <section class="table-card">
-      <div class="table-scroll">
-        <table class="dispatch-table">
-          <thead>
-            <tr>
-              <th>PEDIDO</th>
-              <th>TIPO DE ENTREGA</th>
-              <th>CLIENTE</th>
-              <th>DIRECCIÓN</th>
-              <th>PRODUCTOS</th>
-              <th class="text-right">ACCIÓN</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr *ngFor="let p of pedidosFiltrados()">
-              <td>
-                <strong class="cell-primary">{{ p.codigo }}</strong>
-                <div class="cell-sub">Listo · {{ p.horaListo }}</div>
-              </td>
-
-              <td>
-                <span
-                  class="type-pill"
-                  [class.type-pill--delivery]="p.tipoEntrega === 'DELIVERY'"
-                  [class.type-pill--recojo]="p.tipoEntrega === 'RECOJO'"
-                >
-                  ● {{ p.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo' }}
-                </span>
-              </td>
-
-              <td>
-                <strong class="cell-primary">{{ p.clienteNombre }}</strong>
-                <div class="cell-sub">{{ p.clienteTelefono }}</div>
-              </td>
-
-              <td>
-                <strong class="cell-primary">{{ p.direccionPrincipal }}</strong>
-                <div class="cell-sub">{{ p.direccionReferencia }}</div>
-              </td>
-
-              <td>
-                <div *ngFor="let prod of p.productos; let i = index" [class.cell-primary]="i === 0" [class.cell-sub]="i > 0">
-                  {{ prod.cantidad }} × {{ prod.nombre }}
-                </div>
-              </td>
-
-              <td class="text-right">
-                <div class="row-actions">
-                  <button
-                    type="button"
-                    class="btn-icon-cancel"
-                    title="Cancelar pedido"
-                    (click)="abrirModalCancelar(p)"
-                  >
-                    ✕
-                  </button>
-                  <button
-                    type="button"
-                    class="btn-icon-confirm"
-                    title="Confirmar entrega / despacho"
-                    (click)="confirmarEntrega(p)"
-                  >
-                    ✓
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="table-card__footer">
-        <span>{{ pedidos().length }} pedidos · Ordenados por hora de preparación</span>
-        <span>Mostrando {{ pedidosFiltrados().length }} de {{ pedidos().length }}</span>
-      </div>
-    </section>
-
-    <p class="staff-hint">
-      ⓘ Delivery: confirma el despacho al motorizado. Recojo: confirma la entrega al cliente.
-    </p>
-  </main>
-
-  <footer class="staff-footer">
-    <span>Mostrador · {{ pedidos().length }} pedidos por despachar</span>
-    <span>Toto's Pizza · Sede Miraflores</span>
-  </footer>
-
-  <!-- MODAL CANCELAR PEDIDO -->
-  <div class="modal-backdrop" *ngIf="pedidoACancelar() as ped" (click)="pedidoACancelar.set(null)">
-    <div class="modal-box" (click)="$event.stopPropagation()">
-      <h3>Cancelar pedido {{ ped.codigo }}</h3>
-      <p>Indica el motivo de la cancelación para registrarlo en el sistema.</p>
-      <input
-        type="text"
-        placeholder="Ej: Cliente solicitó anulación por teléfono"
-        [(ngModel)]="motivoCancelacion"
-      />
-      <div class="modal-box__btns">
-        <button type="button" class="btn-secondary" (click)="pedidoACancelar.set(null)">
-          Volver
-        </button>
-        <button type="button" class="btn-danger" (click)="confirmarCancelacion()">
-          Confirmar cancelación
-        </button>
-      </div>
+  @if (backendDesactualizado()) {
+    <div class="op-aviso" role="alert">
+      El servidor está corriendo una versión anterior del backend: el resumen y los pedidos en camino no llegan completos.
+      Detén el backend y vuelve a iniciarlo para cargar la versión nueva.
     </div>
+  }
+
+  <div class="barra">
+    <label class="buscar">
+      <lucide-icon [img]="Icons.Search" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      <input type="search" placeholder="Buscar por número, cliente o teléfono" aria-label="Buscar pedido"
+        [value]="busqueda()" (input)="busqueda.set(valor($event))" />
+    </label>
+    <span class="barra__nota">{{ enCamino() }} {{ enCamino() === 1 ? 'pedido en camino' : 'pedidos en camino' }}</span>
   </div>
+
+  <section class="op-tablero" [attr.aria-busy]="cargando()">
+    @for (col of columnas(); track col.etapa) {
+      <section class="op-columna" [class]="'op-columna tono-' + col.tono" [attr.aria-labelledby]="'col-' + col.etapa">
+        <header class="op-columna__cabecera">
+          <span class="op-columna__icono" aria-hidden="true">
+            <lucide-icon [img]="iconoDe(col.etapa)" [size]="18" [strokeWidth]="1.8"></lucide-icon>
+          </span>
+          <div class="op-columna__titulos">
+            <h2 [id]="'col-' + col.etapa">{{ col.titulo }}</h2>
+            <span>{{ col.ayuda }}</span>
+          </div>
+          <span class="op-columna__conteo" [attr.aria-label]="col.pedidos.length + ' pedidos'">{{ col.pedidos.length }}</span>
+        </header>
+
+        <div class="op-columna__tickets">
+          @for (p of col.pedidos; track p.id) {
+            <article class="op-ticket" [class.is-nuevo]="p.esNuevo"
+              [class.is-alerta]="p.minutosParaVencer !== null && p.minutosParaVencer <= avisoRecojo">
+              <header class="op-ticket__cabecera">
+                <div>
+                  <strong class="op-ticket__numero">#{{ p.numero }}</strong>
+                  <span class="op-ticket__sub">Listo {{ p.horaListo }} · {{ p.totalUnidades }} {{ p.totalUnidades === 1 ? 'unidad' : 'unidades' }}</span>
+                </div>
+                <span class="op-entrega" [class.op-entrega--delivery]="p.tipoEntrega === 'DELIVERY'">
+                  <lucide-icon [img]="p.tipoEntrega === 'DELIVERY' ? Icons.Bike : Icons.Store" [size]="13" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                  {{ p.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo' }}
+                </span>
+              </header>
+
+              @switch (col.etapa) {
+                @case ('por-asignar') {
+                  @if (p.fallida) {
+                    <p class="op-instrucciones fallo">
+                      <lucide-icon [img]="Icons.Ban" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                      <span>
+                        <strong>No se pudo entregar</strong>@if (p.horaFallo) { · {{ p.horaFallo }} }<br />
+                        {{ p.motivoFallo }}@if (p.motorizado) { ({{ p.motorizado }}) }
+                      </span>
+                    </p>
+                  } @else {
+                    <p class="op-estado" [class.op-estado--alerta]="p.minutosListo >= 10">
+                      <lucide-icon [img]="Icons.Clock" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      Esperando hace {{ p.minutosListo }} min
+                    </p>
+                  }
+                }
+                @case ('asignados') {
+                  <p class="op-estado">
+                    <lucide-icon [img]="Icons.UserRoundCheck" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                    {{ p.motorizado }}
+                    @if (p.minutosAsignado !== null) { <small>hace {{ p.minutosAsignado }} min</small> }
+                  </p>
+                }
+                @case ('recojo') {
+                  @if (p.minutosParaVencer !== null) {
+                    <p class="op-estado" [class.op-estado--alerta]="p.minutosParaVencer <= avisoRecojo">
+                      <lucide-icon [img]="Icons.Clock" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      Lo guardamos hasta las {{ p.horaVencimiento }}
+                      <small>{{ p.minutosParaVencer }} min</small>
+                    </p>
+                  }
+                }
+                @case ('en-camino') {
+                  <p class="op-estado">
+                    <lucide-icon [img]="Icons.Bike" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                    {{ p.motorizado ?? 'Motorizado' }}
+                    @if (p.distanciaKm !== null) { <small>{{ p.distanciaKm }} km</small> }
+                  </p>
+                  @if (p.pinBloqueado) {
+                    <p class="op-instrucciones fallo">
+                      <lucide-icon [img]="Icons.KeyRound" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                      <span><strong>PIN bloqueado.</strong> El motorizado falló el código 5 veces y no puede cerrar la entrega.</span>
+                    </p>
+                  }
+                }
+              }
+
+              <ul class="op-datos">
+                <li>
+                  <lucide-icon [img]="Icons.User" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                  <span>
+                    <strong>{{ p.cliente }}</strong>
+                    @if (p.telefono) { · <a [href]="'tel:' + p.telefono">{{ p.telefono }}</a> }
+                  </span>
+                </li>
+                @if (p.direccion) {
+                  <li>
+                    <lucide-icon [img]="Icons.MapPin" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                    <span>
+                      <a [href]="p.mapa" target="_blank" rel="noopener">{{ p.direccion }}</a>
+                      @if (p.referencia) { <br />{{ p.referencia }} }
+                      @if (p.distanciaKm !== null && col.etapa !== 'en-camino') { · {{ p.distanciaKm }} km }
+                    </span>
+                  </li>
+                }
+              </ul>
+
+              @if (col.etapa !== 'en-camino') {
+                <ul class="op-lineas op-lineas--compactas">
+                  @for (l of p.lineas; track $index) {
+                    <li class="op-linea">
+                      <span class="op-linea__cantidad">{{ l.cantidad }}×</span>
+                      <div class="op-linea__texto">
+                        <strong>{{ l.nombre }}</strong>
+                        @if (l.descripcion) { <span class="op-linea__detalle">{{ l.descripcion }}</span> }
+                      </div>
+                    </li>
+                  }
+                </ul>
+              }
+
+              @if (p.instrucciones && col.etapa !== 'en-camino') {
+                <p class="op-instrucciones">
+                  <lucide-icon [img]="Icons.MessageSquareWarning" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                  <span>{{ p.instrucciones }}</span>
+                </p>
+              }
+
+              @switch (col.etapa) {
+                @case ('por-asignar') {
+                  <footer class="op-ticket__acciones">
+                    @if (p.fallida) {
+                      <button type="button" class="op-btn op-btn--claro" [disabled]="ocupado()" (click)="abrirAccion('cancelar', p)">
+                        <lucide-icon [img]="Icons.Ban" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                        Cancelar
+                      </button>
+                    }
+                    <button type="button" class="op-btn op-btn--rojo" [disabled]="ocupado()" (click)="abrirAsignar(p)">
+                      <lucide-icon [img]="Icons.Bike" [size]="17" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      {{ p.fallida ? 'Reasignar' : 'Asignar motorizado' }}
+                    </button>
+                  </footer>
+                }
+                @case ('en-camino') {
+                  @if (p.pinBloqueado) {
+                    <footer class="op-ticket__acciones">
+                      <button type="button" class="op-btn op-btn--amarillo" [disabled]="ocupado()" (click)="desbloquearPin(p)">
+                        <lucide-icon [img]="Icons.LockOpen" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                        Desbloquear
+                      </button>
+                      <button type="button" class="op-btn op-btn--verde" [disabled]="ocupado()" (click)="abrirAccion('sin-pin', p)">
+                        <lucide-icon [img]="Icons.PackageCheck" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                        Entregado
+                      </button>
+                    </footer>
+                  }
+                }
+                @case ('asignados') {
+                  <footer class="op-ticket__acciones">
+                    <button type="button" class="op-btn op-btn--claro" [disabled]="ocupado()" (click)="abrirAsignar(p)">
+                      <lucide-icon [img]="Icons.RefreshCw" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      Reasignar
+                    </button>
+                  </footer>
+                }
+                @case ('recojo') {
+                  <footer class="op-ticket__acciones">
+                    <button type="button" class="op-btn op-btn--verde" [disabled]="ocupado()" (click)="abrirEntregar(p)">
+                      <lucide-icon [img]="Icons.Hand" [size]="17" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      Entregar al cliente
+                    </button>
+                  </footer>
+                }
+              }
+            </article>
+          } @empty {
+            <app-estado-vacio [cargando]="cargando()" [compacto]="true" [icono]="iconoDe(col.etapa)"
+              [titulo]="busqueda() ? 'Sin coincidencias' : col.etapa === 'por-asignar' ? 'Nada por asignar' : col.etapa === 'asignados' ? 'Sin asignaciones pendientes' : col.etapa === 'recojo' ? 'Sin recojos' : 'Nadie en ruta'"
+              [mensaje]="busqueda() ? 'Prueba con otro número o nombre.' : col.etapa === 'por-asignar' ? 'Los delivery que salgan de cocina aparecen aquí.' : col.etapa === 'en-camino' ? 'Cuando el motorizado inicie su ruta, el pedido pasa aquí.' : ''" />
+          }
+        </div>
+      </section>
+    }
+  </section>
+
+  @if (paraAsignar(); as p) {
+    <app-panel-modal [titulo]="(p.motorizado ? 'Reasignar' : 'Asignar') + ' #' + p.numero" ancho="lg" (cerrar)="cerrarModales()"
+      [descripcion]="(p.direccion ?? '') + (p.distanciaKm !== null ? ' · ' + p.distanciaKm + ' km' : '')">
+      <p class="modal-nota">Primero aparecen los que llevan menos entregas en curso. Se le avisa al motorizado al asignar.</p>
+      <div class="motorizados" role="radiogroup" aria-label="Motorizados disponibles">
+        @for (m of opcionesMotorizado(); track m.id) {
+          <button type="button" class="motorizado" role="radio" [attr.aria-checked]="motorizadoElegido() === m.id"
+            [class.is-elegido]="motorizadoElegido() === m.id" (click)="motorizadoElegido.set(m.id)">
+            <span class="motorizado__avatar" aria-hidden="true">{{ m.iniciales }}</span>
+            <span class="motorizado__texto">
+              <strong>{{ m.nombre }}{{ m.nombre === p.motorizado ? ' (actual)' : '' }}</strong>
+              <span>{{ etiquetaEstado(m.estado) }} · {{ m.telefono }}</span>
+            </span>
+            <span class="motorizado__carga" [class.is-libre]="!m.entregasEnCurso">
+              {{ m.entregasEnCurso ? m.entregasEnCurso + (m.entregasEnCurso === 1 ? ' entrega' : ' entregas') : 'Libre' }}
+            </span>
+          </button>
+        } @empty {
+          <app-estado-vacio [cargando]="cargandoMotorizados()" [compacto]="true" [icono]="Icons.Bike" titulo="No hay motorizados disponibles"
+            mensaje="Pide al administrador que asigne turnos o cambie su estado a disponible." />
+        }
+      </div>
+      <div acciones class="op acciones-modal">
+        <button type="button" class="op-btn op-btn--claro" (click)="cerrarModales()" [disabled]="ocupado()">Cancelar</button>
+        <button type="button" class="op-btn op-btn--rojo" (click)="confirmarAsignacion()"
+          [disabled]="ocupado() || motorizadoElegido() === null">
+          {{ ocupado() ? 'Asignando…' : 'Asignar' }}
+        </button>
+      </div>
+    </app-panel-modal>
+  }
+
+  @if (paraEntregar(); as p) {
+    <app-panel-modal [titulo]="'Entregar #' + p.numero" (cerrar)="cerrarModales()"
+      descripcion="Confirma el nombre del cliente antes de entregar. El pedido se marcará como entregado.">
+      <ul class="op-datos entrega-resumen">
+        <li>
+          <lucide-icon [img]="Icons.User" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+          <span>A nombre de <strong>{{ p.cliente }}</strong>@if (p.telefono) { · {{ p.telefono }} }</span>
+        </li>
+        <li>
+          <lucide-icon [img]="Icons.PackageCheck" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+          <span>{{ p.totalUnidades }} {{ p.totalUnidades === 1 ? 'unidad' : 'unidades' }}: {{ p.lineas.map((l) => l.cantidad + '× ' + l.nombre).join(', ') }}</span>
+        </li>
+      </ul>
+      <div acciones class="op acciones-modal">
+        <button type="button" class="op-btn op-btn--claro" (click)="cerrarModales()" [disabled]="ocupado()">Cancelar</button>
+        <button type="button" class="op-btn op-btn--verde" (click)="confirmarEntrega()" [disabled]="ocupado()">
+          {{ ocupado() ? 'Guardando…' : 'Confirmar entrega' }}
+        </button>
+      </div>
+    </app-panel-modal>
+  }
+
+  @if (accion(); as a) {
+    <app-motivo-dialog
+      [titulo]="(a.tipo === 'cancelar' ? 'Cancelar #' : 'Confirmar sin PIN #') + a.pedido.numero"
+      [descripcion]="a.tipo === 'cancelar'
+        ? 'Se cancela el pedido y se reembolsa el pago al cliente. Si prefieres intentarlo otra vez, usa «Reasignar».'
+        : 'Confírmalo solo si hablaste con ' + a.pedido.cliente + ' y recibió su pedido. Queda en el historial con tu motivo.'"
+      [opciones]="motivosDe(a.tipo)" [inicial]="a.tipo === 'cancelar' ? (a.pedido.motivoFallo ?? '') : ''"
+      [etiquetaConfirmar]="a.tipo === 'cancelar' ? 'Cancelar y reembolsar' : 'Marcar entregado'"
+      [tono]="a.tipo === 'cancelar' ? 'rojo' : 'verde'" [ocupado]="ocupado()" [error]="errorAccion()"
+      (confirmar)="confirmarAccion($event)" (cerrar)="cerrarAccion()" />
+  }
 </div>

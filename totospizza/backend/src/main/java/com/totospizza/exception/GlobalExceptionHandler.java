@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +59,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> jsonIlegible(HttpMessageNotReadableException e, HttpServletRequest request) {
         return respuesta(400, "CUERPO_INVALIDO", "El cuerpo de la solicitud no es válido", request, List.of());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiError> archivoMuyGrande(MaxUploadSizeExceededException e, HttpServletRequest request) {
+        return respuesta(413, "ARCHIVO_MUY_GRANDE", "El archivo es demasiado grande", request, List.of());
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ApiError> archivoFaltante(MissingServletRequestPartException e, HttpServletRequest request) {
+        return respuesta(400, "ARCHIVO_REQUERIDO", "Falta el archivo '" + e.getRequestPartName() + "'", request,
+                List.of());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

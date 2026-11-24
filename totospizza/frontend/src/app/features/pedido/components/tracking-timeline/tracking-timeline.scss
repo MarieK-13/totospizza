@@ -84,10 +84,14 @@ $marca: 2rem;
     color: $color-blanco;
   }
 
-  &.is-actual &__marca {
-    border-color: $color-verde-albahaca;
+  // Etapa en curso sin completar (por ejemplo, "En preparación"): número en verde con pulso.
+  &.is-actual:not(.is-completa) &__marca {
     background-color: $color-background-raised;
     color: $color-verde-albahaca;
+  }
+
+  &.is-actual &__marca {
+    border-color: $color-verde-albahaca;
     animation: pulso-etapa 1.8s $ease-out infinite;
 
     @include reduced-motion {
@@ -128,8 +132,24 @@ $marca: 2rem;
     color: $color-verde-albahaca;
   }
 
-  &.is-completa:not(.is-actual) &__hora {
+  &.is-completa &__hora {
     color: $color-verde-albahaca;
+  }
+
+  &__ahora {
+    align-self: flex-start;
+    margin-top: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: $radius-pill;
+    background-color: $tint-verde-10;
+    color: $color-verde-albahaca;
+    font-family: $font-datos;
+    font-size: 0.6875rem;
+    font-weight: $weight-semibold;
+
+    @include up(md) {
+      align-self: center;
+    }
   }
 }
 

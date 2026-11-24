@@ -1,12 +1,15 @@
 <div class="scrim" (click)="closed.emit()" aria-hidden="true"></div>
 
 <aside class="sidebar" aria-label="Panel lateral">
-  <div class="sidebar__head">
-    <a routerLink="/" class="sidebar__brand" aria-label="Toto's Pizza, ir al sitio">
-      <span class="sidebar__brand-name">Toto's Pizza</span>
+  <div class="sidebar__brand">
+    <a routerLink="/" class="sidebar__brand-link" aria-label="Toto's Pizza, ir al sitio">
+      <span class="sidebar__logo-badge" aria-hidden="true">
+        <img src="images/logo-totosm-sin-fondo.png" alt="" width="227" height="241" />
+      </span>
+      <span class="sidebar__brand-title">Toto's Pizza</span>
     </a>
     <button type="button" class="sidebar__close" (click)="closed.emit()" aria-label="Cerrar menú">
-      <lucide-icon [img]="CloseIcon" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+      <lucide-icon [img]="CloseIcon" [size]="20" [strokeWidth]="1.6" aria-hidden="true"></lucide-icon>
     </button>
   </div>
 
@@ -16,30 +19,44 @@
         <p class="sidebar__section">{{ item.section }}</p>
       }
       <a
-        class="sidebar__link"
+        class="sidebar__nav-item"
         [routerLink]="item.route"
         routerLinkActive="is-active"
+        ariaCurrentWhenActive="page"
         [routerLinkActiveOptions]="{ exact: !!item.exact }"
         (click)="closed.emit()"
       >
         @if (item.icon) {
-          <lucide-icon [img]="item.icon" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+          <lucide-icon class="sidebar__icon" [img]="item.icon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
         }
         <span>{{ item.label }}</span>
+        <span class="sidebar__active-pill" aria-hidden="true"></span>
       </a>
     }
   </nav>
 
-  <div class="sidebar__user">
-    <span class="sidebar__avatar" aria-hidden="true">{{ initials() }}</span>
-    <div class="sidebar__user-text">
-      <strong>{{ userName() }}</strong>
-      @if (userRole()) {
-        <span>{{ userRole() }}</span>
-      }
+  <div class="sidebar__session">
+    <p class="sidebar__session-status">
+      <span class="status-dot" aria-hidden="true"></span>
+      Sesión activa
+    </p>
+    <div class="sidebar__user">
+      <span class="sidebar__avatar" aria-hidden="true">{{ initials() }}</span>
+      <span class="sidebar__user-text">
+        <strong>{{ userName() }}</strong>
+        @if (userRole()) {
+          <span>{{ userRole() }}</span>
+        }
+      </span>
     </div>
-    <button type="button" class="sidebar__logout" (click)="logout.emit()" aria-label="Cerrar sesión">
-      <lucide-icon [img]="LogoutIcon" [size]="18" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
-    </button>
   </div>
+
+  <a class="sidebar__logout sidebar__inicio" routerLink="/" (click)="closed.emit()">
+    <lucide-icon [img]="HomeIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+    Ir al inicio
+  </a>
+  <button type="button" class="sidebar__logout" (click)="logout.emit()">
+    <lucide-icon [img]="LogoutIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+    Cerrar sesión
+  </button>
 </aside>

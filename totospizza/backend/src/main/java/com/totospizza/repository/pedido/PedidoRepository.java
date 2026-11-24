@@ -68,6 +68,18 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
      */
     List<Pedido> findBySucursalIdAndEstadoInOrderByConfirmadoEnAsc(Long sucursalId, Collection<EstadoPedido> estados);
 
+    /** Pedidos de una sucursal en un estado, los marcados como listos más recientemente primero. */
+    List<Pedido> findTop20BySucursalIdAndEstadoOrderByListoEnDesc(Long sucursalId, EstadoPedido estado);
+
+    /** Pedidos de una sucursal en ciertos estados (por ejemplo, los que siguen en cocina). */
+    long countBySucursalIdAndEstadoIn(Long sucursalId, Collection<EstadoPedido> estados);
+
+    /** Pedidos de una sucursal en un estado desde un instante de entrega (por ejemplo, entregados hoy). */
+    long countBySucursalIdAndEstadoAndEntregadoEnGreaterThanEqual(Long sucursalId, EstadoPedido estado, Instant desde);
+
+    /** Pedidos que salieron de cocina desde un instante (por ejemplo, el inicio del día). */
+    long countBySucursalIdAndListoEnGreaterThanEqual(Long sucursalId, Instant desde);
+
     /**
      * Listado del panel de pedidos con filtros por sucursal, estado y fechas. 
      */

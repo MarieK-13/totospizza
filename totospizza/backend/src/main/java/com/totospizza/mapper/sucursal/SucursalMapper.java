@@ -19,6 +19,7 @@ import com.totospizza.mapper.seguridad.DireccionMapper;
 import com.totospizza.model.entity.sucursal.HorarioSucursal;
 import com.totospizza.model.entity.sucursal.Sucursal;
 import com.totospizza.model.entity.sucursal.ZonaReparto;
+import com.totospizza.model.enums.Rol;
 
 
 @Mapper(config = MapperBaseConfig.class, uses = DireccionMapper.class)
@@ -26,7 +27,8 @@ public interface SucursalMapper {
 
     @Mapping(target = ".", source = "sucursal")
     @Mapping(target = "abiertoAhora", source = "abiertoAhora")
-    SucursalResponse toResponse(Sucursal sucursal, boolean abiertoAhora);
+    @Mapping(target = "personalFaltante", source = "personalFaltante")
+    SucursalResponse toResponse(Sucursal sucursal, boolean abiertoAhora, List<Rol> personalFaltante);
 
     @Mapping(target = "horaApertura", source = "horario.horaInicio")
     @Mapping(target = "horaCierre", source = "horario.horaFin")

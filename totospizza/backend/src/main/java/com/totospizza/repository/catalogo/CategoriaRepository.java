@@ -17,4 +17,12 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
     /** Busca una categoría por su slug. */
     Optional<Categoria> findBySlug(String slug);
+
+    List<Categoria> findAllByOrderByOrdenAscNombreAsc();
+
+    boolean existsBySlug(String slug);
+
+    boolean existsByNombreIgnoreCase(String nombre);
+
+    boolean existsByNombreIgnoreCaseAndIdNot(String nombre, Long id);
 }

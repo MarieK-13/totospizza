@@ -41,6 +41,11 @@ public interface EntregaRepository extends JpaRepository<Entrega, Long> {
     @EntityGraph(attributePaths = {"pedido", "pedido.cliente"})
     List<Entrega> findByMotorizadoIdAndEstadoInOrderByAsignadaEnAsc(Long motorizadoId, Collection<EstadoEntrega> estados);
 
+    /** Entregas completadas por un motorizado desde un instante, la más reciente primero. Para su jornada. */
+    @EntityGraph(attributePaths = {"pedido", "pedido.cliente"})
+    List<Entrega> findByMotorizadoIdAndEstadoAndEntregadaEnGreaterThanEqualOrderByEntregadaEnDesc(
+            Long motorizadoId, EstadoEntrega estado, Instant desde);
+
     /** Cantidad de entregas de un motorizado en ciertos estados. */
     long countByMotorizadoIdAndEstadoIn(Long motorizadoId, Collection<EstadoEntrega> estados);
 

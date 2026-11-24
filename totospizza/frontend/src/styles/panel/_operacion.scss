@@ -1,0 +1,721 @@
+@use 'sass:color';
+@use 'sass:map';
+@use '../tokens/variables' as *;
+@use '../mixins' as *;
+@use 'paleta' as *;
+@use 'comun' as *;
+
+// Piezas compartidas de los tableros operativos (cocina, mostrador, reparto).
+// Todo vive bajo `.op` para no tocar las demás pantallas. Los tonos salen de la marca:
+// amarillo queso, beige horno, rojo tomate y verde albahaca.
+
+$tonos: (
+  'amarillo': (
+    acento: $color-amarillo-queso,
+    fondo: color.mix($color-amarillo-queso, $color-blanco, 16%),
+    texto: $amber-text,
+  ),
+  'beige': (
+    acento: color.mix($color-marron-suave, $color-arena, 55%),
+    fondo: color.mix($color-beige-horno, $color-blanco, 45%),
+    texto: $color-marron-suave,
+  ),
+  'rojo': (
+    acento: $color-rojo-tomate,
+    fondo: $red-bg,
+    texto: $color-rojo-tomate,
+  ),
+  'verde': (
+    acento: $color-verde-albahaca,
+    fondo: $green-bg,
+    texto: $color-verde-albahaca,
+  ),
+);
+
+.op {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+
+  // ---------- Cabecera con saludo y resumen ----------
+  .op-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: $space-4;
+    padding: 22px 26px;
+    border: 1px solid $border-soft;
+    border-radius: 20px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba($color-amarillo-queso, 0.22), transparent 42%),
+      $color-blanco;
+
+    &__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: $text-muted;
+      font-size: 12px;
+      font-weight: $weight-semibold;
+    }
+
+    &__titulo {
+      margin: 6px 0 4px;
+      font-family: $font-titulos;
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      font-weight: 400;
+      line-height: 1.1;
+    }
+
+    &__subtitulo {
+      max-width: 56ch;
+      margin: 0;
+      color: $text-secondary;
+      font-size: 13.5px;
+
+      strong {
+        color: $brand-red;
+      }
+    }
+  }
+
+  .op-vivo {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $color-verde-albahaca;
+    animation: op-latido 2s ease-out infinite;
+
+    &.is-caido {
+      background: $brand-red;
+      animation: none;
+    }
+  }
+
+  .op-resumen {
+    display: flex;
+    flex: 0 1 40rem;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    &__item {
+      display: grid;
+      flex: 1 1 auto;
+      grid-template-columns: auto auto;
+      grid-template-rows: auto auto;
+      justify-content: start;
+      align-items: center;
+      column-gap: 10px;
+      min-width: 96px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: var(--fondo);
+      color: var(--texto);
+
+      lucide-icon {
+        grid-row: span 2;
+      }
+
+      strong {
+        font-family: $font-titulos;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+
+      span {
+        font-size: 11.5px;
+        font-weight: $weight-semibold;
+        white-space: nowrap;
+      }
+
+      &.is-cero {
+        background: $bg-soft;
+        color: $text-muted;
+      }
+    }
+  }
+
+  .op-aviso {
+    @include aviso-conexion;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+  }
+
+  // ---------- Tablero por columnas ----------
+  .op-tablero {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+
+    @media (max-width: 1280px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 720px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  // Tablero de tres columnas (reparto)
+  .op-tablero--tres {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    @media (max-width: 1100px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .op-columna {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 14rem;
+    padding: 14px;
+    border: 1px solid $border-soft;
+    border-radius: 20px;
+    background: rgba($color-blanco, 0.65);
+
+    &__cabecera {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 4px 10px;
+      border-bottom: 3px solid var(--acento);
+    }
+
+    &__icono {
+      display: grid;
+      flex: none;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--fondo);
+      color: var(--texto);
+    }
+
+    &__titulos {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-width: 0;
+
+      h2 {
+        margin: 0;
+        font-family: $font-titulos;
+        font-size: 19px;
+        font-weight: 400;
+      }
+
+      span {
+        color: $text-muted;
+        font-size: 11.5px;
+      }
+    }
+
+    &__conteo {
+      display: grid;
+      place-items: center;
+      min-width: 32px;
+      height: 32px;
+      padding: 0 8px;
+      border-radius: 10px;
+      background: var(--fondo);
+      color: var(--texto);
+      font-family: $font-datos;
+      font-size: 15px;
+      font-weight: $weight-bold;
+    }
+
+    &__tickets {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+
+  @each $nombre, $c in $tonos {
+    .tono-#{$nombre} {
+      --acento: #{map.get($c, acento)};
+      --fondo: #{map.get($c, fondo)};
+      --texto: #{map.get($c, texto)};
+    }
+  }
+
+  // ---------- Ticket ----------
+  .op-ticket {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 16px 14px;
+    overflow: hidden;
+    border: 1px solid $border-soft;
+    border-radius: 16px;
+    background: $color-blanco;
+    box-shadow: 0 1px 2px rgba($shadow-ink, 0.04);
+    animation: op-entra $duration-base $ease-out both;
+    @include transition((box-shadow, transform, opacity), $duration-base);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: var(--acento);
+    }
+
+    &:hover {
+      box-shadow: 0 10px 24px rgba($shadow-ink, 0.08);
+      transform: translateY(-1px);
+    }
+
+    &.is-ocupado {
+      opacity: 0.6;
+    }
+
+    &.is-nuevo {
+      border-color: $color-amarillo-queso;
+      animation:
+        op-entra $duration-base $ease-out both,
+        op-resalte 1.6s ease-in-out 3;
+    }
+
+    &.is-alerta {
+      border-color: $red-border;
+    }
+
+    &__cabecera {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+
+      > div {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+    }
+
+    &__numero {
+      font-family: $font-titulos;
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 1.1;
+    }
+
+    &__sub {
+      color: $text-muted;
+      font-size: 11.5px;
+    }
+
+    &__acciones {
+      display: flex;
+      gap: 8px;
+      margin-top: 2px;
+    }
+  }
+
+  .op-entrega {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: $radius-pill;
+    background: color.mix($color-amarillo-queso, $color-blanco, 22%);
+    color: $amber-text;
+    font-family: $font-datos;
+    font-size: 11.5px;
+    font-weight: $weight-semibold;
+
+    &--delivery {
+      background: $red-bg;
+      color: $brand-red;
+    }
+  }
+
+  // Franja de estado del ticket ("Listo hace 4 min", "Sale con Juan"…)
+  .op-estado {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: var(--fondo);
+    color: var(--texto);
+    font-size: 12.5px;
+    font-weight: $weight-semibold;
+
+    &--alerta {
+      background: $red-bg;
+      color: $brand-red;
+    }
+
+    small {
+      margin-left: auto;
+      font-weight: $weight-medium;
+      opacity: 0.85;
+    }
+  }
+
+  // Bloque de datos (cliente, dirección…)
+  .op-datos {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: $text-secondary;
+    font-size: 12.5px;
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    lucide-icon {
+      flex: none;
+      margin-top: 2px;
+      color: $text-muted;
+    }
+
+    strong {
+      color: $text-primary;
+      font-weight: $weight-semibold;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        color: $brand-red;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  // ---------- Productos ----------
+  .op-lineas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 12px 0 0;
+    border-top: 1px dashed $border-soft;
+    list-style: none;
+
+    &--compactas {
+      gap: 6px;
+    }
+  }
+
+  .op-linea {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    &__cantidad {
+      display: grid;
+      flex: none;
+      place-items: center;
+      min-width: 30px;
+      height: 30px;
+      padding: 0 6px;
+      border-radius: 9px;
+      background: var(--fondo);
+      color: var(--texto);
+      font-family: $font-datos;
+      font-size: 14px;
+      font-weight: $weight-bold;
+    }
+
+    &__texto {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+      font-size: 14px;
+      line-height: 1.35;
+
+      strong {
+        font-weight: $weight-semibold;
+      }
+    }
+
+    &__detalle {
+      color: $text-secondary;
+      font-size: 12px;
+    }
+
+    &__extras {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    &__nota {
+      color: $amber-text;
+      font-size: 12px;
+      font-style: italic;
+    }
+  }
+
+  .op-lineas--compactas .op-linea__cantidad {
+    min-width: 26px;
+    height: 26px;
+    font-size: 12.5px;
+  }
+
+  .op-extra {
+    padding: 2px 8px;
+    border-radius: $radius-pill;
+    background: $bg-cream;
+    color: $text-secondary;
+    font-size: 11px;
+    font-weight: $weight-semibold;
+  }
+
+  .op-instrucciones {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    padding: 10px 12px;
+    border-left: 3px solid $color-amarillo-queso;
+    border-radius: 10px;
+    background: color.mix($color-amarillo-queso, $color-blanco, 14%);
+    color: $amber-text;
+    font-size: 12.5px;
+    line-height: 1.4;
+
+    lucide-icon {
+      flex: none;
+      margin-top: 1px;
+    }
+  }
+
+  // ---------- Botones ----------
+  .op-btn {
+    display: inline-flex;
+    text-decoration: none;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 12px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: $weight-semibold;
+    cursor: pointer;
+    @include transition((background-color, transform, box-shadow));
+    @include focus-ring;
+
+    &:active:not(:disabled) {
+      transform: scale($press-scale);
+    }
+
+    &--amarillo {
+      background: $color-amarillo-queso;
+      color: $color-cafe-tostado;
+
+      &:hover:not(:disabled) {
+        background: color.mix($color-amarillo-queso, $color-cafe-tostado, 88%);
+      }
+    }
+
+    &--rojo {
+      background: $brand-red;
+      color: $color-blanco;
+
+      &:hover:not(:disabled) {
+        background: $brand-red-hover;
+        box-shadow: 0 6px 14px rgba($brand-red, 0.25);
+      }
+    }
+
+    &--verde {
+      background: $color-verde-albahaca;
+      color: $color-blanco;
+
+      &:hover:not(:disabled) {
+        background: color.mix($color-verde-albahaca, $color-cafe-tostado, 85%);
+        box-shadow: 0 6px 14px rgba($color-verde-albahaca, 0.25);
+      }
+    }
+
+    &--claro {
+      flex: none;
+      border: 1px solid $border-soft;
+      background: $color-blanco;
+      color: $text-primary;
+
+      &:hover:not(:disabled) {
+        border-color: $border-strong;
+        background: $bg-soft;
+      }
+    }
+
+    @include deshabilitado;
+  }
+
+  .op-btn-icono {
+    display: grid;
+    text-decoration: none;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    border: 1px solid $red-border;
+    border-radius: 12px;
+    background: $color-blanco;
+    color: $brand-red;
+    cursor: pointer;
+    @include transition((background-color));
+    @include focus-ring;
+
+    &:hover:not(:disabled) {
+      background: $red-bg;
+    }
+
+    @include deshabilitado;
+  }
+
+  // ---------- Barra de tiempo ----------
+  .op-tiempo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    &__fila {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    &__total,
+    &__etapa {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: $font-datos;
+      font-size: 13px;
+      font-weight: $weight-semibold;
+      font-variant-numeric: tabular-nums;
+    }
+
+    &__total small {
+      color: $text-muted;
+      font-weight: $weight-medium;
+    }
+
+    &__etapa {
+      color: $brand-red;
+      font-size: 12px;
+
+      &--alerta {
+        padding: 2px 8px;
+        border-radius: $radius-pill;
+        background: $red-bg;
+      }
+    }
+
+    &__barra {
+      height: 6px;
+      overflow: hidden;
+      border-radius: $radius-pill;
+      background: $bg-bar-track;
+    }
+
+    &__relleno {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: $color-verde-albahaca;
+      transition: width $duration-slow $ease-out, background-color $duration-base;
+    }
+  }
+
+  .ritmo-a-tiempo .op-tiempo__total {
+    color: $green-text;
+  }
+
+  .ritmo-justo {
+    .op-tiempo__total {
+      color: $amber-text;
+    }
+
+    .op-tiempo__relleno {
+      background: $color-amarillo-queso;
+    }
+  }
+
+  .ritmo-atrasado {
+    border-color: $red-border;
+
+    .op-tiempo__total {
+      color: $brand-red;
+    }
+
+    .op-tiempo__relleno {
+      background: $brand-red;
+    }
+  }
+
+  @include reduced-motion {
+    .op-ticket,
+    .op-ticket.is-nuevo,
+    .op-vivo {
+      animation: none;
+    }
+
+    .op-ticket:hover {
+      transform: none;
+    }
+  }
+}
+
+@keyframes op-entra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes op-resalte {
+  50% {
+    box-shadow: 0 0 0 4px rgba($color-amarillo-queso, 0.55);
+  }
+}
+
+@keyframes op-latido {
+  0% {
+    box-shadow: 0 0 0 0 rgba($color-verde-albahaca, 0.45);
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 7px rgba($color-verde-albahaca, 0);
+  }
+}

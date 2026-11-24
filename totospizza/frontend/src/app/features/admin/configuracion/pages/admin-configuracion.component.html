@@ -1,260 +1,67 @@
-<div class="admin-layout">
-  <!-- SIDEBAR IZQUIERDO PRINCIPAL -->
-  <aside class="sidebar">
-    <div class="sidebar__brand">
-      <div class="sidebar__logo-badge">
-        <span class="sidebar__logo-top">TOTO'S</span>
-        <span class="sidebar__logo-sub">PIZZA</span>
-      </div>
-      <span class="sidebar__brand-title">TOTO'S PIZZA</span>
-    </div>
-
-    <nav class="sidebar__nav">
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('resumen')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="3" width="7" height="7" rx="1.5" />
-          <rect x="14" y="3" width="7" height="7" rx="1.5" />
-          <rect x="3" y="14" width="7" height="7" rx="1.5" />
-          <rect x="14" y="14" width="7" height="7" rx="1.5" />
-        </svg>
-        <span>Resumen</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('pedidos')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-          <rect x="9" y="3" width="6" height="4" rx="1" />
-          <path d="M9 12h6M9 16h4" />
-        </svg>
-        <span>Pedidos</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('empleados')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-        </svg>
-        <span>Empleados</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('finanzas')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-          <polyline points="17 6 23 6 23 12" />
-        </svg>
-        <span>Finanzas</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item sidebar__nav-item--active" (click)="navegarA('configuracion')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="3" />
-          <path
-            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
-          />
-        </svg>
-        <span>Configuración</span>
-        <span class="sidebar__active-pill"></span>
-      </button>
-    </nav>
-
-    <div class="sidebar__shift-card">
-      <div class="sidebar__shift-status">
-        <span class="status-dot status-dot--green"></span>
-        <span>TURNO ACTIVO</span>
-      </div>
-      <div class="sidebar__shift-hours">12:00 — 22:30</div>
-      <div class="sidebar__shift-location">Sede Miraflores · Caja principal</div>
-    </div>
-
-    <button
-      type="button"
-      class="sidebar__help-btn"
-      (click)="mostrarToast('ok', 'Soporte técnico Toto\'s Pizza disponible.')"
-    >
-      <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-        <line x1="12" y1="17" x2="12.01" y2="17" />
-      </svg>
-      <span>Ayuda y soporte</span>
-    </button>
-  </aside>
-
-  <!-- CONTENIDO PRINCIPAL -->
-  <main class="main-content">
-    <div
-      *ngIf="toastMensaje() as toast"
-      class="toast-banner"
-      [class.toast-banner--error]="toast.tipo === 'error'"
-    >
-      {{ toast.texto }}
-    </div>
-
-    <!-- HEADER SUPERIOR -->
-    <header class="topbar">
-      <div class="topbar__titles">
-        <h1 class="topbar__title">Configuración</h1>
-        <p class="topbar__subtitle">Personaliza la operación y seguridad de TOTO'S PIZZA</p>
-      </div>
-
-      <div class="topbar__actions">
-        <div class="topbar__date-pill">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          <span>{{ fechaHoraActual() }}</span>
-        </div>
-
-        <button type="button" class="topbar__bell-btn" aria-label="Notificaciones">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 01-3.46 0" />
-          </svg>
-          <span class="topbar__bell-badge" *ngIf="notificacionesNoLeidas() > 0"></span>
-        </button>
-
-        <div class="topbar__profile">
-          <div class="topbar__avatar">{{ usuario().iniciales }}</div>
-          <div class="topbar__user-info">
-            <span class="topbar__user-name">{{ usuario().nombres }} {{ usuario().apellidos }}</span>
-            <span class="topbar__user-role">{{ usuario().rolEtiqueta }}</span>
-          </div>
-          <svg class="topbar__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-      </div>
-    </header>
-
-    <!-- GRID DE 3 COLUMNAS -->
-    <div class="config-grid">
-      <!-- COLUMNA 1: SUBMENÚ DE CONFIGURACIÓN -->
-      <aside class="config-nav-card">
-        <div class="config-nav-card__heading">CONFIGURACIÓN</div>
-
-        <nav class="config-subnav">
-          <button
-            type="button"
-            class="config-subnav__item"
-            [class.config-subnav__item--active]="seccionActiva() === 'PERFIL_NEGOCIO'"
-            (click)="seleccionarSeccion('PERFIL_NEGOCIO', 'card-perfil-negocio')"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+<div class="config-grid" [attr.aria-busy]="cargando()">
+  <!-- SUBMENÚ -->
+  <aside class="config-nav-card">
+    <div class="config-nav-card__heading">Configuración</div>
+    <nav class="config-subnav" aria-label="Secciones de configuración">
+      @for (sec of secciones; track sec.id) {
+        <button type="button" class="config-subnav__item" [class.config-subnav__item--active]="seccionActiva() === sec.id"
+          [attr.aria-current]="seccionActiva() === sec.id ? 'true' : null" (click)="irA(sec.id)">
+          @switch (sec.id) {
+      @case ('perfil') { <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            <span>Perfil del negocio</span>
-            <span class="config-subnav__arrow" *ngIf="seccionActiva() === 'PERFIL_NEGOCIO'">›</span>
-          </button>
-
-          <button
-            type="button"
-            class="config-subnav__item"
-            [class.config-subnav__item--active]="seccionActiva() === 'CONFIG_PEDIDOS'"
-            (click)="seleccionarSeccion('CONFIG_PEDIDOS', 'card-config-pedidos')"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            </svg> }
+      @case ('pedidos') { <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <rect x="3" y="4" width="18" height="16" rx="2" />
               <path d="M9 9h6M9 13h4" />
-            </svg>
-            <span>Configuración de pedidos</span>
-            <span class="config-subnav__arrow" *ngIf="seccionActiva() === 'CONFIG_PEDIDOS'">›</span>
-          </button>
-
-          <button
-            type="button"
-            class="config-subnav__item"
-            [class.config-subnav__item--active]="seccionActiva() === 'METODOS_PAGO'"
-            (click)="seleccionarSeccion('METODOS_PAGO', 'card-metodos-pago')"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            </svg> }
+      @case ('pagos') { <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <rect x="2" y="5" width="20" height="14" rx="2" />
               <line x1="2" y1="10" x2="22" y2="10" />
-            </svg>
-            <span>Métodos de pago</span>
-            <span class="config-subnav__arrow" *ngIf="seccionActiva() === 'METODOS_PAGO'">›</span>
-          </button>
-
-          <button
-            type="button"
-            class="config-subnav__item"
-            [class.config-subnav__item--active]="seccionActiva() === 'NOTIFICACIONES'"
-            (click)="seleccionarSeccion('NOTIFICACIONES', 'card-notificaciones')"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 01-3.46 0" />
-            </svg>
-            <span>Notificaciones</span>
-            <span class="config-subnav__arrow" *ngIf="seccionActiva() === 'NOTIFICACIONES'">›</span>
-          </button>
-
-          <button
-            type="button"
-            class="config-subnav__item"
-            [class.config-subnav__item--active]="seccionActiva() === 'USUARIOS_PERMISOS'"
-            (click)="seleccionarSeccion('USUARIOS_PERMISOS', 'card-usuarios-permisos')"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            </svg> }
+      @case ('usuarios') { <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-            </svg>
-            <span>Usuarios y permisos</span>
-            <span class="config-subnav__arrow" *ngIf="seccionActiva() === 'USUARIOS_PERMISOS'">›</span>
-          </button>
-
-          <button
-            type="button"
-            class="config-subnav__item"
-            [class.config-subnav__item--active]="seccionActiva() === 'SEGURIDAD'"
-            (click)="seleccionarSeccion('SEGURIDAD', 'card-seguridad')"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            </svg> }
+      @case ('seguridad') { <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               <polyline points="9 12 11 14 15 10" />
-            </svg>
-            <span>Seguridad</span>
-            <span class="config-subnav__arrow" *ngIf="seccionActiva() === 'SEGURIDAD'">›</span>
-          </button>
-        </nav>
+            </svg> }
+          }
+          <span>{{ sec.etiqueta }}</span>
+          @if (seccionActiva() === sec.id) {
+            <span class="config-subnav__arrow" aria-hidden="true">›</span>
+          }
+        </button>
+      }
+    </nav>
 
-        <div class="sync-status-box">
-          <div class="sync-status-box__title">
-            <span class="sync-status-box__check">✓</span>
-            <strong>Todo actualizado</strong>
-          </div>
-          <p class="sync-status-box__time">{{ config().ultimaActualizacionTexto }}</p>
-        </div>
-      </aside>
+    <div class="sync-status-box">
+      <div class="sync-status-box__title">
+        <span class="sync-status-box__check" aria-hidden="true">✓</span>
+        <strong>{{ cargando() ? 'Cargando…' : 'Todo sincronizado' }}</strong>
+      </div>
+      @if (guardadoEn(); as hora) {
+        <p class="sync-status-box__time">Guardado a las {{ hora.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }) }}</p>
+      }
+    </div>
+  </aside>
 
-      <!-- COLUMNA 2 (CENTRAL): PERFIL DEL NEGOCIO + CONFIGURACIÓN DE PEDIDOS -->
-      <div class="config-col">
-        <!-- TARJETA 1: PERFIL DEL NEGOCIO -->
-        <section
-          id="card-perfil-negocio"
-          class="panel-card"
-          [class.panel-card--focused]="seccionActiva() === 'PERFIL_NEGOCIO'"
-        >
-          <div class="panel-card__header">
-            <h2 class="panel-card__title">Perfil del negocio</h2>
-            <span class="panel-card__meta">Datos públicos</span>
-          </div>
+  <!-- COLUMNA CENTRAL -->
+  <div class="config-col">
+    <section id="config-perfil" class="panel-card" [class.panel-card--focused]="seccionActiva() === 'perfil'" [formGroup]="perfil">
+      <div class="panel-card__header">
+        <h2 class="panel-card__title">Perfil del negocio</h2>
+        <span class="panel-card__meta">Se muestra en la tienda</span>
+      </div>
 
-          <div class="logo-uploader">
-            <div class="logo-uploader__preview">
-              <img
-                *ngIf="config().perfilNegocio.logoUrl"
-                [src]="config().perfilNegocio.logoUrl"
-                alt="Logo Toto's Pizza"
-              />
-              <svg
-                *ngIf="!config().perfilNegocio.logoUrl"
-                viewBox="0 0 24 24"
+      <div class="logo-uploader">
+        <div class="logo-uploader__preview">
+          @if (logoUrl()) {
+            <img [src]="logoUrl()" alt="Logo actual" />
+          } @else {
+            <svg aria-hidden="true" viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="1.7"
@@ -264,460 +71,234 @@
                 <circle cx="9.5" cy="16" r="1" />
                 <circle cx="14.5" cy="16" r="1" />
               </svg>
-            </div>
-
-            <div class="logo-uploader__details">
-              <strong class="logo-uploader__brand">TOTO'S PIZZA</strong>
-              <span class="logo-uploader__hint">Logo PNG o SVG · máximo 2 MB</span>
-
-              <div class="logo-uploader__actions">
-                <label class="btn-upload-logo">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
-                  <span>Cambiar logo</span>
-                  <input type="file" accept="image/png,image/svg+xml,image/jpeg" (change)="onSeleccionarLogo($event)" />
-                </label>
-
-                <button type="button" class="btn-remove-logo" (click)="eliminarLogo()">
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-stack">
-            <label class="input-group">
-              <span>Nombre del negocio</span>
-              <div class="input-with-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-                </svg>
-                <input type="text" [(ngModel)]="config().perfilNegocio.nombreNegocio" />
-              </div>
-            </label>
-
-            <label class="input-group">
-              <span>Dirección</span>
-              <div class="input-with-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <input type="text" [(ngModel)]="config().perfilNegocio.direccion" />
-              </div>
-            </label>
-
-            <div class="form-row-2">
-              <label class="input-group">
-                <span>Teléfono</span>
-                <div class="input-with-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path
-                      d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"
-                    />
-                  </svg>
-                  <input type="text" [(ngModel)]="config().perfilNegocio.telefono" />
-                </div>
-              </label>
-
-              <label class="input-group">
-                <span>Correo</span>
-                <div class="input-with-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                    <polyline points="22,6 12,13 2,6" />
-                  </svg>
-                  <input type="email" [(ngModel)]="config().perfilNegocio.correo" />
-                </div>
-              </label>
-            </div>
-
-            <label class="input-group">
-              <span>Horario de atención</span>
-              <div class="input-with-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                <input type="text" [(ngModel)]="config().perfilNegocio.horarioAtencion" />
-              </div>
-            </label>
-          </div>
-        </section>
-
-        <!-- TARJETA 2: CONFIGURACIÓN DE PEDIDOS -->
-        <section
-          id="card-config-pedidos"
-          class="panel-card"
-          [class.panel-card--focused]="seccionActiva() === 'CONFIG_PEDIDOS'"
-        >
-          <div class="panel-card__header">
-            <h2 class="panel-card__title">Configuración de pedidos</h2>
-            <span class="panel-card__meta">Operación</span>
-          </div>
-
-          <div class="form-row-3">
-            <label class="input-group">
-              <span>Tiempo estimado</span>
-              <div class="input-with-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                <input type="number" min="5" [(ngModel)]="config().pedidos.tiempoEstimadoMin" />
-                <span class="input-suffix">min</span>
-              </div>
-            </label>
-
-            <label class="input-group">
-              <span>Costo de delivery</span>
-              <div class="input-with-icon">
-                <span class="input-prefix">S/</span>
-                <input type="number" step="0.5" min="0" [(ngModel)]="config().pedidos.costoDelivery" />
-              </div>
-            </label>
-
-            <label class="input-group">
-              <span>Pedido mínimo</span>
-              <div class="input-with-icon">
-                <span class="input-prefix">S/</span>
-                <input type="number" step="1" min="0" [(ngModel)]="config().pedidos.pedidoMinimo" />
-              </div>
-            </label>
-          </div>
-
-          <div class="toggle-list">
-            <div class="toggle-row">
-              <div class="toggle-row__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <circle cx="5.5" cy="17.5" r="3.5" />
-                  <circle cx="18.5" cy="17.5" r="3.5" />
-                  <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2" />
-                </svg>
-              </div>
-              <div class="toggle-row__text">
-                <strong>Delivery</strong>
-                <span>Aceptar pedidos a domicilio</span>
-              </div>
-              <label class="switch">
-                <input type="checkbox" [(ngModel)]="config().pedidos.deliveryActivo" />
-                <span class="switch__slider"></span>
-              </label>
-            </div>
-
-            <div class="toggle-row">
-              <div class="toggle-row__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <path d="M16 10a4 4 0 01-8 0" />
-                </svg>
-              </div>
-              <div class="toggle-row__text">
-                <strong>Recojo en tienda</strong>
-                <span>Permitir retiro en el local</span>
-              </div>
-              <label class="switch">
-                <input type="checkbox" [(ngModel)]="config().pedidos.recojoEnTiendaActivo" />
-                <span class="switch__slider"></span>
-              </label>
-            </div>
-          </div>
-        </section>
+          }
+        </div>
+        <div class="logo-uploader__details">
+          <strong class="logo-uploader__brand">{{ perfil.controls.nombreComercial.value || 'Tu pizzería' }}</strong>
+          <span class="logo-uploader__hint">Pega el enlace de tu logo (PNG o SVG)</span>
+        </div>
       </div>
 
-      <!-- COLUMNA 3 (DERECHA): MÉTODOS DE PAGO + NOTIFICACIONES + USUARIOS + SEGURIDAD -->
-      <div class="config-col">
-        <!-- TARJETA 3: MÉTODOS DE PAGO -->
-        <section
-          id="card-metodos-pago"
-          class="panel-card"
-          [class.panel-card--focused]="seccionActiva() === 'METODOS_PAGO'"
-        >
-          <div class="panel-card__header">
-            <h2 class="panel-card__title">Métodos de pago</h2>
-            <span class="panel-card__meta">{{ totalMetodosHabilitados() }} habilitados</span>
+      <div class="form-stack">
+        <label class="input-group">
+          <span>Nombre comercial</span>
+          <div class="input-with-icon" [class.input-with-icon--error]="invalido(perfil.controls.nombreComercial)">
+            <input type="text" formControlName="nombreComercial" maxlength="120" />
           </div>
-
-          <div class="payment-chips-grid">
-            <button
-              type="button"
-              *ngFor="let m of config().metodosPago"
-              class="payment-chip"
-              [class.payment-chip--disabled]="!m.habilitado"
-              (click)="toggleMetodoPago(m)"
-            >
-              <span class="payment-chip__icon">▣</span>
-              <span class="payment-chip__name">{{ m.nombre }}</span>
-              <span
-                class="payment-chip__dot"
-                [class.payment-chip__dot--on]="m.habilitado"
-              ></span>
-            </button>
+          @if (invalido(perfil.controls.nombreComercial)) {
+            <small class="input-error" role="alert">{{ mensaje(perfil.controls.nombreComercial) }}</small>
+          }
+        </label>
+        <label class="input-group">
+          <span>Enlace del logo</span>
+          <div class="input-with-icon" [class.input-with-icon--error]="invalido(perfil.controls.logoUrl)">
+            <input type="url" formControlName="logoUrl" placeholder="https://…" (input)="logoUrl.set(perfil.controls.logoUrl.value)" />
           </div>
-        </section>
-
-        <!-- TARJETA 4: NOTIFICACIONES -->
-        <section
-          id="card-notificaciones"
-          class="panel-card"
-          [class.panel-card--focused]="seccionActiva() === 'NOTIFICACIONES'"
-        >
-          <div class="panel-card__header">
-            <h2 class="panel-card__title">Notificaciones</h2>
-            <span class="panel-card__meta">Preferencias</span>
+          @if (invalido(perfil.controls.logoUrl)) {
+            <small class="input-error" role="alert">{{ mensaje(perfil.controls.logoUrl) }}</small>
+          }
+        </label>
+        <div class="form-row-2">
+        <label class="input-group">
+          <span>Razón social</span>
+          <div class="input-with-icon" [class.input-with-icon--error]="invalido(perfil.controls.razonSocial)">
+            <input type="text" formControlName="razonSocial" maxlength="160" />
           </div>
+          @if (invalido(perfil.controls.razonSocial)) {
+            <small class="input-error" role="alert">{{ mensaje(perfil.controls.razonSocial) }}</small>
+          }
+        </label>
+        <label class="input-group">
+          <span>RUC</span>
+          <div class="input-with-icon" [class.input-with-icon--error]="invalido(perfil.controls.ruc)">
+            <input type="text" formControlName="ruc" inputmode="numeric" maxlength="11" />
+          </div>
+          @if (invalido(perfil.controls.ruc)) {
+            <small class="input-error" role="alert">{{ mensaje(perfil.controls.ruc) }}</small>
+          }
+        </label>
+        </div>
+        <label class="input-group">
+          <span>Dirección</span>
+          <div class="input-with-icon" [class.input-with-icon--error]="invalido(perfil.controls.direccionFiscal)">
+            <input type="text" formControlName="direccionFiscal" maxlength="200" />
+          </div>
+          @if (invalido(perfil.controls.direccionFiscal)) {
+            <small class="input-error" role="alert">{{ mensaje(perfil.controls.direccionFiscal) }}</small>
+          }
+        </label>
+        <div class="form-row-2">
+        <label class="input-group">
+          <span>Teléfono</span>
+          <div class="input-with-icon" [class.input-with-icon--error]="invalido(perfil.controls.telefonoContacto)">
+            <input type="tel" formControlName="telefonoContacto" inputmode="tel" maxlength="9" />
+          </div>
+          @if (invalido(perfil.controls.telefonoContacto)) {
+            <small class="input-error" role="alert">{{ mensaje(perfil.controls.telefonoContacto) }}</small>
+          }
+        </label>
+        <label class="input-group">
+          <span>Correo de contacto</span>
+          <div class="input-with-icon" [class.input-with-icon--error]="invalido(perfil.controls.correoContacto)">
+            <input type="email" formControlName="correoContacto" maxlength="120" />
+          </div>
+          @if (invalido(perfil.controls.correoContacto)) {
+            <small class="input-error" role="alert">{{ mensaje(perfil.controls.correoContacto) }}</small>
+          }
+        </label>
+        </div>
+        <div class="form-row-2">
+        <label class="input-group">
+          <span>WhatsApp</span>
+          <div class="input-with-icon" [class.input-with-icon--error]="invalido(perfil.controls.whatsapp)">
+            <input type="tel" formControlName="whatsapp" inputmode="tel" maxlength="9" />
+          </div>
+          @if (invalido(perfil.controls.whatsapp)) {
+            <small class="input-error" role="alert">{{ mensaje(perfil.controls.whatsapp) }}</small>
+          }
+        </label>
+        <label class="input-group">
+          <span>Instagram</span>
+          <div class="input-with-icon" [class.input-with-icon--error]="invalido(perfil.controls.instagramUrl)">
+            <input type="url" formControlName="instagramUrl" placeholder="https://instagram.com/…" />
+          </div>
+          @if (invalido(perfil.controls.instagramUrl)) {
+            <small class="input-error" role="alert">{{ mensaje(perfil.controls.instagramUrl) }}</small>
+          }
+        </label>
+        </div>
+        <label class="input-group">
+          <span>Facebook</span>
+          <div class="input-with-icon" [class.input-with-icon--error]="invalido(perfil.controls.facebookUrl)">
+            <input type="url" formControlName="facebookUrl" placeholder="https://facebook.com/…" />
+          </div>
+          @if (invalido(perfil.controls.facebookUrl)) {
+            <small class="input-error" role="alert">{{ mensaje(perfil.controls.facebookUrl) }}</small>
+          }
+        </label>
+      </div>
+    </section>
 
-          <div class="toggle-list">
-            <div class="toggle-row">
-              <div class="toggle-row__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                </svg>
-              </div>
-              <div class="toggle-row__text">
-                <strong>Nuevos pedidos</strong>
-                <span>Sonido y alerta en pantalla</span>
-              </div>
-              <label class="switch">
-                <input type="checkbox" [(ngModel)]="config().notificaciones.nuevosPedidos" />
-                <span class="switch__slider"></span>
-              </label>
+    <section id="config-pedidos" class="panel-card" [class.panel-card--focused]="seccionActiva() === 'pedidos'">
+      <div class="panel-card__header">
+        <h2 class="panel-card__title">Pedidos y delivery</h2>
+        <span class="panel-card__meta">Tiempos y costos</span>
+      </div>
+      <div class="form-row-2">
+        @for (p of parametros(); track p.clave) {
+          <label class="input-group">
+            <span>{{ p.info.etiqueta }}</span>
+            <div class="input-with-icon">
+              @if (p.info.prefijo) {
+                <span class="input-prefix">{{ p.info.prefijo }}</span>
+              }
+              <input type="number" min="0" step="any" inputmode="decimal" [value]="valoresParametros()[p.clave]" (input)="cambiarParametro(p.clave, $event)" />
+              @if (p.info.sufijo) {
+                <span class="input-suffix">{{ p.info.sufijo }}</span>
+              }
             </div>
+            <small class="input-hint">{{ p.info.ayuda }}</small>
+          </label>
+        } @empty {
+          <app-estado-vacio class="span-2" [cargando]="cargando()" [icono]="IconoParametros" [compacto]="true" titulo="Sin parámetros"
+            mensaje="El backend no devolvió parámetros configurables." />
+        }
+      </div>
+    </section>
+  </div>
 
-            <div class="toggle-row">
-              <div class="toggle-row__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="15" y1="9" x2="9" y2="15" />
-                  <line x1="9" y1="9" x2="15" y2="15" />
-                </svg>
-              </div>
-              <div class="toggle-row__text">
-                <strong>Pedidos cancelados</strong>
-                <span>Avisar a administración</span>
-              </div>
-              <label class="switch">
-                <input type="checkbox" [(ngModel)]="config().notificaciones.pedidosCancelados" />
-                <span class="switch__slider"></span>
-              </label>
-            </div>
+  <!-- COLUMNA DERECHA -->
+  <div class="config-col">
+    <section id="config-pagos" class="panel-card" [class.panel-card--focused]="seccionActiva() === 'pagos'">
+      <div class="panel-card__header">
+        <h2 class="panel-card__title">Métodos de pago</h2>
+        <span class="panel-card__meta">{{ metodosActivos() }} habilitados</span>
+      </div>
+      <div class="payment-chips-grid">
+        @for (m of metodos(); track m.metodo) {
+          <button type="button" class="payment-chip" [class.payment-chip--disabled]="!m.activo" role="switch"
+            [attr.aria-checked]="m.activo" (click)="alternarMetodo(m.metodo)">
+            <span class="payment-chip__icon" aria-hidden="true">▣</span>
+            <span class="payment-chip__name">{{ m.etiqueta }}</span>
+            <span class="payment-chip__dot" [class.payment-chip__dot--on]="m.activo"></span>
+          </button>
+        }
+      </div>
+    </section>
 
-            <div class="toggle-row">
-              <div class="toggle-row__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <rect x="2" y="5" width="20" height="14" rx="2" />
-                  <line x1="2" y1="10" x2="22" y2="10" />
-                </svg>
-              </div>
-              <div class="toggle-row__text">
-                <strong>Pagos recibidos</strong>
-                <span>Confirmación automática</span>
-              </div>
-              <label class="switch">
-                <input type="checkbox" [(ngModel)]="config().notificaciones.pagosRecibidos" />
-                <span class="switch__slider"></span>
-              </label>
-            </div>
-
-            <div class="toggle-row">
-              <div class="toggle-row__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                  <line x1="12" y1="9" x2="12" y2="13" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-              </div>
-              <div class="toggle-row__text">
-                <strong>Alertas de stock</strong>
-                <span>Cuando un insumo esté por agotarse</span>
-              </div>
-              <label class="switch">
-                <input type="checkbox" [(ngModel)]="config().notificaciones.alertasStock" />
-                <span class="switch__slider"></span>
-              </label>
-            </div>
-          </div>
-        </section>
-
-        <!-- TARJETA 5: USUARIOS Y PERMISOS -->
-        <section
-          id="card-usuarios-permisos"
-          class="panel-card"
-          [class.panel-card--focused]="seccionActiva() === 'USUARIOS_PERMISOS'"
-        >
-          <div class="panel-card__header">
-            <h2 class="panel-card__title">Usuarios y permisos</h2>
-            <span class="panel-card__meta">4 roles</span>
-          </div>
-
-          <div class="roles-list">
-            <button
-              type="button"
-              *ngFor="let r of config().roles"
-              class="role-row-btn"
-              (click)="irARolEnEmpleados(r)"
-            >
-              <span class="role-row-btn__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <section id="config-usuarios" class="panel-card" [class.panel-card--focused]="seccionActiva() === 'usuarios'">
+      <div class="panel-card__header">
+        <h2 class="panel-card__title">Usuarios y permisos</h2>
+        <span class="panel-card__meta">{{ roles().length }} roles</span>
+      </div>
+      <div class="roles-list">
+        @for (r of roles(); track r.rol) {
+          <a class="role-row-btn" routerLink="/admin/empleados">
+            <span class="role-row-btn__icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
-                </svg>
-              </span>
-              <strong class="role-row-btn__name">{{ r.etiqueta }}</strong>
-              <span class="role-count-pill" [ngClass]="'role-count-pill--' + r.claseBadge">
-                {{ r.cantidadUsuarios }} usuarios
-              </span>
-              <span class="role-row-btn__chevron">›</span>
-            </button>
-          </div>
-        </section>
+                </svg></span>
+            <strong class="role-row-btn__name">{{ r.etiqueta }}</strong>
+            <span class="role-count-pill" [class]="'role-count-pill role-count-pill--' + r.clase">
+              {{ r.cantidad === null ? '…' : r.cantidad + (r.cantidad === 1 ? ' usuario' : ' usuarios') }}
+            </span>
+            <span class="role-row-btn__chevron" aria-hidden="true">›</span>
+          </a>
+        }
+      </div>
+    </section>
 
-        <!-- TARJETA 6: SEGURIDAD -->
-        <section
-          id="card-seguridad"
-          class="panel-card"
-          [class.panel-card--focused]="seccionActiva() === 'SEGURIDAD'"
-        >
-          <div class="panel-card__header">
-            <h2 class="panel-card__title">Seguridad</h2>
-            <span class="panel-card__meta">Cuenta protegida</span>
-          </div>
-
-          <div class="security-actions-row">
-            <button type="button" class="security-btn" (click)="modalContrasenaAbierto.set(true)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <section id="config-seguridad" class="panel-card" [class.panel-card--focused]="seccionActiva() === 'seguridad'">
+      <div class="panel-card__header">
+        <h2 class="panel-card__title">Seguridad</h2>
+        <span class="panel-card__meta">Tu cuenta</span>
+      </div>
+      <div class="security-actions-row">
+        <button type="button" class="security-btn" (click)="abrirModalContrasena()">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path
                   d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"
                 />
               </svg>
-              <span>Cambiar contraseña</span>
-            </button>
+          <span>Cambiar contraseña</span>
+        </button>
+      </div>
+    </section>
 
-            <button type="button" class="security-btn" (click)="modalSesionesAbierto.set(true)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <rect x="2" y="3" width="20" height="14" rx="2" />
-                <line x1="8" y1="21" x2="16" y2="21" />
-                <line x1="12" y1="17" x2="12" y2="21" />
-              </svg>
-              <span>Sesiones activas · {{ config().sesionesActivas.length }}</span>
-            </button>
-          </div>
-
-          <div class="active-session-box" *ngIf="config().sesionesActivas[0] as ses">
-            <div class="active-session-box__info">
-              <strong>{{ ses.dispositivo }}</strong>
-              <span>{{ ses.estadoTexto }}</span>
-            </div>
-
-            <div class="active-session-box__actions">
-              <span class="secure-tag">🛡 Segura</span>
-              <button
-                type="button"
-                class="close-session-link"
-                (click)="mostrarToast('ok', 'Para cerrar tu sesión actual usa Salir en el menú de usuario.')"
-              >
-                Cerrar sesión
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <!-- BARRA INFERIOR DE GUARDADO -->
-        <div class="save-footer-bar">
-          <span class="save-footer-bar__hint">
-            Los cambios se aplicarán inmediatamente en todas las sedes.
-          </span>
-
-          <div class="save-footer-bar__buttons">
-            <button type="button" class="btn-cancel-footer" (click)="cancelarCambios()">
-              Cancelar
-            </button>
-            <button
-              type="button"
-              class="btn-save-footer"
-              [disabled]="guardando()"
-              (click)="guardarCambios()"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <div class="save-footer-bar">
+      <span class="save-footer-bar__hint">Los cambios se aplican al instante en la tienda.</span>
+      <div class="save-footer-bar__buttons">
+        <button type="button" class="btn-cancel-footer" (click)="descartar()" [disabled]="guardando()">Descartar</button>
+        <button type="button" class="btn-save-footer" [disabled]="guardando() || cargando()" (click)="guardar()">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
                 <polyline points="17 21 17 13 7 13 7 21" />
                 <polyline points="7 3 7 8 15 8" />
               </svg>
-              <span>{{ guardando() ? 'Guardando...' : 'Guardar cambios' }}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- MODAL CAMBIAR CONTRASEÑA -->
-  <div class="modal-backdrop" *ngIf="modalContrasenaAbierto()" (click)="modalContrasenaAbierto.set(false)">
-    <div class="modal-card" (click)="$event.stopPropagation()">
-      <h3>Cambiar contraseña</h3>
-      <p class="modal-card__desc">
-        Usa al menos 8 caracteres combinando letras y números para proteger la cuenta.
-      </p>
-
-      <label class="modal-field">
-        <span>Contraseña actual</span>
-        <input type="password" [(ngModel)]="formContrasena().actual" />
-      </label>
-
-      <label class="modal-field">
-        <span>Nueva contraseña</span>
-        <input type="password" [(ngModel)]="formContrasena().nueva" />
-      </label>
-
-      <label class="modal-field">
-        <span>Confirmar nueva contraseña</span>
-        <input type="password" [(ngModel)]="formContrasena().confirmar" />
-      </label>
-
-      <div class="modal-card__actions">
-        <button type="button" class="btn-cancel-footer" (click)="modalContrasenaAbierto.set(false)">
-          Cancelar
-        </button>
-        <button type="button" class="btn-save-footer" (click)="confirmarCambioContrasena()">
-          Actualizar contraseña
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL SESIONES ACTIVAS -->
-  <div class="modal-backdrop" *ngIf="modalSesionesAbierto()" (click)="modalSesionesAbierto.set(false)">
-    <div class="modal-card" (click)="$event.stopPropagation()">
-      <h3>Sesiones activas ({{ config().sesionesActivas.length }})</h3>
-      <p class="modal-card__desc">Dispositivos donde tu cuenta de administración tiene sesión abierta.</p>
-
-      <div class="sessions-modal-list">
-        <div *ngFor="let s of config().sesionesActivas" class="session-modal-row">
-          <div>
-            <strong>{{ s.dispositivo }}</strong>
-            <div class="session-modal-row__sub">{{ s.estadoTexto }}</div>
-          </div>
-          <span *ngIf="s.esActual" class="secure-tag">Actual</span>
-          <button
-            *ngIf="!s.esActual"
-            type="button"
-            class="close-session-link"
-            (click)="cerrarSesionDispositivo(s.id)"
-          >
-            Cerrar
-          </button>
-        </div>
-      </div>
-
-      <div class="modal-card__actions">
-        <button type="button" class="btn-save-footer" (click)="modalSesionesAbierto.set(false)">
-          Listo
+          <span>{{ guardando() ? 'Guardando…' : 'Guardar cambios' }}</span>
         </button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- MODAL CAMBIAR CONTRASEÑA -->
+@if (modalContrasenaAbierto()) {
+  <div class="modal-backdrop" (click)="modalContrasenaAbierto.set(false)">
+    <form class="modal-card" role="dialog" aria-modal="true" aria-labelledby="titulo-clave" novalidate
+      [formGroup]="formContrasena" (ngSubmit)="cambiarContrasena()" (click)="$event.stopPropagation()">
+      <h3 id="titulo-clave">Cambiar contraseña</h3>
+      <p class="modal-card__desc">Usa al menos 8 caracteres combinando letras y números.</p>
+      @if (errorContrasena(); as error) {
+        <p class="input-error" role="alert">{{ error }}</p>
+      }
+      <app-text-field label="Contraseña actual" type="password" autocomplete="current-password" [required]="true" formControlName="contrasenaActual" />
+      <app-text-field label="Nueva contraseña" type="password" autocomplete="new-password" [rules]="reglasContrasena" [required]="true" formControlName="nuevaContrasena" />
+      <app-text-field label="Confirmar nueva contraseña" type="password" autocomplete="new-password" [required]="true" formControlName="confirmarContrasena" />
+      <div class="modal-card__actions">
+        <button type="button" class="btn-cancel-footer" (click)="modalContrasenaAbierto.set(false)">Cancelar</button>
+        <button type="submit" class="btn-save-footer" [disabled]="cambiandoContrasena()">{{ cambiandoContrasena() ? 'Guardando…' : 'Actualizar contraseña' }}</button>
+      </div>
+    </form>
+  </div>
+}

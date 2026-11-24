@@ -113,6 +113,14 @@ public final class MapeoUtils {
         return (int) Math.max(0, Duration.between(desde, hasta).toMinutes());
     }
 
+    /** Hora que se le prometió al cliente: confirmación del pago + minutos estimados. */
+    public static Instant horaPrometida(Pedido pedido) {
+        if (pedido.getConfirmadoEn() == null || pedido.getMinutosEstimados() == null) {
+            return null;
+        }
+        return pedido.getConfirmadoEn().plus(Duration.ofMinutes(pedido.getMinutosEstimados()));
+    }
+
     /** Promedio de estrellas con un decimal. */
     public static BigDecimal promedio(Double valor) {
         return valor == null ? BigDecimal.ZERO : BigDecimal.valueOf(valor).setScale(1, RoundingMode.HALF_UP);

@@ -1,0 +1,26 @@
+<span class="imagen__etiqueta">{{ etiqueta() }}</span>
+<div class="imagen">
+  <div class="imagen__vista">
+    @if (url() && !falloVista()) {
+      <img [src]="url()" alt="" (error)="falloVista.set(true)" />
+    } @else {
+      <lucide-icon [img]="ImageIcon" [size]="22" [strokeWidth]="1.6" aria-hidden="true"></lucide-icon>
+    }
+  </div>
+  <div class="imagen__controles">
+    <div class="imagen__botones">
+      <button type="button" class="imagen__btn" (click)="elegir()" [disabled]="subiendo() || deshabilitado()">
+        {{ subiendo() ? 'Subiendo…' : url() ? 'Cambiar imagen' : 'Subir imagen' }}
+      </button>
+      @if (url()) {
+        <button type="button" class="imagen__btn imagen__btn--quitar" aria-label="Quitar imagen" (click)="quitar()" [disabled]="deshabilitado()">
+          <lucide-icon [img]="TrashIcon" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        </button>
+      }
+    </div>
+    <input type="url" class="imagen__url" placeholder="…o pega un enlace https://" aria-label="Enlace de la imagen"
+      [value]="url()" [disabled]="deshabilitado()" (change)="alEscribir($event)" (blur)="alSalir()" />
+    <small>JPG, PNG o WebP · máx. 2 MB</small>
+  </div>
+  <input #archivo type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="alElegir($event)" />
+</div>

@@ -1,13 +1,53 @@
 <header class="topbar">
-  @if (showMenuButton()) {
-    <button type="button" class="topbar__menu" (click)="menuToggle.emit()" aria-label="Abrir menú">
-      <lucide-icon [img]="MenuIcon" [size]="22" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
-    </button>
-  }
-
-  <p class="topbar__title">{{ title() }}</p>
+  <div class="topbar__titles">
+    @if (showMenuButton()) {
+      <button type="button" class="topbar__menu" (click)="menuToggle.emit()" aria-label="Abrir menú">
+        <lucide-icon [img]="MenuIcon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      </button>
+    }
+    <div>
+      <h1 class="topbar__title">{{ title() }}</h1>
+      @if (subtitle()) {
+        <p class="topbar__subtitle">{{ subtitle() }}</p>
+      }
+    </div>
+  </div>
 
   <div class="topbar__actions">
-    <ng-content />
+    @if (cabecera.acciones(); as acciones) {
+      <div class="topbar__page-actions">
+        <ng-container [ngTemplateOutlet]="acciones" />
+      </div>
+    }
+
+    <p class="topbar__date-pill">
+      <lucide-icon [img]="CalendarIcon" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      <span>{{ fecha() }}</span>
+    </p>
+
+    <app-campana-notificaciones />
+
+    <div class="topbar__user" (click)="$event.stopPropagation()">
+      <button type="button" class="topbar__profile" (click)="alternarMenu($event)" [attr.aria-expanded]="menuAbierto()" aria-haspopup="menu">
+        <span class="topbar__avatar" aria-hidden="true">{{ iniciales() }}</span>
+        <span class="topbar__user-info">
+          <span class="topbar__user-name">{{ nombre() }}</span>
+          <span class="topbar__user-role">{{ rol() }}</span>
+        </span>
+        <lucide-icon class="topbar__chevron" [img]="ChevronIcon" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+      </button>
+      @if (menuAbierto()) {
+        <div class="user-menu" role="menu">
+          <button type="button" role="menuitem" class="user-menu__item" (click)="irAlSitio()">
+            <lucide-icon [img]="SiteIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+            Ver el sitio
+          </button>
+          <button type="button" role="menuitem" class="user-menu__item user-menu__item--salir" (click)="cerrarSesion()">
+            <lucide-icon [img]="LogoutIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+            Cerrar sesión
+          </button>
+        </div>
+      }
+    </div>
   </div>
 </header>

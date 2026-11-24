@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.totospizza.dto.request.catalogo.CambiarDisponibilidadRequest;
 import com.totospizza.dto.request.catalogo.PromocionRequest;
-import com.totospizza.dto.response.catalogo.PromocionResponse;
+import com.totospizza.dto.response.catalogo.PromocionAdminResponse;
 import com.totospizza.service.catalogo.PromocionService;
 
 /** Administración de promociones, incluidas las que se venden en pérdida. */
@@ -33,28 +33,28 @@ public class AdminPromocionController {
     private final PromocionService promocionService;
 
     @GetMapping
-    public List<PromocionResponse> listar() {
+    public List<PromocionAdminResponse> listar() {
         return promocionService.listar();
     }
 
     @GetMapping("/en-perdida")
-    public List<PromocionResponse> enPerdida() {
+    public List<PromocionAdminResponse> enPerdida() {
         return promocionService.enPerdida();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PromocionResponse crear(@Valid @RequestBody PromocionRequest request) {
+    public PromocionAdminResponse crear(@Valid @RequestBody PromocionRequest request) {
         return promocionService.crear(request);
     }
 
     @PutMapping("/{id}")
-    public PromocionResponse actualizar(@PathVariable Long id, @Valid @RequestBody PromocionRequest request) {
+    public PromocionAdminResponse actualizar(@PathVariable Long id, @Valid @RequestBody PromocionRequest request) {
         return promocionService.actualizar(id, request);
     }
 
     @PatchMapping("/{id}/activa")
-    public PromocionResponse cambiarActiva(@PathVariable Long id,
+    public PromocionAdminResponse cambiarActiva(@PathVariable Long id,
                                            @Valid @RequestBody CambiarDisponibilidadRequest request) {
         return promocionService.cambiarActiva(id, request);
     }

@@ -39,7 +39,10 @@
             } @else if (enCurso()) {
               <p class="estado__ayuda">Recógelo en <strong>{{ p.sucursalNombre }}</strong> con el número de pedido.
                 @if (p.vencimientoRecojo) {
-                  Te lo guardamos hasta las {{ fechaHora(p.vencimientoRecojo) }}.
+                  Te lo guardamos hasta las {{ horaDe(p.vencimientoRecojo) }}, luego se marca como no recogido.
+                }
+                @if (estadoActual() === 'LISTO') {
+                  Cuando te lo entreguen en el mostrador podrás calificar tu pedido.
                 }
               </p>
             }
@@ -49,12 +52,13 @@
                 <lucide-icon [img]="StarIcon" [size]="16" [strokeWidth]="1.9" aria-hidden="true"></lucide-icon>
                 Calificar pedido
               </button>
-            } @else if (calificado()) {
+            } @else if (yaCalificado()) {
               <p class="estado__gracias">Gracias por calificar este pedido.</p>
             }
           </div>
 
-          @if (enCurso() && seguimiento.value()?.entregaEstimada; as entrega) {
+          <!-- Un recojo ya listo no necesita cuenta regresiva: solo falta que el cliente pase por él. -->
+          @if (enCurso() && (delivery() || estadoActual() !== 'LISTO') && seguimiento.value()?.entregaEstimada; as entrega) {
             <app-eta-countdown class="estado__reloj" [invertido]="true" [entregaEstimada]="entrega" [minutosTotales]="p.minutosEstimados"
               [etiqueta]="delivery() ? 'Llega en' : 'Listo en'" />
           }
@@ -188,6 +192,6 @@
       </div>
     </dialog>
 
-    <app-order-rating [pedidoId]="p.id" [abierto]="calificando()" (calificado)="alCalificar()" (cerrado)="calificando.set(false)" />
+    <app-order-rating [pedidoId]="p.id" [productos]="productosCalificables()" [abierto]="calificando()" (calificado)="alCalificar()" (cerrado)="calificando.set(false)" />
   }
 </app-account-shell>

@@ -73,4 +73,7 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, Long> {
     List<Usuario> findUsuariosActivosPorRolYSucursal(@Param("rol") Rol rol, @Param("sucursalId") Long sucursalId);
 
     long countBySucursalId(Long sucursalId);
+
+    /** Indica si la sucursal tiene al menos un usuario activo de ese rol (para saber si puede atender pedidos). */
+    boolean existsBySucursalIdAndUsuarioRolAndUsuarioActivoTrue(Long sucursalId, Rol rol);
 }

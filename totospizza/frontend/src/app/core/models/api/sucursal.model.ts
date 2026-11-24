@@ -1,4 +1,4 @@
-import type { DiaSemana, Hora } from './enums.model';
+import type { DiaSemana, Hora, Rol } from './enums.model';
 import type { DireccionRequest, DireccionResponse } from './seguridad.model';
 
 export interface HorarioSucursalRequest {
@@ -48,6 +48,8 @@ export interface SucursalResponse {
   readonly abiertoAhora: boolean;
   readonly horarios: readonly HorarioSucursalResponse[];
   readonly zonas: readonly ZonaRepartoResponse[];
+  /** Roles sin ningún empleado activo; si hay alguno, la sede no recibe delivery. */
+  readonly personalFaltante?: readonly Rol[];
 }
 
 export interface LocalesResponse {

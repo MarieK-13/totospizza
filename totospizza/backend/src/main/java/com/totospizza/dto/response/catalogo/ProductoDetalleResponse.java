@@ -22,6 +22,7 @@ public record ProductoDetalleResponse(
         List<EtiquetaResponse> etiquetas,
         List<PrecioTamanoResponse> precios,
         List<TipoMasaResponse> tiposMasa,
-        List<IngredienteResponse> adicionales
+        List<IngredienteResponse> adicionales,
+        List<IngredienteResponse> ingredientes
 ) {
 }

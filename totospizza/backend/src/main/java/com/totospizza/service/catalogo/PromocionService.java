@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.totospizza.dto.request.catalogo.CambiarDisponibilidadRequest;
 import com.totospizza.dto.request.catalogo.PromocionRequest;
+import com.totospizza.dto.response.catalogo.PromocionAdminResponse;
 import com.totospizza.dto.response.catalogo.PromocionResponse;
 
 
@@ -11,13 +12,13 @@ public interface PromocionService {
 
     List<PromocionResponse> vigentes();
 
-    List<PromocionResponse> listar();
+    List<PromocionAdminResponse> listar();
 
-    PromocionResponse crear(PromocionRequest request);
+    PromocionAdminResponse crear(PromocionRequest request);
 
-    PromocionResponse actualizar(Long id, PromocionRequest request);
+    PromocionAdminResponse actualizar(Long id, PromocionRequest request);
 
-    PromocionResponse cambiarActiva(Long id, CambiarDisponibilidadRequest request);
+    PromocionAdminResponse cambiarActiva(Long id, CambiarDisponibilidadRequest request);
 
-    List<PromocionResponse> enPerdida();
+    List<PromocionAdminResponse> enPerdida();
 }

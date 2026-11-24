@@ -1,0 +1,120 @@
+<ng-template appPanelAcciones>
+  <button type="button" class="panel-cta" (click)="abrirNueva()">
+    <lucide-icon [img]="Icons.Plus" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+    Nueva categoría
+  </button>
+</ng-template>
+
+<div class="crud" [attr.aria-busy]="cargando()">
+  <section class="crud-kpis crud-kpis--3">
+    <app-panel-kpi etiqueta="Categorías" [valor]="categorias().length" [icono]="Icons.Layers" tono="rojo" pie="secciones del menú" />
+    <app-panel-kpi etiqueta="Visibles" [valor]="activas()" [icono]="Icons.Eye" tono="verde" pie="aparecen en la tienda" />
+    <app-panel-kpi etiqueta="Ocultas" [valor]="categorias().length - activas()" [icono]="Icons.EyeOff" tono="ambar" pie="no se muestran al cliente" />
+  </section>
+
+  <section class="crud-card">
+    <div class="crud-card__cabecera">
+      <h2 class="crud-card__titulo">Secciones del menú</h2>
+      <label class="crud-buscar">
+        <lucide-icon [img]="Icons.Search" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <input type="search" placeholder="Buscar categoría" aria-label="Buscar categoría" [value]="busqueda()" (input)="busqueda.set(valor($event))" />
+      </label>
+    </div>
+
+    @if (filtradas().length) {
+      <div class="crud-tabla-wrap">
+        <table class="crud-tabla">
+          <thead>
+            <tr>
+              <th>Orden</th>
+              <th>Categoría</th>
+              <th>Enlace</th>
+              <th>Visible</th>
+              <th class="der">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of filtradas(); track c.id) {
+              <tr [class.is-apagado]="!c.activa">
+                <td class="num">{{ c.orden }}</td>
+                <td>
+                  <div class="crud-celda">
+                    <span class="crud-celda__icono" aria-hidden="true">
+                      <lucide-icon [img]="Icons.Layers" [size]="16" [strokeWidth]="1.8"></lucide-icon>
+                    </span>
+                    <div class="crud-celda__texto"><strong>{{ c.nombre }}</strong></div>
+                  </div>
+                </td>
+                <td><span class="crud-badge">/menu?categoria={{ c.slug }}</span></td>
+                <td>
+                  <button type="button" class="crud-switch" role="switch" [attr.aria-checked]="c.activa"
+                    [attr.aria-label]="(c.activa ? 'Ocultar ' : 'Mostrar ') + c.nombre" (click)="alternarActiva(c)"></button>
+                </td>
+                <td class="der">
+                  <div class="crud-acciones">
+                    <button type="button" class="crud-icono-btn" title="Editar" [attr.aria-label]="'Editar ' + c.nombre" (click)="abrirEdicion(c)">
+                      <lucide-icon [img]="Icons.Pencil" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                    </button>
+                    <button type="button" class="crud-icono-btn crud-icono-btn--peligro" title="Eliminar" [attr.aria-label]="'Eliminar ' + c.nombre" (click)="abrirEliminar(c)">
+                      <lucide-icon [img]="Icons.Trash2" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <app-estado-vacio [cargando]="cargando()" [icono]="Icons.Layers"
+        [titulo]="busqueda() ? 'Sin coincidencias' : 'Aún no hay categorías'"
+        [mensaje]="busqueda() ? 'Prueba con otro nombre.' : 'Crea la primera sección del menú, por ejemplo Pizzas o Bebidas.'">
+        @if (!busqueda()) {
+          <button type="button" class="crud-btn crud-btn--primario crud-btn--sm" (click)="abrirNueva()">Crear categoría</button>
+        }
+      </app-estado-vacio>
+    }
+  </section>
+
+  @switch (modal()) {
+    @case ('formulario') {
+      <app-panel-modal [titulo]="seleccionada() ? 'Editar categoría' : 'Nueva categoría'"
+        descripcion="El orden define en qué posición aparece en el menú." (cerrar)="cerrar()">
+        <form id="form-categoria" class="crud-form" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+          @if (errorFormulario(); as error) {
+            <p class="crud-aviso" role="alert">{{ error }}</p>
+          }
+          <app-text-field label="Nombre" [required]="true" [maxlength]="60" placeholder="Ej. Pizzas clásicas" formControlName="nombre" />
+          <app-text-field label="Orden" type="number" inputmode="numeric" [min]="'0'" [max]="'999'" [required]="true" formControlName="orden" />
+          <div class="crud-fila-switch">
+            <span>
+              Visible en el menú
+              <small>Si la ocultas, sus productos no se listan por categoría.</small>
+            </span>
+            <button type="button" class="crud-switch" role="switch" aria-label="Visible en el menú"
+              [attr.aria-checked]="form.controls.activa.value" (click)="form.controls.activa.setValue(!form.controls.activa.value)"></button>
+          </div>
+        </form>
+        <div acciones>
+          <button type="button" class="crud-btn" (click)="cerrar()" [disabled]="guardando()">Cancelar</button>
+          <button type="submit" form="form-categoria" class="crud-btn crud-btn--primario" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando…' : seleccionada() ? 'Guardar cambios' : 'Crear categoría' }}
+          </button>
+        </div>
+      </app-panel-modal>
+    }
+    @case ('eliminar') {
+      @if (seleccionada(); as c) {
+        <app-panel-modal titulo="¿Eliminar categoría?" (cerrar)="cerrar()"
+          [descripcion]="'Se eliminará “' + c.nombre + '”. Si todavía tiene productos, muévelos antes u ocúltala en su lugar.'">
+          <div acciones>
+            <button type="button" class="crud-btn" (click)="cerrar()" [disabled]="guardando()">Cancelar</button>
+            <button type="button" class="crud-btn crud-btn--peligro" (click)="eliminar()" [disabled]="guardando()">
+              {{ guardando() ? 'Eliminando…' : 'Eliminar' }}
+            </button>
+          </div>
+        </app-panel-modal>
+      }
+    }
+  }
+</div>

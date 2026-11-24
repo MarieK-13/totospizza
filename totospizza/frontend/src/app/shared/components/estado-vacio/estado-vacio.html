@@ -1,0 +1,15 @@
+@if (cargando()) {
+  <span class="vacio__icono vacio__icono--cargando" aria-hidden="true">
+    <lucide-icon [img]="LoaderIcon" [size]="22" [strokeWidth]="1.8"></lucide-icon>
+  </span>
+  <p class="vacio__titulo">Cargando…</p>
+} @else {
+  <span class="vacio__icono" aria-hidden="true">
+    <lucide-icon [img]="icono()" [size]="compacto() ? 20 : 24" [strokeWidth]="1.6"></lucide-icon>
+  </span>
+  <p class="vacio__titulo">{{ titulo() }}</p>
+  @if (mensaje()) {
+    <p class="vacio__mensaje">{{ mensaje() }}</p>
+  }
+  <ng-content />
+}

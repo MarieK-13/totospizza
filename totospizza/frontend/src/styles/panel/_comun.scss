@@ -1,0 +1,77 @@
+@use '../tokens/variables' as *;
+@use 'paleta' as *;
+
+// Piezas repetidas en las pantallas del personal.
+
+/** Franja de aviso cuando el backend no respondió al refrescar. */
+@mixin aviso-conexion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border: 1px solid $red-border;
+  border-radius: $radius-md;
+  background: $red-bg;
+  color: $brand-red;
+  font-size: 0.8125rem;
+
+  button {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid $brand-red;
+    border-radius: $radius-pill;
+    background: $bg-card;
+    color: $brand-red;
+    font: inherit;
+    font-weight: $weight-semibold;
+    cursor: pointer;
+  }
+}
+
+/** Texto centrado de una lista o columna vacía. */
+@mixin vacio {
+  margin: 0;
+  padding: $space-6 $space-4;
+  color: $text-muted;
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+/** Botón deshabilitado mientras se guarda. */
+@mixin deshabilitado {
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+/** Fondo y tarjeta de los diálogos del panel. */
+@mixin modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: $z-modal + 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-4;
+  background: $scrim;
+}
+
+@mixin modal-card($ancho: 440px) {
+  width: 100%;
+  max-width: $ancho;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  padding: $space-6;
+  border-radius: 16px;
+  background: $bg-card;
+  box-shadow: 0 16px 36px rgba($shadow-ink, 0.15);
+
+  h3 {
+    margin: 0 0 6px;
+    font-family: $font-titulos;
+    font-size: 21px;
+    font-weight: 400;
+  }
+}

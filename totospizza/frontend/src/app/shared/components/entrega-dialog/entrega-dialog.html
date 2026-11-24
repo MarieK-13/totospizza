@@ -17,6 +17,28 @@
 
   <div class="entrega__cuerpo">
     @if (tipo() === 'DELIVERY') {
+      @if (guardadas().length) {
+        <div class="guardadas">
+          <p class="guardadas__titulo">Tus direcciones</p>
+          <ul class="guardadas__lista" role="radiogroup" aria-label="Tus direcciones guardadas">
+            @for (g of guardadas(); track g.id) {
+              <li>
+                <button type="button" role="radio" class="guardada" [class.is-activa]="guardadaId() === g.id" [attr.aria-checked]="guardadaId() === g.id"
+                  [disabled]="buscando()" (click)="elegirGuardada(g)">
+                  <lucide-icon [img]="g.favorita ? StarIcon : HomeIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                  <span class="guardada__texto">
+                    <span class="guardada__etiqueta">{{ g.etiqueta }}</span>
+                    <span class="guardada__direccion">{{ g.direccion.direccion }}, {{ g.direccion.distrito }}</span>
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
+          <p class="guardadas__o">o</p>
+        </div>
+      } @else if (esCliente()) {
+        <p class="guardadas__ayuda">Guarda tus direcciones en <a routerLink="/perfil" (click)="cerrar()">Mi perfil</a> para elegirlas aquí con un toque.</p>
+      }
       <button type="button" class="ubicar" (click)="ubicar()" [disabled]="buscando()">
         <lucide-icon [class.gira]="buscando()" [img]="buscando() ? LoadingIcon : LocateIcon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
         {{ buscando() ? 'Buscando tu ubicación…' : cobertura() ? 'Volver a ubicarme' : 'Usar mi ubicación' }}

@@ -1,362 +1,148 @@
-<div class="admin-layout" (click)="menuFilaAbiertoId.set(null)">
-  <!-- SIDEBAR IZQUIERDO -->
-  <aside class="sidebar">
-    <div class="sidebar__brand">
-      <div class="sidebar__logo-badge">
-        <span class="sidebar__logo-top">TOTO'S</span>
-        <span class="sidebar__logo-sub">PIZZA</span>
-      </div>
-      <span class="sidebar__brand-title">TOTO'S PIZZA</span>
-    </div>
-
-    <nav class="sidebar__nav">
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('resumen')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="3" width="7" height="7" rx="1.5" />
-          <rect x="14" y="3" width="7" height="7" rx="1.5" />
-          <rect x="3" y="14" width="7" height="7" rx="1.5" />
-          <rect x="14" y="14" width="7" height="7" rx="1.5" />
-        </svg>
-        <span>Resumen</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item sidebar__nav-item--active" (click)="navegarA('pedidos')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-          <rect x="9" y="3" width="6" height="4" rx="1" />
-          <path d="M9 12h6M9 16h4" />
-        </svg>
-        <span>Pedidos</span>
-        <span class="sidebar__active-pill"></span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('empleados')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-        </svg>
-        <span>Empleados</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('finanzas')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-          <polyline points="17 6 23 6 23 12" />
-        </svg>
-        <span>Finanzas</span>
-      </button>
-
-      <button type="button" class="sidebar__nav-item" (click)="navegarA('configuracion')">
-        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="3" />
-          <path
-            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
-          />
-        </svg>
-        <span>Configuración</span>
-      </button>
-    </nav>
-
-    <div class="sidebar__shift-card">
-      <div class="sidebar__shift-status">
-        <span class="status-dot status-dot--green"></span>
-        <span>TURNO ACTIVO</span>
-      </div>
-      <div class="sidebar__shift-hours">12:00 — 22:30</div>
-      <div class="sidebar__shift-location">Sede Miraflores · Caja principal</div>
-    </div>
-
-    <button
-      type="button"
-      class="sidebar__help-btn"
-      (click)="mostrarToast('ok', 'Soporte técnico Toto\'s Pizza disponible.')"
-    >
-      <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-        <line x1="12" y1="17" x2="12.01" y2="17" />
+<div class="pedidos-page" (click)="menuFilaAbiertoId.set(null)">
+  <!-- BARRA DE FILTROS -->
+  <section class="filters-bar" aria-label="Filtros de pedidos">
+    <div class="filter-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
       </svg>
-      <span>Ayuda y soporte</span>
-    </button>
-  </aside>
-
-  <!-- CONTENIDO PRINCIPAL -->
-  <main class="main-content">
-    <div
-      *ngIf="toastMensaje() as toast"
-      class="toast-banner"
-      [class.toast-banner--error]="toast.tipo === 'error'"
-    >
-      {{ toast.texto }}
+      <input
+        type="search"
+        placeholder="Buscar N° de pedido o cliente"
+        aria-label="Buscar N° de pedido o cliente"
+        [value]="filtroTexto()"
+        (input)="filtroTexto.set(valor($event))"
+        (keyup.enter)="aplicarFiltros()"
+      />
     </div>
 
-    <!-- HEADER SUPERIOR -->
-    <header class="topbar">
-      <div class="topbar__titles">
-        <h1 class="topbar__title">Pedidos</h1>
-        <p class="topbar__subtitle">Gestiona pedidos, pagos y entregas en tiempo real</p>
+    <label class="filter-pill filter-pill--date">
+      <span>{{ etiquetaFecha() }}</span>
+      <input type="date" aria-label="Fecha de los pedidos" [value]="filtroFecha()" [max]="hoy"
+        (change)="filtroFecha.set(valor($event)); aplicarFiltros()" />
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+      </svg>
+    </label>
+
+    <select class="filter-select" aria-label="Estado" (change)="filtrarPorEstado($any(valor($event)))">
+      <option value="" [selected]="filtroEstado() === ''">Todos los estados</option>
+      @for (e of estadosFiltro; track e) {
+        <option [value]="e" [selected]="filtroEstado() === e">{{ etiquetaEstado(e) }}</option>
+      }
+    </select>
+
+    <select class="filter-select" aria-label="Tipo de entrega" (change)="filtroTipoEntrega.set($any(valor($event)))">
+      <option value="" [selected]="filtroTipoEntrega() === ''">Delivery y recojo</option>
+      <option value="DELIVERY" [selected]="filtroTipoEntrega() === 'DELIVERY'">Delivery</option>
+      <option value="RECOJO" [selected]="filtroTipoEntrega() === 'RECOJO'">Recojo en tienda</option>
+    </select>
+
+    <button type="button" class="filter-clear-btn" (click)="limpiarFiltros()">Limpiar</button>
+  </section>
+
+  <div class="orders-workspace">
+    <!-- TABLA -->
+    <section class="panel-card orders-table-panel" [attr.aria-busy]="cargandoLista()">
+      <div class="panel-card__header">
+        <h2 class="panel-card__title">Pedidos</h2>
+        <span class="panel-card__meta">{{ totalElementos() }} {{ totalElementos() === 1 ? 'pedido' : 'pedidos' }}</span>
       </div>
 
-      <div class="topbar__actions">
-        <button type="button" class="btn-new-order" (click)="modalInfoNuevoPedido.set(true)">
-          <span>+</span> Nuevo pedido
-        </button>
-
-        <div class="topbar__date-pill">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          <span>{{ fechaHoraActual() }}</span>
-        </div>
-
-        <button type="button" class="topbar__bell-btn" aria-label="Notificaciones">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 01-3.46 0" />
-          </svg>
-          <span class="topbar__bell-badge" *ngIf="notificacionesNoLeidas() > 0"></span>
-        </button>
-
-        <div class="topbar__profile">
-          <div class="topbar__avatar">{{ usuario().iniciales }}</div>
-          <div class="topbar__user-info">
-            <span class="topbar__user-name">{{ usuario().nombres }} {{ usuario().apellidos }}</span>
-            <span class="topbar__user-role">{{ usuario().rolEtiqueta }}</span>
-          </div>
-          <svg class="topbar__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-      </div>
-    </header>
-
-    <!-- BARRA DE FILTROS -->
-    <section class="filters-bar">
-      <div class="filter-search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-        <input
-          type="text"
-          placeholder="Buscar N° pedido o cliente"
-          [ngModel]="filtroTexto()"
-          (ngModelChange)="filtroTexto.set($event)"
-          (keyup.enter)="aplicarFiltros()"
-        />
-        <span class="filter-search__shortcut">⌘K</span>
-      </div>
-
-      <label class="filter-pill filter-pill--date">
-        <span>Hoy, 02 oct</span>
-        <input
-          type="date"
-          [ngModel]="filtroFecha()"
-          (ngModelChange)="filtroFecha.set($event); aplicarFiltros()"
-        />
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="4" width="18" height="18" rx="2" />
-          <line x1="16" y1="2" x2="16" y2="6" />
-          <line x1="8" y1="2" x2="8" y2="6" />
-          <line x1="3" y1="10" x2="21" y2="10" />
-        </svg>
-      </label>
-
-      <select
-        class="filter-select"
-        [ngModel]="filtroEstado()"
-        (ngModelChange)="filtroEstado.set($event); aplicarFiltros()"
-      >
-        <option value="">Todos los estados</option>
-        <option value="PENDIENTE_PAGO">Pendiente</option>
-        <option value="CONFIRMADO">Confirmado</option>
-        <option value="EN_PREPARACION">En preparación</option>
-        <option value="EN_HORNO">En el horno</option>
-        <option value="LISTO">Listo</option>
-        <option value="EN_CAMINO">En camino</option>
-        <option value="ENTREGADO">Entregado</option>
-        <option value="CANCELADO">Cancelado</option>
-        <option value="NO_RECOGIDO">No recogido</option>
-      </select>
-
-      <select
-        class="filter-select"
-        [ngModel]="filtroTipoEntrega()"
-        (ngModelChange)="filtroTipoEntrega.set($event)"
-      >
-        <option value="">Delivery y recojo</option>
-        <option value="DELIVERY">Delivery</option>
-        <option value="RECOJO">Recojo en tienda</option>
-      </select>
-
-      <select
-        class="filter-select"
-        [ngModel]="filtroMetodoPago()"
-        (ngModelChange)="filtroMetodoPago.set($event)"
-      >
-        <option value="">Método de pago</option>
-        <option value="YAPE">Yape</option>
-        <option value="TARJETA">Tarjeta</option>
-        <option value="PLIN">Plin</option>
-        <option value="CMR">CMR</option>
-      </select>
-
-      <button type="button" class="filter-clear-btn" (click)="limpiarFiltros()">Limpiar</button>
-    </section>
-
-    <!-- GRID PRINCIPAL: TABLA IZQUIERDA + PANEL DETALLE DERECHA -->
-    <div class="orders-workspace">
-      <!-- PANEL TABLA PEDIDOS RECIENTES -->
-      <section class="panel-card orders-table-panel">
-        <div class="panel-card__header">
-          <h2 class="panel-card__title">Pedidos recientes</h2>
-          <span class="panel-card__meta">{{ totalElementos() }} pedidos hoy</span>
-        </div>
-
-        <div class="table-responsive">
-          <table class="orders-table">
-            <thead>
-              <tr>
-                <th>N°</th>
-                <th>CLIENTE / PRODUCTOS</th>
-                <th>TIPO</th>
-                <th>TOTAL</th>
-                <th>PAGO</th>
-                <th>ESTADO</th>
-                <th>HORA</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                *ngFor="let pedido of pedidosFiltrados()"
-                [class.orders-table__row--selected]="pedidoSeleccionadoId() === pedido.id"
-                (click)="seleccionarPedido(pedido)"
-              >
-                <td class="orders-table__num">{{ pedido.numero }}</td>
+      <div class="table-responsive">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>N°</th>
+              <th>Cliente</th>
+              <th>Tipo</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Hora</th>
+              <th><span class="sr-only">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (pedido of pedidosFiltrados(); track pedido.id) {
+              <tr [class.orders-table__row--selected]="pedidoSeleccionadoId() === pedido.id" (click)="seleccionarPedido(pedido)">
+                <td class="orders-table__num">
+                  <button type="button" class="row-link" (click)="$event.stopPropagation(); seleccionarPedido(pedido)">#{{ pedido.numero }}</button>
+                </td>
                 <td>
                   <div class="client-summary">
-                    <strong>{{ pedido.clienteNombre || 'Pedido ' + pedido.numero }}</strong>
-                    <span>{{ pedido.resumenProductos || (pedido.cantidadItems + ' ítems') }}</span>
+                    <strong>{{ pedido.nombreCliente }}</strong>
+                    <span>{{ pedido.cantidadItems }} {{ pedido.cantidadItems === 1 ? 'producto' : 'productos' }}</span>
                   </div>
                 </td>
                 <td>{{ pedido.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo' }}</td>
-                <td class="orders-table__total">S/ {{ pedido.total | number : '1.2-2' }}</td>
-                <td>{{ etiquetaMetodoPago(pedido.metodoPago) }}</td>
+                <td class="orders-table__total">S/ {{ pedido.total | number: '1.2-2' }}</td>
                 <td>
                   <span class="state-badge" [ngClass]="'state-badge--' + pedido.estado.toLowerCase()">
                     <span class="state-badge__dot"></span>
                     {{ etiquetaEstado(pedido.estado) }}
                   </span>
                 </td>
-                <td class="orders-table__time">{{ formatearHora(pedido.creadoEn) }}</td>
+                <td class="orders-table__time">{{ hora(pedido.creadoEn) }}</td>
                 <td class="action-cell">
-                  <button
-                    type="button"
-                    class="dots-btn"
-                    (click)="toggleMenuFila(pedido.id, $event)"
-                    aria-label="Opciones del pedido"
-                  >
-                    ⋮
-                  </button>
-
-                  <div
-                    class="row-menu"
-                    *ngIf="menuFilaAbiertoId() === pedido.id"
-                    (click)="$event.stopPropagation()"
-                  >
-                    <button type="button" (click)="seleccionarPedido(pedido); abrirModalCambioEstado()">
-                      Cambiar estado
-                    </button>
-                    <button
-                      type="button"
-                      *ngIf="pedido.estado === 'PENDIENTE_PAGO' || pedido.estado === 'CONFIRMADO'"
-                      (click)="seleccionarPedido(pedido); modalCancelarAbierto.set(true)"
-                    >
-                      Cancelar pedido
-                    </button>
-                  </div>
+                  <button type="button" class="dots-btn" (click)="alternarMenuFila(pedido.id, $event)"
+                    [attr.aria-label]="'Opciones del pedido ' + pedido.numero" [attr.aria-expanded]="menuFilaAbiertoId() === pedido.id">⋮</button>
+                  @if (menuFilaAbiertoId() === pedido.id) {
+                    <div class="row-menu" (click)="$event.stopPropagation()">
+                      <button type="button" (click)="seleccionarPedido(pedido)">Ver detalle</button>
+                    </div>
+                  }
                 </td>
               </tr>
-            </tbody>
-          </table>
-        </div>
+            } @empty {
+              <tr>
+                <td colspan="7">
+                  <app-estado-vacio [cargando]="cargandoLista()" [icono]="IconoPedidos" titulo="No hay pedidos"
+                    mensaje="No encontramos pedidos con estos filtros. Prueba con otra fecha o estado." />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
 
-        <!-- LEYENDA DE ESTADOS -->
-        <div class="status-legend">
-          <button type="button" class="state-badge state-badge--pendiente_pago" (click)="filtroEstado.set('PENDIENTE_PAGO'); aplicarFiltros()">
-            <span class="state-badge__dot"></span> Pendiente
+      <!-- LEYENDA DE ESTADOS (también filtra) -->
+      <div class="status-legend" role="group" aria-label="Filtrar por estado">
+        @for (e of estadosLeyenda; track e) {
+          <button type="button" class="state-badge" [ngClass]="'state-badge--' + e.toLowerCase()"
+            [class.is-activo]="filtroEstado() === e" [attr.aria-pressed]="filtroEstado() === e"
+            (click)="filtrarPorEstado(filtroEstado() === e ? '' : e)">
+            <span class="state-badge__dot"></span> {{ etiquetaEstado(e) }}
           </button>
-          <button type="button" class="state-badge state-badge--confirmado" (click)="filtroEstado.set('CONFIRMADO'); aplicarFiltros()">
-            <span class="state-badge__dot"></span> Confirmado
-          </button>
-          <button type="button" class="state-badge state-badge--en_preparacion" (click)="filtroEstado.set('EN_PREPARACION'); aplicarFiltros()">
-            <span class="state-badge__dot"></span> En preparación
-          </button>
-          <button type="button" class="state-badge state-badge--listo" (click)="filtroEstado.set('LISTO'); aplicarFiltros()">
-            <span class="state-badge__dot"></span> Listo
-          </button>
-          <button type="button" class="state-badge state-badge--en_camino" (click)="filtroEstado.set('EN_CAMINO'); aplicarFiltros()">
-            <span class="state-badge__dot"></span> En camino
-          </button>
-          <button type="button" class="state-badge state-badge--entregado" (click)="filtroEstado.set('ENTREGADO'); aplicarFiltros()">
-            <span class="state-badge__dot"></span> Entregado
-          </button>
-          <button type="button" class="state-badge state-badge--cancelado" (click)="filtroEstado.set('CANCELADO'); aplicarFiltros()">
-            <span class="state-badge__dot"></span> Cancelado
-          </button>
-        </div>
+        }
+      </div>
 
-        <!-- PAGINACIÓN -->
+      <!-- PAGINACIÓN -->
+      @if (totalElementos() > 0) {
         <div class="pagination-footer">
           <span class="pagination-footer__info">
-            Mostrando {{ paginaActual() * tamanoPagina() + 1 }}-{{
-              paginaActual() * tamanoPagina() + pedidosFiltrados().length
-            }}
-            de {{ totalElementos() }} pedidos
+            Mostrando {{ paginaActual() * 10 + 1 }}–{{ paginaActual() * 10 + pedidos().length }} de {{ totalElementos() }}
           </span>
-
-          <div class="pagination-footer__controls">
-            <button
-              type="button"
-              class="page-btn"
-              [disabled]="paginaActual() === 0"
-              (click)="irAPagina(paginaActual())"
-            >
-              ‹
-            </button>
-
-            <button
-              *ngFor="let p of paginasVisibles()"
-              type="button"
-              class="page-btn"
-              [class.page-btn--active]="paginaActual() + 1 === p"
-              (click)="irAPagina(p)"
-            >
-              {{ p }}
-            </button>
-
-            <button
-              type="button"
-              class="page-btn"
-              [disabled]="paginaActual() + 1 >= totalPaginas()"
-              (click)="irAPagina(paginaActual() + 2)"
-            >
-              ›
-            </button>
-          </div>
+          <nav class="pagination-footer__controls" aria-label="Paginación">
+            <button type="button" class="page-btn" aria-label="Página anterior" [disabled]="paginaActual() === 0" (click)="irAPagina(paginaActual())">‹</button>
+            @for (p of paginasVisibles(); track p) {
+              <button type="button" class="page-btn" [class.page-btn--active]="paginaActual() + 1 === p"
+                [attr.aria-current]="paginaActual() + 1 === p ? 'page' : null" (click)="irAPagina(p)">{{ p }}</button>
+            }
+            <button type="button" class="page-btn" aria-label="Página siguiente" [disabled]="paginaActual() + 1 >= totalPaginas()" (click)="irAPagina(paginaActual() + 2)">›</button>
+          </nav>
         </div>
-      </section>
+      }
+    </section>
 
-      <!-- PANEL DERECHO: DETALLE DEL PEDIDO -->
-      <aside class="panel-card detail-panel" *ngIf="detallePedido() as det">
+    <!-- DETALLE -->
+    @if (detallePedido(); as det) {
+      <aside class="panel-card detail-panel" [attr.aria-busy]="cargandoDetalle()" aria-labelledby="titulo-detalle">
         <div class="detail-panel__header">
-          <h2 class="detail-panel__title">Detalle del pedido {{ det.numero }}</h2>
-          <span class="detail-panel__tag">Seleccionado</span>
+          <h2 class="detail-panel__title" id="titulo-detalle">Pedido #{{ det.numero }}</h2>
+          <span class="detail-panel__tag">{{ det.sucursalNombre }}</span>
         </div>
 
         <div class="detail-panel__status-row">
@@ -364,215 +150,202 @@
             <span class="state-badge__dot"></span>
             {{ etiquetaEstado(det.estado) }}
           </span>
-          <span class="detail-panel__elapsed">Hace {{ minutosTranscurridos(det.creadoEn) }} min</span>
+          <span class="detail-panel__elapsed">Hace {{ minutosDesde(det.creadoEn) }} min</span>
         </div>
 
-        <!-- Tarjeta Cliente y Dirección -->
-        <div class="customer-box">
-          <div class="customer-box__top">
-            <div class="customer-box__avatar">
-              {{ detalleClienteExtra()?.iniciales || 'CL' }}
-            </div>
-            <div>
-              <div class="customer-box__name">
-                {{ detalleClienteExtra()?.nombre || ('Cliente · ' + det.sucursalNombre) }}
+        @if (filaSeleccionada(); as fila) {
+          <div class="customer-box">
+            <div class="customer-box__top">
+              <div class="customer-box__avatar" aria-hidden="true">{{ inicialesDe(fila.nombreCliente) }}</div>
+              <div>
+                <div class="customer-box__name">{{ fila.nombreCliente }}</div>
+                <div class="customer-box__phone">
+                  @if (fila.telefonoCliente) {
+                    <a [href]="'tel:' + fila.telefonoCliente">{{ fila.telefonoCliente }}</a> ·
+                  }
+                  {{ det.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo en tienda' }}
+                </div>
               </div>
-              <div class="customer-box__phone">
-                {{ detalleClienteExtra()?.telefono || (det.tipoEntrega === 'DELIVERY' ? 'Entrega a domicilio' : 'Recojo en mostrador') }}
-              </div>
             </div>
+            @if (det.direccionEntrega; as dir) {
+              <div class="customer-box__address">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <span>{{ dir.direccion }}, {{ dir.distrito }}@if (dir.referencia) { · {{ dir.referencia }} }</span>
+              </div>
+            }
+            @if (det.instrucciones) {
+              <p class="customer-box__nota">“{{ det.instrucciones }}”</p>
+            }
           </div>
+        }
 
-          <div class="customer-box__address" *ngIf="det.direccionEntrega">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            <span>{{ det.direccionEntrega.direccion }}</span>
-          </div>
-        </div>
-
-        <!-- Productos -->
         <div class="detail-section">
-          <div class="detail-section__label">PRODUCTOS</div>
-
-          <div class="product-line" *ngFor="let item of det.detalles">
-            <div class="product-line__qty">{{ item.cantidad }}x</div>
-            <div class="product-line__info">
-              <strong>{{ item.nombre }}</strong>
-              <span>{{ item.descripcion }}</span>
+          <h3 class="detail-section__label">Productos</h3>
+          @for (item of det.detalles; track item.id) {
+            <div class="product-line">
+              <div class="product-line__qty">{{ item.cantidad }}x</div>
+              <div class="product-line__info">
+                <strong>{{ item.nombre }}</strong>
+                @if (item.descripcion) {
+                  <span>{{ item.descripcion }}</span>
+                }
+              </div>
+              <div class="product-line__price">S/ {{ item.subtotal | number: '1.2-2' }}</div>
             </div>
-            <div class="product-line__price">S/ {{ item.subtotal | number : '1.2-2' }}</div>
-          </div>
+          }
         </div>
 
-        <!-- Totales -->
         <div class="totals-box">
           <div class="totals-box__row">
             <span>Subtotal</span>
-            <strong>S/ {{ det.montos.subtotal | number : '1.2-2' }}</strong>
+            <strong>S/ {{ det.montos.subtotal | number: '1.2-2' }}</strong>
           </div>
-          <div class="totals-box__row">
-            <span>Delivery</span>
-            <strong>S/ {{ det.montos.costoDelivery | number : '1.2-2' }}</strong>
-          </div>
+          @if (det.tipoEntrega === 'DELIVERY') {
+            <div class="totals-box__row">
+              <span>Delivery</span>
+              <strong>S/ {{ det.montos.costoDelivery | number: '1.2-2' }}</strong>
+            </div>
+          }
           <div class="totals-box__total">
             <span>Total</span>
-            <strong>S/ {{ det.montos.total | number : '1.2-2' }}</strong>
+            <strong>S/ {{ det.montos.total | number: '1.2-2' }}</strong>
           </div>
         </div>
 
-        <!-- Método de pago -->
-        <div class="payment-box" *ngIf="det.pago">
-          <div class="payment-box__method">
-            <span class="payment-box__icon">▣</span>
-            <span>
-              {{ etiquetaMetodoPago(det.pago.metodo) }} ·
-              {{ det.pago.estado === 'APROBADO' ? 'Pagado' : det.pago.estado }}
-            </span>
+        @if (det.pago; as pago) {
+          <div class="payment-box">
+            <div class="payment-box__method">
+              <span class="payment-box__icon" aria-hidden="true">▣</span>
+              <span>
+                {{ etiquetaMetodo(pago.metodo) }}@if (pago.ultimosDigitos) { ···{{ pago.ultimosDigitos }} } · {{ etiquetaPago(pago.estado) }}
+              </span>
+            </div>
+            @if (pago.pagadoEn) {
+              <span class="payment-box__hora">{{ hora(pago.pagadoEn) }}</span>
+            }
           </div>
-          <button
-            type="button"
-            class="voucher-btn"
-            (click)="mostrarToast('ok', 'Pago #' + det.pago.id + ' (' + det.pago.estado + ') por S/ ' + det.pago.monto.toFixed(2))"
-          >
-            Ver comprobante
-          </button>
-        </div>
+        }
 
-        <!-- Línea de tiempo -->
         <div class="detail-section">
-          <div class="detail-section__label">LÍNEA DE TIEMPO</div>
-
+          <h3 class="detail-section__label">Línea de tiempo</h3>
           <ul class="timeline-list">
-            <li *ngFor="let h of det.historial" class="timeline-list__item timeline-list__item--done">
-              <span class="timeline-list__dot"></span>
-              <span class="timeline-list__text">{{ h.comentario || etiquetaEstado(h.estado) }}</span>
-              <span class="timeline-list__time">{{ formatearHora(h.fecha) }}</span>
-            </li>
-
-            <li
-              *ngIf="det.estado !== 'ENTREGADO' && det.estado !== 'CANCELADO'"
-              class="timeline-list__item timeline-list__item--pending"
-            >
-              <span class="timeline-list__dot"></span>
-              <span class="timeline-list__text">Listo para despacho</span>
-              <span class="timeline-list__time">Estimado 14:48</span>
-            </li>
-
-            <li
-              *ngIf="det.tipoEntrega === 'DELIVERY' && det.estado !== 'ENTREGADO' && det.estado !== 'CANCELADO'"
-              class="timeline-list__item timeline-list__item--pending"
-            >
-              <span class="timeline-list__dot"></span>
-              <span class="timeline-list__text">En camino</span>
-              <span class="timeline-list__time">Pendiente</span>
-            </li>
+            @for (h of det.historial; track $index) {
+              <li class="timeline-list__item timeline-list__item--done">
+                <span class="timeline-list__dot"></span>
+                <span class="timeline-list__text">{{ etiquetaEstado(h.estado) }}@if (h.comentario) { · {{ h.comentario }} }</span>
+                <span class="timeline-list__time">{{ hora(h.fecha) }}</span>
+              </li>
+            }
           </ul>
         </div>
 
-        <!-- Botones inferiores -->
         <div class="detail-actions">
-          <button type="button" class="btn-change-state" (click)="abrirModalCambioEstado()">
-            ↻ Cambiar estado
-          </button>
-          <button type="button" class="btn-print" (click)="imprimirTicket()">
-            🖨 Imprimir
-          </button>
+          <button type="button" class="btn-change-state" (click)="abrirModalCambioEstado()" [disabled]="!transicionesDisponibles().length">↻ Cambiar estado</button>
+          @if (puedeCancelar()) {
+            <button type="button" class="btn-print" (click)="abrirModalCancelar()">Cancelar pedido</button>
+          } @else if (saldoReembolsable() > 0) {
+            <button type="button" class="btn-print" (click)="abrirModalReembolso()">↺ Reembolsar</button>
+          } @else {
+            <button type="button" class="btn-print" (click)="imprimirTicket()">🖨 Imprimir</button>
+          }
         </div>
       </aside>
-    </div>
-  </main>
+    } @else if (!cargandoLista()) {
+      <aside class="panel-card detail-panel detail-panel--vacio">
+        <app-estado-vacio [icono]="IconoSeleccion" titulo="Ningún pedido seleccionado" mensaje="Elige un pedido de la lista para ver su detalle, pago y seguimiento." />
+      </aside>
+    }
+  </div>
+</div>
 
-  <!-- MODAL CAMBIAR ESTADO (PATCH /api/v1/admin/pedidos/{id}/estado) -->
-  <div class="modal-backdrop" *ngIf="modalEstadoAbierto()" (click)="modalEstadoAbierto.set(false)">
-    <div class="modal-card" (click)="$event.stopPropagation()">
-      <h3>Cambiar estado del pedido {{ detallePedido()?.numero }}</h3>
-      <p class="modal-card__desc">
-        Transiciones válidas según el flujo operativo del backend.
-      </p>
+<!-- MODAL CAMBIAR ESTADO -->
+@if (modalEstadoAbierto()) {
+  <div class="modal-backdrop" (click)="modalEstadoAbierto.set(false)">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="titulo-estado" (click)="$event.stopPropagation()">
+      <h3 id="titulo-estado">Cambiar estado de #{{ detallePedido()?.numero }}</h3>
+      <p class="modal-card__desc">Solo aparecen los pasos que el flujo del pedido permite desde su estado actual.</p>
 
       <label class="form-field">
         <span>Nuevo estado</span>
-        <select [ngModel]="nuevoEstadoSeleccionado()" (ngModelChange)="nuevoEstadoSeleccionado.set($event)">
-          <option *ngFor="let est of transicionesDisponibles()" [value]="est">
-            {{ etiquetaEstado(est) }}
-          </option>
+        <select (change)="nuevoEstado.set($any(valor($event)))">
+          @for (est of transicionesDisponibles(); track est) {
+            <option [value]="est" [selected]="nuevoEstado() === est">{{ etiquetaEstado(est) }}</option>
+          }
         </select>
       </label>
 
       <label class="form-field">
-        <span>Comentario operativo (opcional, máx. 250 caracteres)</span>
-        <input
-          type="text"
-          maxlength="250"
-          placeholder="Ej. Enviado al horno principal"
-          [ngModel]="comentarioEstado()"
-          (ngModelChange)="comentarioEstado.set($event)"
-        />
+        <span>Comentario (opcional)</span>
+        <input type="text" maxlength="250" placeholder="Ej. Se envió al horno principal"
+          [value]="comentarioEstado()" (input)="comentarioEstado.set(valor($event))" />
       </label>
 
       <div class="modal-card__actions">
-        <button type="button" class="btn-outline" (click)="modalEstadoAbierto.set(false)">
-          Cancelar
-        </button>
-        <button type="button" class="btn-primary" (click)="confirmarCambioEstado()">
-          Guardar cambio
+        <button type="button" class="btn-outline" (click)="modalEstadoAbierto.set(false)">Volver</button>
+        <button type="button" class="btn-primary" (click)="confirmarCambioEstado()" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : 'Guardar cambio' }}
         </button>
       </div>
     </div>
   </div>
+}
 
-  <!-- MODAL CANCELAR PEDIDO (POST /api/v1/admin/pedidos/{id}/cancelar) -->
-  <div class="modal-backdrop" *ngIf="modalCancelarAbierto()" (click)="modalCancelarAbierto.set(false)">
-    <div class="modal-card" (click)="$event.stopPropagation()">
-      <h3>Cancelar pedido {{ detallePedido()?.numero }}</h3>
+<!-- MODAL CANCELAR -->
+@if (modalCancelarAbierto()) {
+  <div class="modal-backdrop" (click)="modalCancelarAbierto.set(false)">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="titulo-cancelar" (click)="$event.stopPropagation()">
+      <h3 id="titulo-cancelar">Cancelar #{{ detallePedido()?.numero }}</h3>
+      <p class="modal-card__desc">El pedido se cancela y, si ya se pagó, el reembolso se procesa automáticamente.</p>
+
+      <label class="form-field">
+        <span>Motivo</span>
+        <input type="text" maxlength="250" placeholder="Ej. El cliente pidió anularlo por teléfono"
+          [value]="motivoCancelacion()" (input)="motivoCancelacion.set(valor($event))" />
+      </label>
+
+      <div class="modal-card__actions">
+        <button type="button" class="btn-outline" (click)="modalCancelarAbierto.set(false)">Volver</button>
+        <button type="button" class="btn-primary" [disabled]="!motivoCancelacion().trim() || guardando()" (click)="confirmarCancelacion()">
+          {{ guardando() ? 'Cancelando…' : 'Cancelar pedido' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- MODAL REEMBOLSO -->
+@if (modalReembolsoAbierto()) {
+  <div class="modal-backdrop" (click)="modalReembolsoAbierto.set(false)">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="titulo-reembolso" (click)="$event.stopPropagation()">
+      <h3 id="titulo-reembolso">Reembolsar #{{ detallePedido()?.numero }}</h3>
       <p class="modal-card__desc">
-        Solo disponible desde Pendiente o Confirmado. Gestiona reembolso automático.
+        Devuelve todo o parte del pago al cliente. Disponible para devolver: S/ {{ saldoReembolsable() | number: '1.2-2' }}.
       </p>
 
       <label class="form-field">
-        <span>Motivo de cancelación (obligatorio)</span>
-        <input
-          type="text"
-          maxlength="250"
-          placeholder="Ej. Solicitud del cliente por demora"
-          [ngModel]="motivoCancelacion()"
-          (ngModelChange)="motivoCancelacion.set($event)"
-        />
+        <span>Monto (S/)</span>
+        <input type="number" min="0.01" step="0.01" [max]="saldoReembolsable()" inputmode="decimal"
+          [value]="montoReembolso()" (input)="montoReembolso.set(valor($event))" />
+        @if (montoReembolso() && !montoReembolsoValido()) {
+          <small class="input-error" role="alert">Debe ser mayor a cero y no superar S/ {{ saldoReembolsable() | number: '1.2-2' }}</small>
+        }
+      </label>
+
+      <label class="form-field">
+        <span>Motivo</span>
+        <input type="text" maxlength="250" placeholder="Ej. Llegó una pizza equivocada"
+          [value]="motivoReembolso()" (input)="motivoReembolso.set(valor($event))" />
       </label>
 
       <div class="modal-card__actions">
-        <button type="button" class="btn-outline" (click)="modalCancelarAbierto.set(false)">
-          Volver
-        </button>
-        <button
-          type="button"
-          class="btn-primary"
-          [disabled]="!motivoCancelacion().trim()"
-          (click)="confirmarCancelacion()"
-        >
-          Confirmar cancelación
+        <button type="button" class="btn-outline" (click)="modalReembolsoAbierto.set(false)">Volver</button>
+        <button type="button" class="btn-primary" [disabled]="!motivoReembolso().trim() || !montoReembolsoValido() || guardando()" (click)="confirmarReembolso()">
+          {{ guardando() ? 'Procesando…' : 'Reembolsar' }}
         </button>
       </div>
     </div>
   </div>
-
-  <!-- MODAL AVISO + NUEVO PEDIDO -->
-  <div class="modal-backdrop" *ngIf="modalInfoNuevoPedido()" (click)="modalInfoNuevoPedido.set(false)">
-    <div class="modal-card" (click)="$event.stopPropagation()">
-      <h3>Registro de nuevo pedido</h3>
-      <p class="modal-card__desc">
-        Según el contrato actual del backend, el endpoint de checkout
-        (<code>POST /api/v1/cliente/pedidos</code>) está restringido al rol
-        <strong>CLIENTE</strong> con pago online obligatorio. Aún no existe endpoint de toma de
-        pedidos en caja para <strong>ADMINISTRADOR</strong>.
-      </p>
-      <div class="modal-card__actions">
-        <button type="button" class="btn-primary" (click)="modalInfoNuevoPedido.set(false)">
-          Entendido
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+}

@@ -29,4 +29,7 @@ public interface FinanzasService {
     PageResponse<PagoMotorizadoResponse> pagosPendientes(Pageable pageable);
 
     PagoMotorizadoResponse marcarPagado(Long usuarioId, Long pagoId);
+
+    /** Elimina una liquidación que todavía no se pagó (por ejemplo, para volver a generarla). */
+    void eliminarLiquidacion(Long pagoId);
 }

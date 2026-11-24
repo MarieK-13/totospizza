@@ -1,154 +1,141 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { catchError, forkJoin, of } from 'rxjs';
-import { AdminEmpleadosService } from '../services/admin-empleados.service';
-import {
-  ApiError,
-  AsignarHorarioRequest,
+import { DecimalPipe, NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
+import { finalize, startWith } from 'rxjs/operators';
+import type {
   EmpleadoRequest,
   EmpleadoResponse,
   EstadoEmpleado,
+  EstadoTurno,
   ResumenEmpleadosResponse,
   Rol,
-  SucursalBasica,
+  SucursalResponse,
   TipoDocumento,
   TurnoResponse,
-} from '../models/admin-empleados.models';
+} from '../../../../core/models/api';
+import { AdminApi } from '../../../../core/services/api/admin.api';
+import { ToastService } from '../../../../core/services/toast.service';
+import { esApiException } from '../../../../core/utils/api-exception';
+import { OPCIONES_DOCUMENTO, documentoValidator } from '../../../../core/utils/documento';
+import { fechaISO, formatearFecha } from '../../../../core/utils/fechas';
+import { aplicarErroresDeCampo } from '../../../../core/utils/form-errors';
+import { passwordValidator, phoneValidator } from '../../../../core/utils/form-validators';
+import { ETIQUETA_ROL, iniciales } from '../../../../core/utils/roles';
+import { PanelAccionesDirective } from '../../../../shared/directives/panel-acciones.directive';
+import { SelectField } from '../../../../shared/components/select-field/select-field';
+import { TextField } from '../../../../shared/components/text-field/text-field';
 
-export interface EmpleadoFilaUI extends EmpleadoResponse {
-  // Campos visuales del diseño no incluidos en EmpleadoResponse del backend
-  numeroDocumentoUI?: string;
-  ultimoAccesoUI?: string;
-  cargoVisualEtiqueta?: string;
-}
+const TAMANO_PAGINA = 8;
+type RolOperativo = Exclude<Rol, 'CLIENTE' | 'ADMINISTRADOR'>;
 
+const ETIQUETA_ESTADO: Readonly<Record<EstadoEmpleado, string>> = {
+  ACTIVO: 'Activo',
+  EN_TURNO: 'En turno',
+  DISPONIBLE: 'Disponible',
+  INACTIVO: 'Inactivo',
+  CON_LICENCIA: 'Con licencia',
+};
+const ETIQUETA_TURNO: Readonly<Record<EstadoTurno, string>> = {
+  PROGRAMADO: 'Programado',
+  EN_CURSO: 'En curso',
+  FINALIZADO: 'Finalizado',
+  CANCELADO: 'Cancelado (no asistió)',
+};
+const CLASE_ROL: Readonly<Record<Rol, string>> = {
+  ADMINISTRADOR: 'role-badge--admin',
+  PIZZERO: 'role-badge--cook',
+  DESPACHADOR: 'role-badge--vendor',
+  MOTORIZADO: 'role-badge--motorized',
+  CLIENTE: 'role-badge--admin',
+};
+const RESUMEN_VACIO: ResumenEmpleadosResponse = { total: 0, activos: 0, enTurno: 0, disponibles: 0, inactivos: 0, conLicencia: 0 };
+
+import { Users } from 'lucide-angular';
+import { EstadoVacio } from '../../../../shared/components/estado-vacio/estado-vacio';
 @Component({
   selector: 'app-admin-empleados',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [DecimalPipe, NgClass, ReactiveFormsModule, TextField, SelectField, PanelAccionesDirective, EstadoVacio],
   templateUrl: './admin-empleados.component.html',
   styleUrls: ['./admin-empleados.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminEmpleadosComponent implements OnInit {
-  private readonly empleadosService = inject(AdminEmpleadosService);
-  private readonly router = inject(Router);
+export class AdminEmpleadosComponent {
+  protected readonly IconoEquipo = Users;
 
-  // Usuario y cabecera
-  readonly usuario = signal({
-    nombres: 'Andrea',
-    apellidos: 'Mendoza',
-    rolEtiqueta: 'Administradora',
-    iniciales: 'AM',
+  private readonly api = inject(AdminApi);
+  private readonly toast = inject(ToastService);
+  private readonly fb = inject(FormBuilder).nonNullable;
+
+  protected readonly estados = Object.keys(ETIQUETA_ESTADO) as EstadoEmpleado[];
+  protected readonly opcionesDocumento = OPCIONES_DOCUMENTO;
+  protected readonly opcionesRol = (['PIZZERO', 'DESPACHADOR', 'MOTORIZADO'] as const).map((valor) => ({ valor, etiqueta: ETIQUETA_ROL[valor] }));
+  protected readonly hoy = fechaISO(0);
+
+  protected readonly sucursales = signal<readonly SucursalResponse[]>([]);
+  protected readonly sucursalId = signal<number | null>(null);
+  protected readonly opcionesSucursal = computed(() => this.sucursales().map((s) => ({ valor: String(s.id), etiqueta: s.nombre })));
+  protected readonly resumen = signal<ResumenEmpleadosResponse>(RESUMEN_VACIO);
+
+  protected readonly filtroTexto = signal('');
+  protected readonly filtroRol = signal<Rol | ''>('');
+  protected readonly filtroEstado = signal<EstadoEmpleado | ''>('');
+  protected readonly paginaActual = signal(0);
+  protected readonly totalElementos = signal(0);
+  protected readonly totalPaginas = signal(0);
+  protected readonly cargando = signal(true);
+  protected readonly empleados = signal<readonly EmpleadoResponse[]>([]);
+  protected readonly seleccionado = signal<EmpleadoResponse | null>(null);
+  protected readonly menuFilaAbiertoId = signal<number | null>(null);
+
+  protected readonly modal = signal<'formulario' | 'perfil' | 'estado' | 'horario' | 'historial' | null>(null);
+  protected readonly modoEdicion = signal(false);
+  protected readonly guardando = signal(false);
+  protected readonly errorFormulario = signal<string | null>(null);
+  protected readonly estadoElegido = signal<EstadoEmpleado>('ACTIVO');
+  protected readonly turnos = signal<readonly TurnoResponse[]>([]);
+  protected readonly cancelandoTurnoId = signal<number | null>(null);
+  protected readonly cargandoTurnos = signal(false);
+  protected readonly turnosDesde = signal(fechaISO(-7));
+  protected readonly turnosHasta = signal(fechaISO(7));
+
+  protected readonly form = this.fb.group({
+    nombres: ['', [Validators.required, Validators.maxLength(80)]],
+    apellidos: ['', [Validators.required, Validators.maxLength(80)]],
+    tipoDocumento: ['DNI' as TipoDocumento, [Validators.required]],
+    numeroDocumento: ['', [Validators.required, documentoValidator()]],
+    telefono: ['', [Validators.required, phoneValidator]],
+    correo: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
+    contrasenaInicial: ['', [passwordValidator, Validators.maxLength(72)]],
+    rol: ['PIZZERO' as RolOperativo, [Validators.required]],
+    sucursalId: ['', [Validators.required]],
+    horaInicio: ['12:00', [Validators.required]],
+    horaFin: ['21:00', [Validators.required]],
+    fechaIngreso: [fechaISO(0), [Validators.required]],
+    pagoBaseTurno: ['50', [Validators.min(0)]],
+    bonoPorEntrega: ['3', [Validators.min(0)]],
   });
-  readonly fechaHoraActual = signal('Vie, 02 oct · 14:32');
-  readonly notificacionesNoLeidas = signal(2);
-
-  // Sucursales
-  readonly sucursales = signal<SucursalBasica[]>([
-    { id: 1, nombre: 'Sede Miraflores' },
-    { id: 2, nombre: 'Sede San Isidro' },
-  ]);
-  readonly sucursalActivaId = signal<number>(1);
-
-  // KPI Resumen (ResumenEmpleadosResponse)
-  readonly resumen = signal<ResumenEmpleadosResponse>({
-    total: 27,
-    activos: 24,
-    enTurno: 18,
-    disponibles: 6,
-    inactivos: 3,
-    conLicencia: 2,
-  });
-
-  // Filtros
-  readonly filtroTexto = signal('');
-  readonly filtroRol = signal<Rol | ''>('');
-  readonly filtroEstado = signal<EstadoEmpleado | ''>('');
-
-  // Paginación
-  readonly paginaActual = signal(0);
-  readonly tamanoPagina = signal(5);
-  readonly totalElementos = signal(27);
-  readonly totalPaginas = signal(6);
-
-  // Listado y selección
-  readonly cargando = signal(false);
-  readonly usandoDatosDemo = signal(false);
-  readonly empleados = signal<EmpleadoFilaUI[]>([]);
-  readonly empleadoSeleccionado = signal<EmpleadoFilaUI | null>(null);
-  readonly menuFilaAbiertoId = signal<number | null>(null);
-  readonly toastMensaje = signal<{ tipo: 'ok' | 'error'; texto: string } | null>(null);
-
-  // Modales interactivos
-  readonly modalFormularioAbierto = signal(false);
-  readonly modoEdicion = signal(false);
-  readonly modalPerfilAbierto = signal(false);
-  readonly modalEstadoAbierto = signal(false);
-  readonly modalHorarioAbierto = signal(false);
-  readonly modalHistorialAbierto = signal(false);
-
-  // Formularios de modales
-  readonly formEmpleado = signal<{
-    nombres: string;
-    apellidos: string;
-    tipoDocumento: TipoDocumento;
-    numeroDocumento: string;
-    telefono: string;
-    correo: string;
-    contrasenaInicial: string;
-    rol: Rol;
-    sucursalId: number;
-    horaInicio: string;
-    horaFin: string;
-    fechaIngreso: string;
-    pagoBaseTurno: number;
-    bonoPorEntrega: number;
-  }>({
-    nombres: '',
-    apellidos: '',
-    tipoDocumento: 'DNI',
-    numeroDocumento: '',
-    telefono: '',
-    correo: '',
-    contrasenaInicial: '',
-    rol: 'PIZZERO',
-    sucursalId: 1,
-    horaInicio: '12:00',
-    horaFin: '21:00',
-    fechaIngreso: this.obtenerFechaISO(0),
-    pagoBaseTurno: 50,
-    bonoPorEntrega: 3,
+  protected readonly rolFormulario = toSignal(this.form.controls.rol.valueChanges.pipe(startWith(this.form.controls.rol.value)), {
+    requireSync: true,
   });
 
-  readonly estadoSeleccionado = signal<EstadoEmpleado>('EN_TURNO');
-
-  readonly formHorario = signal<AsignarHorarioRequest>({
-    fecha: this.obtenerFechaISO(0),
-    horaInicio: '12:00',
-    horaFin: '20:00',
-    puesto: 'Reparto Miraflores',
-    sucursalId: 1,
+  protected readonly formHorario = this.fb.group({
+    fecha: [fechaISO(0), [Validators.required]],
+    horaInicio: ['12:00', [Validators.required]],
+    horaFin: ['20:00', [Validators.required]],
+    puesto: ['', [Validators.maxLength(60)]],
   });
 
-  readonly turnosHistorial = signal<TurnoResponse[]>([]);
-  readonly filtroTurnosDesde = signal(this.obtenerFechaISO(-7));
-  readonly filtroTurnosHasta = signal(this.obtenerFechaISO(7));
-
-  readonly porcentajeEnTurno = computed(() => {
+  protected readonly porcentajeEnTurno = computed(() => {
     const r = this.resumen();
-    if (!r.activos) return 0;
-    return Math.round((r.enTurno / r.activos) * 100);
+    return r.activos ? Math.round((r.enTurno / r.activos) * 100) : 0;
   });
-
-  readonly porcentajeInactivos = computed(() => {
+  protected readonly porcentajeInactivos = computed(() => {
     const r = this.resumen();
-    if (!r.total) return 0;
-    return Number(((r.inactivos / r.total) * 100).toFixed(1));
+    return r.total ? Math.round((r.inactivos / r.total) * 1000) / 10 : 0;
   });
-
-  readonly paginasVisibles = computed(() => {
+  protected readonly paginasVisibles = computed(() => {
     const actual = this.paginaActual() + 1;
     const total = Math.max(this.totalPaginas(), 1);
     if (total <= 3) return Array.from({ length: total }, (_, i) => i + 1);
@@ -157,574 +144,285 @@ export class AdminEmpleadosComponent implements OnInit {
     return [actual - 1, actual, actual + 1];
   });
 
-  ngOnInit(): void {
-    this.cargarDatos();
-  }
-
-  navegarA(ruta: 'resumen' | 'pedidos' | 'empleados' | 'finanzas' | 'configuracion'): void {
-    if (ruta === 'resumen') {
-      this.router.navigate(['/admin/resumen']);
-    } else if (ruta === 'pedidos') {
-      this.router.navigate(['/admin/pedidos']);
-      } else if (ruta === 'empleados') {
-      this.router.navigate(['/admin/empleados']);
-      } else if (ruta === 'finanzas') {
-      this.router.navigate(['/admin/finanzas']);
-      } else if (ruta === 'configuracion') {
-      this.router.navigate(['/admin/configuracion']);
-      this.mostrarToast('ok', `Módulo "${ruta}" listo para conectar cuando envíes su vista.`);
-    }
-  }
-
-  cargarDatos(): void {
-    this.cargando.set(true);
-
-    forkJoin({
-      sucursales: this.empleadosService.obtenerSucursales().pipe(catchError(() => of(null))),
-      resumen: this.empleadosService
-        .obtenerResumenEmpleados(this.sucursalActivaId())
-        .pipe(catchError(() => of(null))),
-      lista: this.empleadosService
-        .listarEmpleados({
-          sucursalId: this.sucursalActivaId(),
-          rol: this.filtroRol() || undefined,
-          estado: this.filtroEstado() || undefined,
-          texto: this.filtroTexto() || undefined,
-          pagina: this.paginaActual(),
-          tamano: this.tamanoPagina(),
-        })
-        .pipe(catchError(() => of(null))),
-    }).subscribe(({ sucursales, resumen, lista }) => {
-      this.cargando.set(false);
-
-      if (!lista) {
-        this.cargarFallbackMockup();
-        return;
-      }
-
-      this.usandoDatosDemo.set(false);
-      if (sucursales && sucursales.length) this.sucursales.set(sucursales);
-      if (resumen) this.resumen.set(resumen);
-
-      this.empleados.set(lista.contenido);
-      this.totalElementos.set(lista.totalElementos);
-      this.totalPaginas.set(lista.totalPaginas);
-
-      if (lista.contenido.length > 0) {
-        const previo = this.empleadoSeleccionado();
-        const encontrado = lista.contenido.find((e) => e.id === previo?.id);
-        this.empleadoSeleccionado.set(encontrado ?? lista.contenido[0]);
-      } else {
-        this.empleadoSeleccionado.set(null);
-      }
-    });
-  }
-
-  aplicarFiltros(): void {
-    this.paginaActual.set(0);
-    if (this.usandoDatosDemo()) {
-      this.filtrarMockupLocal();
-      return;
-    }
-    this.cargarDatos();
-  }
-
-  irAPagina(pagina1Based: number): void {
-    const idx = pagina1Based - 1;
-    if (idx < 0 || idx >= this.totalPaginas()) return;
-    this.paginaActual.set(idx);
-    if (!this.usandoDatosDemo()) {
+  constructor() {
+    this.form.controls.tipoDocumento.valueChanges.subscribe(() => this.form.controls.numeroDocumento.updateValueAndValidity());
+    this.api.sucursales().subscribe((lista) => {
+      this.sucursales.set(lista);
+      this.sucursalId.set(lista[0]?.id ?? null);
       this.cargarDatos();
+    });
+  }
+
+  // ---- Etiquetas ----
+  protected etiquetaRol(rol: Rol): string {
+    return ETIQUETA_ROL[rol];
+  }
+  protected claseRol(rol: Rol): string {
+    return CLASE_ROL[rol];
+  }
+  protected etiquetaEstado(estado: EstadoEmpleado): string {
+    return ETIQUETA_ESTADO[estado];
+  }
+  protected etiquetaTurno(estado: EstadoTurno): string {
+    return ETIQUETA_TURNO[estado];
+  }
+  protected inicialesDe(emp: EmpleadoResponse): string {
+    return iniciales(emp.nombres ?? emp.nombreCompleto, emp.apellidos ?? '');
+  }
+  protected fecha(iso: string): string {
+    return formatearFecha(`${iso}T12:00:00`);
+  }
+  protected valor(evento: Event): string {
+    return (evento.target as HTMLInputElement | HTMLSelectElement).value;
+  }
+
+  // ---- Listado ----
+  protected cargarDatos(): void {
+    const sucursalId = this.sucursalId();
+    if (sucursalId === null) {
+      this.cargando.set(false);
+      return;
     }
-  }
-
-  seleccionarEmpleado(emp: EmpleadoFilaUI): void {
-    this.empleadoSeleccionado.set(emp);
-    this.menuFilaAbiertoId.set(null);
-  }
-
-  toggleMenuFila(id: number, event: Event): void {
-    event.stopPropagation();
-    this.menuFilaAbiertoId.update((prev) => (prev === id ? null : id));
-  }
-
-  // ==================== ACCIÓN 1: VER PERFIL ====================
-  abrirModalPerfil(emp?: EmpleadoFilaUI): void {
-    const objetivo = emp ?? this.empleadoSeleccionado();
-    if (!objetivo) return;
-    this.empleadoSeleccionado.set(objetivo);
-    this.menuFilaAbiertoId.set(null);
-
-    if (!this.usandoDatosDemo()) {
-      this.empleadosService.obtenerEmpleadoPorId(objetivo.id).subscribe({
-        next: (detalle) => this.empleadoSeleccionado.set({ ...objetivo, ...detalle }),
-        error: (err) => this.manejarErrorApi(err),
+    this.cargando.set(true);
+    forkJoin({
+      resumen: this.api.resumenEmpleados(sucursalId),
+      pagina: this.api.empleados({
+        sucursalId,
+        rol: this.filtroRol() || undefined,
+        estado: this.filtroEstado() || undefined,
+        q: this.filtroTexto().trim() || undefined,
+        pagina: this.paginaActual(),
+        tamano: TAMANO_PAGINA,
+      }),
+    })
+      .pipe(finalize(() => this.cargando.set(false)))
+      .subscribe(({ resumen, pagina }) => {
+        this.resumen.set(resumen);
+        this.empleados.set(pagina.contenido);
+        this.totalElementos.set(pagina.totalElementos);
+        this.totalPaginas.set(pagina.totalPaginas);
+        const previo = this.seleccionado();
+        this.seleccionado.set(pagina.contenido.find((e) => e.id === previo?.id) ?? pagina.contenido[0] ?? null);
       });
-    }
-    this.modalPerfilAbierto.set(true);
   }
 
-  // ==================== ACCIÓN 2: NUEVO / EDITAR EMPLEADO ====================
-  abrirModalNuevoEmpleado(): void {
+  protected cambiarSucursal(evento: Event): void {
+    this.sucursalId.set(Number(this.valor(evento)));
+    this.aplicarFiltros();
+  }
+
+  protected aplicarFiltros(): void {
+    this.paginaActual.set(0);
+    this.cargarDatos();
+  }
+
+  protected irAPagina(numero: number): void {
+    const indice = numero - 1;
+    if (indice < 0 || indice >= this.totalPaginas() || indice === this.paginaActual()) return;
+    this.paginaActual.set(indice);
+    this.cargarDatos();
+  }
+
+  protected seleccionar(emp: EmpleadoResponse): void {
+    this.seleccionado.set(emp);
+    this.menuFilaAbiertoId.set(null);
+  }
+
+  protected alternarMenuFila(id: number, evento: Event): void {
+    evento.stopPropagation();
+    this.menuFilaAbiertoId.update((actual) => (actual === id ? null : id));
+  }
+
+  protected cerrarModal(): void {
+    if (!this.guardando()) this.modal.set(null);
+  }
+
+  // ---- Perfil ----
+  protected abrirPerfil(emp: EmpleadoResponse): void {
+    this.seleccionar(emp);
+    this.modal.set('perfil');
+  }
+
+  // ---- Crear / editar ----
+  protected abrirNuevo(): void {
     this.modoEdicion.set(false);
-    this.formEmpleado.set({
-      nombres: '',
-      apellidos: '',
-      tipoDocumento: 'DNI',
-      numeroDocumento: '',
-      telefono: '',
-      correo: '',
-      contrasenaInicial: '',
-      rol: 'PIZZERO',
-      sucursalId: this.sucursalActivaId(),
-      horaInicio: '12:00',
-      horaFin: '21:00',
-      fechaIngreso: this.obtenerFechaISO(0),
-      pagoBaseTurno: 50,
-      bonoPorEntrega: 3,
-    });
-    this.modalFormularioAbierto.set(true);
+    this.errorFormulario.set(null);
+    this.form.reset({ sucursalId: String(this.sucursalId() ?? ''), fechaIngreso: fechaISO(0) });
+    this.form.controls.contrasenaInicial.addValidators(Validators.required);
+    this.form.controls.contrasenaInicial.updateValueAndValidity();
+    this.modal.set('formulario');
   }
 
-  abrirModalEditarEmpleado(emp?: EmpleadoFilaUI): void {
-    const objetivo = emp ?? this.empleadoSeleccionado();
-    if (!objetivo) return;
-    this.empleadoSeleccionado.set(objetivo);
-    this.menuFilaAbiertoId.set(null);
+  protected abrirEdicion(emp: EmpleadoResponse): void {
+    this.seleccionar(emp);
     this.modoEdicion.set(true);
-
-    const partes = objetivo.nombreCompleto.trim().split(' ');
-    const nombres = partes.slice(0, Math.ceil(partes.length / 2)).join(' ');
-    const apellidos = partes.slice(Math.ceil(partes.length / 2)).join(' ') || 'Empleado';
-
-    this.formEmpleado.set({
-      nombres,
-      apellidos,
-      tipoDocumento: 'DNI',
-      numeroDocumento: objetivo.numeroDocumentoUI ?? '',
-      telefono: objetivo.telefono.replace(/\s+/g, ''),
-      correo: objetivo.correo,
+    this.errorFormulario.set(null);
+    this.form.reset({
+      nombres: emp.nombres,
+      apellidos: emp.apellidos,
+      tipoDocumento: emp.tipoDocumento ?? 'DNI',
+      numeroDocumento: emp.numeroDocumento ?? '',
+      telefono: emp.telefono,
+      correo: emp.correo,
       contrasenaInicial: '',
-      rol: objetivo.rol === 'ADMINISTRADOR' ? 'PIZZERO' : objetivo.rol,
-      sucursalId: objetivo.sucursalId,
-      horaInicio: objetivo.horaInicio,
-      horaFin: objetivo.horaFin,
-      fechaIngreso: objetivo.fechaIngreso,
-      pagoBaseTurno: objetivo.pagoBaseTurno,
-      bonoPorEntrega: objetivo.bonoPorEntrega,
+      rol: emp.rol as RolOperativo,
+      sucursalId: String(emp.sucursalId),
+      horaInicio: emp.horaInicio.slice(0, 5),
+      horaFin: emp.horaFin.slice(0, 5),
+      fechaIngreso: emp.fechaIngreso,
+      pagoBaseTurno: String(emp.pagoBaseTurno ?? 0),
+      bonoPorEntrega: String(emp.bonoPorEntrega ?? 0),
     });
-    this.modalFormularioAbierto.set(true);
+    this.form.controls.contrasenaInicial.removeValidators(Validators.required);
+    this.form.controls.contrasenaInicial.updateValueAndValidity();
+    this.modal.set('formulario');
   }
 
-  guardarEmpleado(): void {
-    const f = this.formEmpleado();
-    const payload: EmpleadoRequest = {
-      nombres: f.nombres.trim(),
-      apellidos: f.apellidos.trim(),
-      tipoDocumento: f.tipoDocumento,
-      numeroDocumento: f.numeroDocumento.trim(),
-      telefono: f.telefono.replace(/\s+/g, ''),
-      correo: f.correo.trim(),
-      contrasenaInicial: f.contrasenaInicial.trim() || undefined,
-      rol: f.rol,
-      sucursalId: Number(f.sucursalId),
-      horaInicio: f.horaInicio,
-      horaFin: f.horaFin,
-      fechaIngreso: f.fechaIngreso,
-      pagoBaseTurno: Number(f.pagoBaseTurno),
-      bonoPorEntrega: f.rol === 'MOTORIZADO' ? Number(f.bonoPorEntrega) : 0,
+  protected guardarEmpleado(): void {
+    if (this.guardando()) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    const v = this.form.getRawValue();
+    const cuerpo: EmpleadoRequest = {
+      nombres: v.nombres.trim(),
+      apellidos: v.apellidos.trim(),
+      tipoDocumento: v.tipoDocumento,
+      numeroDocumento: v.numeroDocumento.trim(),
+      telefono: v.telefono.replace(/\s/g, ''),
+      correo: v.correo.trim(),
+      contrasenaInicial: v.contrasenaInicial || null,
+      rol: v.rol,
+      sucursalId: Number(v.sucursalId),
+      horaInicio: v.horaInicio,
+      horaFin: v.horaFin,
+      fechaIngreso: v.fechaIngreso,
+      pagoBaseTurno: v.pagoBaseTurno === '' ? null : Number(v.pagoBaseTurno),
+      bonoPorEntrega: v.rol === 'MOTORIZADO' && v.bonoPorEntrega !== '' ? Number(v.bonoPorEntrega) : null,
     };
+    const editado = this.modoEdicion() ? this.seleccionado() : null;
+    const peticion = editado ? this.api.actualizarEmpleado(editado.id, cuerpo) : this.api.crearEmpleado(cuerpo);
 
-    if (this.usandoDatosDemo()) {
-      const nombreCompleto = `${payload.nombres} ${payload.apellidos}`;
-      if (this.modoEdicion() && this.empleadoSeleccionado()) {
-        const idEdit = this.empleadoSeleccionado()!.id;
-        this.empleados.update((list) =>
-          list.map((e) =>
-            e.id === idEdit
-              ? {
-                  ...e,
-                  nombreCompleto,
-                  numeroDocumentoUI: payload.numeroDocumento,
-                  telefono: payload.telefono,
-                  correo: payload.correo,
-                  rol: payload.rol,
-                  horaInicio: payload.horaInicio,
-                  horaFin: payload.horaFin,
-                }
-              : e
-          )
-        );
-        this.mostrarToast('ok', `Empleado ${nombreCompleto} actualizado.`);
-      } else {
-        const nuevo: EmpleadoFilaUI = {
-          id: Date.now(),
-          usuarioId: Date.now() + 1,
-          nombreCompleto,
-          correo: payload.correo,
-          telefono: payload.telefono,
-          rol: payload.rol,
-          sucursalId: payload.sucursalId,
-          sucursalNombre: 'Sede Miraflores',
-          estado: 'ACTIVO',
-          horaInicio: payload.horaInicio,
-          horaFin: payload.horaFin,
-          fechaIngreso: payload.fechaIngreso,
-          pagoBaseTurno: payload.pagoBaseTurno ?? 50,
-          bonoPorEntrega: payload.bonoPorEntrega ?? 0,
-          numeroDocumentoUI: payload.numeroDocumento,
-          ultimoAccesoUI: 'Ahora',
-        };
-        this.empleados.update((list) => [nuevo, ...list]);
-        this.empleadoSeleccionado.set(nuevo);
-        this.mostrarToast('ok', `Empleado ${nombreCompleto} registrado.`);
-      }
-      this.modalFormularioAbierto.set(false);
-      return;
-    }
-
-    const obs =
-      this.modoEdicion() && this.empleadoSeleccionado()
-        ? this.empleadosService.actualizarEmpleado(this.empleadoSeleccionado()!.id, payload)
-        : this.empleadosService.crearEmpleado(payload);
-
-    obs.subscribe({
-      next: (guardado) => {
-        this.modalFormularioAbierto.set(false);
-        this.mostrarToast('ok', `Empleado ${guardado.nombreCompleto} guardado correctamente.`);
+    this.guardando.set(true);
+    this.errorFormulario.set(null);
+    peticion.pipe(finalize(() => this.guardando.set(false))).subscribe({
+      next: (emp) => {
+        this.modal.set(null);
+        this.seleccionado.set(emp);
+        this.toast.success(editado ? 'Empleado actualizado' : 'Empleado registrado', emp.nombreCompleto);
         this.cargarDatos();
       },
-      error: (err) => this.manejarErrorApi(err),
-    });
-  }
-
-  // ==================== ACCIÓN 3: CAMBIAR ESTADO ====================
-  abrirModalEstado(emp?: EmpleadoFilaUI): void {
-    const objetivo = emp ?? this.empleadoSeleccionado();
-    if (!objetivo) return;
-    this.empleadoSeleccionado.set(objetivo);
-    this.menuFilaAbiertoId.set(null);
-    this.estadoSeleccionado.set(objetivo.estado);
-    this.modalEstadoAbierto.set(true);
-  }
-
-  confirmarCambioEstado(): void {
-    const objetivo = this.empleadoSeleccionado();
-    const nuevoEstado = this.estadoSeleccionado();
-    if (!objetivo) return;
-
-    if (this.usandoDatosDemo()) {
-      this.empleados.update((list) =>
-        list.map((e) => (e.id === objetivo.id ? { ...e, estado: nuevoEstado } : e))
-      );
-      this.empleadoSeleccionado.set({ ...objetivo, estado: nuevoEstado });
-      this.modalEstadoAbierto.set(false);
-      this.mostrarToast('ok', `Estado de ${objetivo.nombreCompleto} actualizado a ${this.etiquetaEstado(nuevoEstado)}.`);
-      return;
-    }
-
-    this.empleadosService.cambiarEstado(objetivo.id, { estado: nuevoEstado }).subscribe({
-      next: (actualizado) => {
-        this.modalEstadoAbierto.set(false);
-        this.mostrarToast('ok', `Estado actualizado a ${this.etiquetaEstado(actualizado.estado)}.`);
-        this.cargarDatos();
+      error: (error: unknown) => {
+        if (esApiException(error) && error.errores.length > 0) {
+          const sueltos = aplicarErroresDeCampo(this.form, error.errores);
+          this.errorFormulario.set(sueltos.length ? sueltos.join(' ') : 'Revisa los campos marcados.');
+        }
       },
-      error: (err) => this.manejarErrorApi(err),
     });
   }
 
-  // ==================== ACCIÓN 4: ASIGNAR HORARIO ====================
-  abrirModalHorario(emp?: EmpleadoFilaUI): void {
-    const objetivo = emp ?? this.empleadoSeleccionado();
-    if (!objetivo) return;
-    this.empleadoSeleccionado.set(objetivo);
-    this.menuFilaAbiertoId.set(null);
-    this.formHorario.set({
-      fecha: this.obtenerFechaISO(0),
-      horaInicio: objetivo.horaInicio || '12:00',
-      horaFin: objetivo.horaFin || '20:00',
-      puesto: this.etiquetaRol(objetivo),
-      sucursalId: objetivo.sucursalId || this.sucursalActivaId(),
-    });
-    this.modalHorarioAbierto.set(true);
+  // ---- Estado ----
+  protected abrirEstado(emp: EmpleadoResponse): void {
+    this.seleccionar(emp);
+    this.estadoElegido.set(emp.estado);
+    this.modal.set('estado');
   }
 
-  confirmarAsignacionHorario(): void {
-    const objetivo = this.empleadoSeleccionado();
-    if (!objetivo) return;
-    const req = this.formHorario();
-
-    if (this.usandoDatosDemo()) {
-      this.empleados.update((list) =>
-        list.map((e) =>
-          e.id === objetivo.id ? { ...e, horaInicio: req.horaInicio, horaFin: req.horaFin } : e
-        )
-      );
-      this.modalHorarioAbierto.set(false);
-      this.mostrarToast('ok', `Turno asignado a ${objetivo.nombreCompleto} (${req.horaInicio}–${req.horaFin}).`);
-      return;
-    }
-
-    this.empleadosService.asignarHorario(objetivo.id, req).subscribe({
-      next: (turno) => {
-        this.modalHorarioAbierto.set(false);
-        this.mostrarToast('ok', `Turno programado para ${turno.fecha} (${turno.horaInicio}–${turno.horaFin}).`);
+  protected confirmarEstado(): void {
+    const emp = this.seleccionado();
+    if (!emp || this.guardando()) return;
+    this.guardando.set(true);
+    this.api
+      .cambiarEstadoEmpleado(emp.id, this.estadoElegido())
+      .pipe(finalize(() => this.guardando.set(false)))
+      .subscribe((actualizado) => {
+        this.modal.set(null);
+        this.toast.success('Estado actualizado', `${actualizado.nombreCompleto}: ${this.etiquetaEstado(actualizado.estado)}.`);
         this.cargarDatos();
-      },
-      error: (err) => this.manejarErrorApi(err),
-    });
-  }
-
-  // ==================== ACCIÓN 5: VER HISTORIAL / HORARIOS ====================
-  abrirModalHistorial(emp?: EmpleadoFilaUI): void {
-    const objetivo = emp ?? this.empleadoSeleccionado();
-    if (!objetivo) return;
-    this.empleadoSeleccionado.set(objetivo);
-    this.menuFilaAbiertoId.set(null);
-    this.modalHistorialAbierto.set(true);
-    this.consultarTurnosEmpleado();
-  }
-
-  consultarTurnosEmpleado(): void {
-    const objetivo = this.empleadoSeleccionado();
-    if (!objetivo) return;
-
-    if (this.usandoDatosDemo()) {
-      this.turnosHistorial.set([
-        {
-          id: 1,
-          empleadoId: objetivo.id,
-          empleadoNombre: objetivo.nombreCompleto,
-          fecha: '2026-10-02',
-          horaInicio: objetivo.horaInicio,
-          horaFin: objetivo.horaFin,
-          estado: 'EN_CURSO',
-          puesto: this.etiquetaRol(objetivo),
-        },
-        {
-          id: 2,
-          empleadoId: objetivo.id,
-          empleadoNombre: objetivo.nombreCompleto,
-          fecha: '2026-10-01',
-          horaInicio: objetivo.horaInicio,
-          horaFin: objetivo.horaFin,
-          estado: 'FINALIZADO',
-          puesto: this.etiquetaRol(objetivo),
-        },
-      ]);
-      return;
-    }
-
-    this.empleadosService
-      .obtenerTurnos(objetivo.id, this.filtroTurnosDesde(), this.filtroTurnosHasta())
-      .subscribe({
-        next: (turnos) => this.turnosHistorial.set(turnos),
-        error: (err) => this.manejarErrorApi(err),
       });
   }
 
-  exportarCSV(): void {
+  // ---- Turnos ----
+  protected abrirHorario(emp: EmpleadoResponse): void {
+    this.seleccionar(emp);
+    this.formHorario.reset({ fecha: fechaISO(0), horaInicio: emp.horaInicio.slice(0, 5), horaFin: emp.horaFin.slice(0, 5), puesto: '' });
+    this.modal.set('horario');
+  }
+
+  protected asignarHorario(): void {
+    const emp = this.seleccionado();
+    if (!emp || this.guardando()) return;
+    if (this.formHorario.invalid) {
+      this.formHorario.markAllAsTouched();
+      return;
+    }
+    const v = this.formHorario.getRawValue();
+    this.guardando.set(true);
+    this.api
+      .asignarHorario(emp.id, { ...v, puesto: v.puesto.trim() || null, sucursalId: emp.sucursalId })
+      .pipe(finalize(() => this.guardando.set(false)))
+      .subscribe((turno) => {
+        this.modal.set(null);
+        this.toast.success('Turno asignado', `${emp.nombreCompleto} · ${this.fecha(turno.fecha)} de ${turno.horaInicio.slice(0, 5)} a ${turno.horaFin.slice(0, 5)}.`);
+      });
+  }
+
+  protected abrirHistorial(emp: EmpleadoResponse | null = this.seleccionado()): void {
+    if (!emp) return;
+    this.seleccionar(emp);
+    this.modal.set('historial');
+    this.consultarTurnos();
+  }
+
+  protected cancelarTurno(turno: TurnoResponse): void {
+    const emp = this.seleccionado();
+    if (!emp || this.cancelandoTurnoId() !== null) return;
+    this.cancelandoTurnoId.set(turno.id);
+    this.api
+      .cancelarTurno(emp.id, turno.id)
+      .pipe(finalize(() => this.cancelandoTurnoId.set(null)))
+      .subscribe((actualizado) => {
+        this.turnos.update((lista) => lista.map((t) => (t.id === actualizado.id ? actualizado : t)));
+        this.toast.success('Turno cancelado', 'Ya no cuenta para el pago base.');
+      });
+  }
+
+  protected consultarTurnos(): void {
+    const emp = this.seleccionado();
+    if (!emp) return;
+    this.cargandoTurnos.set(true);
+    this.api
+      .turnos(emp.id, this.turnosDesde(), this.turnosHasta())
+      .pipe(finalize(() => this.cargandoTurnos.set(false)))
+      .subscribe({ next: (lista) => this.turnos.set(lista), error: () => this.turnos.set([]) });
+  }
+
+  // ---- Exportar ----
+  protected exportarCSV(): void {
     const filas = this.empleados();
     if (!filas.length) return;
-
-    const cabecera = ['ID', 'Nombre Completo', 'Correo', 'Cargo', 'Telefono', 'Horario', 'Estado'];
-    const cuerpo = filas.map((e) => [
-      e.id,
-      `"${e.nombreCompleto}"`,
-      e.correo,
-      this.etiquetaRol(e),
-      `"${e.telefono}"`,
-      `${e.horaInicio}-${e.horaFin}`,
-      this.etiquetaEstado(e.estado),
-    ]);
-
-    const csv = [cabecera.join(','), ...cuerpo.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `empleados-totos-pizza-${this.obtenerFechaISO(0)}.csv`;
-    link.click();
+    const celda = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const csv = [
+      ['Nombre', 'Documento', 'Correo', 'Cargo', 'Teléfono', 'Horario', 'Estado', 'Sede'],
+      ...filas.map((e) => [
+        e.nombreCompleto,
+        e.numeroDocumento,
+        e.correo,
+        this.etiquetaRol(e.rol),
+        e.telefono,
+        `${e.horaInicio.slice(0, 5)}-${e.horaFin.slice(0, 5)}`,
+        this.etiquetaEstado(e.estado),
+        e.sucursalNombre,
+      ]),
+    ]
+      .map((fila) => fila.map(celda).join(','))
+      .join('\n');
+    const url = URL.createObjectURL(new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' }));
+    const enlace = document.createElement('a');
+    enlace.href = url;
+    enlace.download = `empleados-totos-pizza-${this.hoy}.csv`;
+    enlace.click();
     URL.revokeObjectURL(url);
-    this.mostrarToast('ok', 'Directorio exportado en formato CSV.');
-  }
-
-  obtenerIniciales(nombreCompleto: string): string {
-    const partes = nombreCompleto.trim().split(' ');
-    return `${partes[0]?.[0] ?? ''}${partes[1]?.[0] ?? ''}`.toUpperCase();
-  }
-
-  etiquetaRol(emp: EmpleadoFilaUI): string {
-    if (emp.cargoVisualEtiqueta) return emp.cargoVisualEtiqueta;
-    const mapa: Record<Rol, string> = {
-      ADMINISTRADOR: 'Administrador',
-      PIZZERO: 'Cocinero',
-      DESPACHADOR: 'Despachador',
-      MOTORIZADO: 'Motorizado',
-      CLIENTE: 'Cliente',
-    };
-    return mapa[emp.rol] ?? emp.rol;
-  }
-
-  claseRol(emp: EmpleadoFilaUI): string {
-    const etiqueta = this.etiquetaRol(emp).toLowerCase();
-    if (etiqueta.includes('admin')) return 'role-badge--admin';
-    if (etiqueta.includes('vendedor') || etiqueta.includes('despach')) return 'role-badge--vendor';
-    if (etiqueta.includes('cocin') || etiqueta.includes('pizzero')) return 'role-badge--cook';
-    if (etiqueta.includes('repart')) return 'role-badge--courier';
-    return 'role-badge--motorized';
-  }
-
-  etiquetaEstado(estado: EstadoEmpleado): string {
-    const mapa: Record<EstadoEmpleado, string> = {
-      ACTIVO: 'Activo',
-      EN_TURNO: 'En turno',
-      DISPONIBLE: 'Disponible',
-      INACTIVO: 'Inactivo',
-      CON_LICENCIA: 'Con licencia',
-    };
-    return mapa[estado] ?? estado;
-  }
-
-  private manejarErrorApi(err: { error?: ApiError }): void {
-    const msg = err?.error?.mensaje ?? 'Ocurrió un error al comunicarse con el servidor.';
-    this.mostrarToast('error', msg);
-  }
-
-  mostrarToast(tipo: 'ok' | 'error', texto: string): void {
-    this.toastMensaje.set({ tipo, texto });
-    setTimeout(() => this.toastMensaje.set(null), 4000);
-  }
-
-  private obtenerFechaISO(offsetDias: number): string {
-    const d = new Date();
-    d.setDate(d.getDate() + offsetDias);
-    return d.toISOString().split('T')[0];
-  }
-
-  // ==================== DATOS DEMO IDÉNTICOS A LA IMAGEN ====================
-  private readonly mockInicial: EmpleadoFilaUI[] = [
-    {
-      id: 1,
-      usuarioId: 10,
-      nombreCompleto: 'Andrea Mendoza',
-      correo: 'andrea.mendoza@fornorosso.pe',
-      telefono: '987 245 109',
-      rol: 'ADMINISTRADOR',
-      sucursalId: 1,
-      sucursalNombre: 'Sede Miraflores',
-      estado: 'ACTIVO',
-      horaInicio: '09:00',
-      horaFin: '18:00',
-      fechaIngreso: '2024-03-15',
-      pagoBaseTurno: 80,
-      bonoPorEntrega: 0,
-      numeroDocumentoUI: '72845109',
-      ultimoAccesoUI: 'Ahora',
-      cargoVisualEtiqueta: 'Administrador',
-    },
-    {
-      id: 2,
-      usuarioId: 11,
-      nombreCompleto: 'Carlos Tapia',
-      correo: 'carlos.tapia@fornorosso.pe',
-      telefono: '965 872 410',
-      rol: 'DESPACHADOR',
-      sucursalId: 1,
-      sucursalNombre: 'Sede Miraflores',
-      estado: 'EN_TURNO',
-      horaInicio: '12:00',
-      horaFin: '21:00',
-      fechaIngreso: '2025-01-10',
-      pagoBaseTurno: 55,
-      bonoPorEntrega: 0,
-      numeroDocumentoUI: '70451283',
-      ultimoAccesoUI: 'Hace 4 min',
-      cargoVisualEtiqueta: 'Vendedor',
-    },
-    {
-      id: 3,
-      usuarioId: 12,
-      nombreCompleto: 'Rosa Paredes',
-      correo: 'rosa.paredes@fornorosso.pe',
-      telefono: '944 381 226',
-      rol: 'PIZZERO',
-      sucursalId: 1,
-      sucursalNombre: 'Sede Miraflores',
-      estado: 'EN_TURNO',
-      horaInicio: '14:00',
-      horaFin: '22:30',
-      fechaIngreso: '2025-02-01',
-      pagoBaseTurno: 60,
-      bonoPorEntrega: 0,
-      numeroDocumentoUI: '71682904',
-      ultimoAccesoUI: 'Hace 2 min',
-      cargoVisualEtiqueta: 'Cocinero',
-    },
-    {
-      id: 4,
-      usuarioId: 13,
-      nombreCompleto: 'Diego Mendoza',
-      correo: 'diego.mendoza@fornorosso.pe',
-      telefono: '986 402 719',
-      rol: 'MOTORIZADO',
-      sucursalId: 1,
-      sucursalNombre: 'Sede Miraflores',
-      estado: 'DISPONIBLE',
-      horaInicio: '12:00',
-      horaFin: '20:00',
-      fechaIngreso: '2025-04-20',
-      pagoBaseTurno: 50,
-      bonoPorEntrega: 3,
-      numeroDocumentoUI: '74820911',
-      ultimoAccesoUI: 'Hace 1 min',
-      cargoVisualEtiqueta: 'Repartidor',
-    },
-    {
-      id: 5,
-      usuarioId: 14,
-      nombreCompleto: 'José Salinas',
-      correo: 'jose.salinas@fornorosso.pe',
-      telefono: '972 618 305',
-      rol: 'MOTORIZADO',
-      sucursalId: 1,
-      sucursalNombre: 'Sede Miraflores',
-      estado: 'INACTIVO',
-      horaInicio: '18:00',
-      horaFin: '23:00',
-      fechaIngreso: '2025-05-11',
-      pagoBaseTurno: 50,
-      bonoPorEntrega: 3,
-      numeroDocumentoUI: '70188342',
-      ultimoAccesoUI: 'Ayer, 22:41',
-      cargoVisualEtiqueta: 'Motorizado',
-    },
-  ];
-
-  private cargarFallbackMockup(): void {
-    this.usandoDatosDemo.set(true);
-    this.empleados.set(this.mockInicial);
-    this.totalElementos.set(27);
-    this.totalPaginas.set(6);
-    this.empleadoSeleccionado.set(this.mockInicial[3]); // Diego Mendoza seleccionado como en la imagen
-  }
-
-  private filtrarMockupLocal(): void {
-    const q = this.filtroTexto().toLowerCase().trim();
-    const rol = this.filtroRol();
-    const est = this.filtroEstado();
-
-    const filtrados = this.mockInicial.filter((e) => {
-      const matchTexto =
-        !q ||
-        e.nombreCompleto.toLowerCase().includes(q) ||
-        (e.numeroDocumentoUI?.includes(q) ?? false);
-      const matchRol = !rol || e.rol === rol;
-      const matchEst = !est || e.estado === est;
-      return matchTexto && matchRol && matchEst;
-    });
-
-    this.empleados.set(filtrados);
-    if (filtrados.length) this.empleadoSeleccionado.set(filtrados[0]);
   }
 }

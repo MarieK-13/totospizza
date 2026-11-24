@@ -67,6 +67,8 @@ import com.totospizza.service.pedido.PedidoEstadoService;
 import com.totospizza.service.pedido.PedidoService;
 import com.totospizza.service.sucursal.SucursalService;
 import com.totospizza.util.FechaUtil;
+import java.util.EnumSet;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -76,6 +78,9 @@ public class PedidoServiceImpl implements PedidoService {
 
     private static final int DIAS_BUSQUEDA_POR_DEFECTO = 30;
     private static final String PAGO_RECHAZADO = "PAGO_RECHAZADO";
+    /** El cliente solo cancela antes de que cocina empiece a preparar. */
+    private static final Set<EstadoPedido> CANCELABLES_POR_CLIENTE =
+            EnumSet.of(EstadoPedido.PENDIENTE_PAGO, EstadoPedido.CONFIRMADO);
 
     private final PedidoRepository pedidoRepository;
     private final CarritoRepository carritoRepository;
@@ -259,7 +264,14 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public PedidoResponse cancelar(Long usuarioId, String numero, CancelarPedidoRequest request) {
-        Long pedidoId = transaccion.execute(estado -> pedidoPropio(usuarioId, numero).getId());
+        Long pedidoId = transaccion.execute(estado -> {
+            Pedido pedido = pedidoPropio(usuarioId, numero);
+            if (!CANCELABLES_POR_CLIENTE.contains(pedido.getEstado())) {
+                throw new ReglaNegocioException("PEDIDO_NO_CANCELABLE",
+                        "Tu pedido ya se está preparando y no se puede cancelar");
+            }
+            return pedido.getId();
+        });
         return cancelarYReembolsar(pedidoId, usuarioId, request.motivo());
     }
 

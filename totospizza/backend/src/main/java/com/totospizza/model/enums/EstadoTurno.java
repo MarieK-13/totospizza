@@ -7,7 +7,8 @@ public enum EstadoTurno {
 
     PROGRAMADO("Programado"),
     EN_CURSO("En curso"),
-    FINALIZADO("Finalizado");
+    FINALIZADO("Finalizado"),
+    CANCELADO("Cancelado");
 
     private final String etiqueta;
 

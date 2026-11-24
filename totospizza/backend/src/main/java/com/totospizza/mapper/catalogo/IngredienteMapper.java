@@ -5,6 +5,7 @@ import java.util.List;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import com.totospizza.dto.request.catalogo.IngredienteRequest;
@@ -22,6 +23,8 @@ public interface IngredienteMapper {
     @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
     Ingrediente toEntity(IngredienteRequest request);
 
-    @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+    /** Un costo operativo vacío conserva el actual: el panel no lo recibe en la respuesta pública. */
+    @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE,
+            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntity(IngredienteRequest request, @MappingTarget Ingrediente ingrediente);
 }

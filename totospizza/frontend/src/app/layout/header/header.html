@@ -19,6 +19,10 @@
 
     <div class="bar__actions">
 
+      @if (auth.esCliente()) {
+        <app-campana-notificaciones variante="sitio" />
+      }
+
       @if (auth.estaAutenticado()) {
         <div class="account">
           <button

@@ -31,6 +31,8 @@ import com.totospizza.mapper.sucursal.SucursalMapper;
 import com.totospizza.model.entity.sucursal.HorarioSucursal;
 import com.totospizza.model.entity.sucursal.Sucursal;
 import com.totospizza.model.entity.sucursal.ZonaReparto;
+import com.totospizza.model.enums.Rol;
+import com.totospizza.repository.seguridad.EmpleadoRepository;
 import com.totospizza.repository.sucursal.SucursalRepository;
 import com.totospizza.repository.sucursal.ZonaRepartoRepository;
 import com.totospizza.rules.calculator.CalculadoraDistancia;
@@ -44,8 +46,11 @@ import com.totospizza.service.sucursal.SucursalService;
 @Transactional
 public class SucursalServiceImpl implements SucursalService {
 
+    private static final List<Rol> ROLES_OPERATIVOS = List.of(Rol.PIZZERO, Rol.DESPACHADOR, Rol.MOTORIZADO);
+
     private final SucursalRepository sucursalRepository;
     private final ZonaRepartoRepository zonaRepository;
+    private final EmpleadoRepository empleadoRepository;
     private final SucursalMapper sucursalMapper;
     private final ParametrosService parametros;
     private final InventarioService inventarioService;
@@ -140,7 +145,8 @@ public class SucursalServiceImpl implements SucursalService {
     }
 
     private SucursalResponse respuesta(Sucursal sucursal) {
-        return sucursalMapper.toResponse(sucursal, HorarioPolicy.abierta(sucursal, LocalDateTime.now(clock)));
+        return sucursalMapper.toResponse(sucursal, HorarioPolicy.abierta(sucursal, LocalDateTime.now(clock)),
+                personalFaltante(sucursal));
     }
 
     private BigDecimal distancia(Sucursal sucursal, ConsultaCoberturaRequest destino) {
@@ -148,10 +154,39 @@ public class SucursalServiceImpl implements SucursalService {
                 destino.latitud(), destino.longitud());
     }
 
+    /**
+     * Elige la sucursal que atenderá un delivery: la más cercana que cubra la dirección, esté abierta y tenga
+     * pizzero, despachador y motorizado. Si ninguna puede, devuelve la más cercana para que el mensaje de cobertura
+     * sea el correcto.
+     */
     private Sucursal masCercana(ConsultaCoberturaRequest destino) {
-        return sucursalRepository.findByActivaTrueOrderByNombreAsc().stream()
-                .min(Comparator.comparing(s -> distancia(s, destino)))
-                .orElseThrow(() -> new ReglaNegocioException("SIN_SUCURSALES", "No hay sucursales disponibles por ahora"));
+        List<Sucursal> porCercania = sucursalRepository.findByActivaTrueOrderByNombreAsc().stream()
+                .sorted(Comparator.comparing(s -> distancia(s, destino)))
+                .toList();
+        if (porCercania.isEmpty()) {
+            throw new ReglaNegocioException("SIN_SUCURSALES", "No hay sucursales disponibles por ahora");
+        }
+        LocalDateTime ahora = LocalDateTime.now(clock);
+        return porCercania.stream()
+                .filter(s -> distancia(s, destino).compareTo(s.getRadioCoberturaKm()) <= 0)
+                .filter(s -> HorarioPolicy.abierta(s, ahora))
+                .filter(this::tienePersonalOperativo)
+                .findFirst()
+                .orElse(porCercania.get(0));
+    }
+
+    private boolean tienePersonalOperativo(Sucursal sucursal) {
+        return personalFaltante(sucursal).isEmpty();
+    }
+
+    /** Un delivery necesita cocina, mostrador y reparto: si falta alguno, la sede no recibe pedidos a domicilio. */
+    private List<Rol> personalFaltante(Sucursal sucursal) {
+        if (sucursal.getId() == null) {
+            return ROLES_OPERATIVOS;
+        }
+        return ROLES_OPERATIVOS.stream()
+                .filter(rol -> !empleadoRepository.existsBySucursalIdAndUsuarioRolAndUsuarioActivoTrue(sucursal.getId(), rol))
+                .toList();
     }
 
     private void validarNombreLibre(String nombre, Long idActual) {

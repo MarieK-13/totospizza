@@ -167,3 +167,73 @@
     transform: translateY(0.75rem) scale(0.98);
   }
 }
+
+// Calificación por producto (se envía en `calificaciones` de la reseña).
+.productos {
+  margin: 0 0 $space-5;
+  padding: $space-3 $space-4;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-lg;
+  text-align: left;
+
+  &__titulo {
+    margin: 0 0 $space-2;
+    font-size: 0.875rem;
+    font-weight: $weight-medium;
+
+    span {
+      color: $color-text-secondary;
+      font-weight: $weight-regular;
+    }
+  }
+
+  &__fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+    padding: $space-2 0;
+
+    & + & {
+      border-top: $border-width solid $color-border-default;
+    }
+  }
+
+  &__nombre {
+    min-width: 0;
+    font-size: 0.875rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__estrellas {
+    display: flex;
+    flex: none;
+  }
+
+  &__estrella {
+    display: grid;
+    place-items: center;
+    width: 1.875rem;
+    height: 1.875rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: $color-border-default;
+    cursor: pointer;
+    @include transition((color, transform));
+    @include focus-ring;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &.is-llena {
+      color: $color-amarillo-queso;
+
+      ::ng-deep svg {
+        fill: currentColor;
+      }
+    }
+  }
+}

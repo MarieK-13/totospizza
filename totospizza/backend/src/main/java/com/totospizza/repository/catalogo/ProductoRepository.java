@@ -73,6 +73,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     boolean existsBySlug(String slug);
 
+    boolean existsByCategoriaId(Long categoriaId);
+
     /** Guarda el promedio de estrellas y el total de reseñas de un producto. */
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""

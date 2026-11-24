@@ -60,4 +60,11 @@ public class Entrega extends AuditableEntity {
 
     @Column(name = "distancia_km", precision = 5, scale = 2)
     private BigDecimal distanciaKm;
+
+    /** Por qué el motorizado no pudo entregar (cliente ausente, dirección errada…). */
+    @Column(name = "motivo_fallo", length = 200)
+    private String motivoFallo;
+
+    @Column(name = "fallida_en")
+    private Instant fallidaEn;
 }

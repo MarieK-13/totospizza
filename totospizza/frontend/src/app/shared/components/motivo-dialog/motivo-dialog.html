@@ -1,0 +1,28 @@
+<app-panel-modal [titulo]="titulo()" [descripcion]="descripcion()" (cerrar)="salir()">
+  @if (opciones().length) {
+    <div class="opciones" role="radiogroup" aria-label="Motivos frecuentes">
+      @for (o of opciones(); track o) {
+        <button type="button" class="opcion" role="radio" [attr.aria-checked]="elegida() === o" [class.is-elegida]="elegida() === o"
+          (click)="elegir(o)">{{ o }}</button>
+      }
+    </div>
+  }
+
+  <label class="campo">
+    <span class="campo__etiqueta">{{ opciones().length ? 'U otro motivo' : 'Motivo' }}</span>
+    <textarea class="campo__texto" rows="3" [attr.maxlength]="max" [value]="texto() ?? inicial()"
+      placeholder="Escribe el motivo" (input)="escribir($event)"></textarea>
+    <span class="campo__contador">{{ motivo().length }}/{{ max }}</span>
+  </label>
+
+  @if (error(); as e) {
+    <p class="error" role="alert">{{ e }}</p>
+  }
+
+  <div acciones class="op acciones">
+    <button type="button" class="op-btn op-btn--claro" (click)="salir()" [disabled]="ocupado()">Volver</button>
+    <button type="button" class="op-btn" [class]="'op-btn op-btn--' + tono()" (click)="enviar()" [disabled]="ocupado() || !valido()">
+      {{ ocupado() ? 'Guardando…' : etiquetaConfirmar() }}
+    </button>
+  </div>
+</app-panel-modal>

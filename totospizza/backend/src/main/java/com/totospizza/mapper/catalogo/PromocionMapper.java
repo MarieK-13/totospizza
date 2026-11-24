@@ -9,6 +9,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
 import com.totospizza.dto.request.catalogo.PromocionRequest;
+import com.totospizza.dto.response.catalogo.PromocionAdminResponse;
 import com.totospizza.dto.response.catalogo.PromocionItemResponse;
 import com.totospizza.dto.response.catalogo.PromocionResponse;
 import com.totospizza.mapper.MapperBaseConfig;
@@ -22,8 +23,13 @@ public interface PromocionMapper {
 
     List<PromocionResponse> toResponses(List<Promocion> promociones);
 
+    PromocionAdminResponse toAdminResponse(Promocion promocion);
+
+    List<PromocionAdminResponse> toAdminResponses(List<Promocion> promociones);
+
     @Mapping(target = "productoId", source = "producto.id")
     @Mapping(target = "productoNombre", source = "producto.nombre")
+    @Mapping(target = "tamanoId", source = "tamano.id")
     @Mapping(target = "tamanoNombre", source = "tamano.nombre")
     PromocionItemResponse toItem(PromocionItem item);
 

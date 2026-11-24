@@ -10,9 +10,9 @@ import type {
 } from '../models/api';
 
 
-const CATEGORIA: CategoriaResponse = { id: 1, nombre: 'Pizzas', slug: 'pizzas' };
-const BEBIDAS: CategoriaResponse = { id: 2, nombre: 'Bebidas', slug: 'bebidas' };
-const SALSAS: CategoriaResponse = { id: 3, nombre: 'Salsas', slug: 'salsas' };
+const CATEGORIA: CategoriaResponse = { id: 1, nombre: 'Pizzas', slug: 'pizzas', orden: 1, activa: true };
+const BEBIDAS: CategoriaResponse = { id: 2, nombre: 'Bebidas', slug: 'bebidas', orden: 2, activa: true };
+const SALSAS: CategoriaResponse = { id: 3, nombre: 'Salsas', slug: 'salsas', orden: 3, activa: true };
 
 const etiqueta = (id: number, nombre: string, slug: string, esFiltro = true): EtiquetaResponse => ({ id, nombre, slug, esFiltro });
 
@@ -29,9 +29,9 @@ const PRECIOS: readonly PrecioTamanoResponse[] = [
 ];
 
 const MASAS: readonly TipoMasaResponse[] = [
-  { id: 1, nombre: 'Clásica', recargo: 0 },
-  { id: 2, nombre: 'Delgada', recargo: 0 },
-  { id: 3, nombre: 'Borde de queso', recargo: 6 },
+  { id: 1, nombre: 'Clásica', recargo: 0, activa: true },
+  { id: 2, nombre: 'Delgada', recargo: 0, activa: true },
+  { id: 3, nombre: 'Borde de queso', recargo: 6, activa: true },
 ];
 
 const ingrediente = (id: number, nombre: string, tipo: IngredienteResponse['tipo'], precioExtra: number): IngredienteResponse => ({
@@ -152,9 +152,9 @@ export const FILTROS_PRUEBA: MenuFiltrosResponse = {
   categorias: [CATEGORIA, BEBIDAS, SALSAS],
   etiquetas: [SIN_LACTEOS, VEGETARIANA, PICANTE],
   tamanos: [
-    { id: 1, nombre: 'Personal', diametroCm: 22, personasMin: 1, personasMax: 1, precioBase: 18 },
-    { id: 2, nombre: 'Mediana', diametroCm: 30, personasMin: 2, personasMax: 3, precioBase: 32 },
-    { id: 3, nombre: 'Familiar', diametroCm: 40, personasMin: 4, personasMax: 5, precioBase: 48 },
+    { id: 1, nombre: 'Personal', diametroCm: 22, personasMin: 1, personasMax: 1, precioBase: 18, orden: 1, activo: true },
+    { id: 2, nombre: 'Mediana', diametroCm: 30, personasMin: 2, personasMax: 3, precioBase: 32, orden: 2, activo: true },
+    { id: 3, nombre: 'Familiar', diametroCm: 40, personasMin: 4, personasMax: 5, precioBase: 48, orden: 3, activo: true },
   ],
 };
 
@@ -210,7 +210,7 @@ export function detallePrueba(slug: string): ProductoDetalleResponse | undefined
       destacado: false,
       calificacionPromedio: 0,
       totalResenas: 0,
-      ingredientes: null,
+      ingredientes: [],
       etiquetas: simple.etiquetas,
       precios: [],
       tiposMasa: [],
@@ -232,7 +232,7 @@ export function detallePrueba(slug: string): ProductoDetalleResponse | undefined
     destacado: semilla.destacado,
     calificacionPromedio: semilla.calificacion,
     totalResenas: semilla.resenas,
-    ingredientes: semilla.ingredientes,
+    ingredientes: [],
     etiquetas: semilla.etiquetas,
     precios: PRECIOS,
     tiposMasa: MASAS,

@@ -98,7 +98,11 @@ export class Producto {
     const p = this.producto();
     if (!p) return null;
     const precios = p.precios.map((x) => x.precio);
-    return { ...p, precioDesde: precios.length > 0 ? Math.min(...precios) : p.precioBase };
+    return {
+      ...p,
+      ingredientes: p.ingredientes.map((i) => i.nombre).join(', '),
+      precioDesde: precios.length > 0 ? Math.min(...precios) : p.precioBase,
+    };
   });
 
   protected readonly imagen = computed(() => {

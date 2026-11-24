@@ -6,6 +6,12 @@ import { ClienteApi } from '../../../../core/services/api/cliente.api';
 import { esApiException, mensajeDeError } from '../../../../core/utils/api-exception';
 
 const TEXTOS = ['', 'Muy mala', 'Mala', 'Regular', 'Buena', '¡Excelente!'] as const;
+
+/** Producto del pedido que el cliente puede calificar por separado. */
+export interface ProductoCalificable {
+  readonly productoId: number;
+  readonly nombre: string;
+}
 const MAX_COMENTARIO = 500;
 
 @Component({
@@ -18,6 +24,7 @@ const MAX_COMENTARIO = 500;
 export class OrderRating {
   readonly pedidoId = input.required<number>();
   readonly abierto = input(false);
+  readonly productos = input<readonly ProductoCalificable[]>([]);
   readonly calificado = output<ResenaResponse | null>();
   readonly cerrado = output<void>();
 
@@ -28,6 +35,8 @@ export class OrderRating {
   protected readonly calificacion = signal(0);
   protected readonly sobre = signal(0);
   protected readonly comentario = signal('');
+  /** Estrellas por producto (0 = sin calificar; calificarlos es opcional). */
+  protected readonly porProducto = signal<Readonly<Partial<Record<number, number>>>>({});
   protected readonly enviando = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly maxComentario = MAX_COMENTARIO;
@@ -42,6 +51,7 @@ export class OrderRating {
       const dialogo = this.dialogo().nativeElement;
       if (this.abierto() && !dialogo.open) {
         this.calificacion.set(0);
+        this.porProducto.set({});
         this.comentario.set('');
         this.error.set(null);
         dialogo.showModal();
@@ -49,6 +59,10 @@ export class OrderRating {
         dialogo.close();
       }
     });
+  }
+
+  protected calificarProducto(productoId: number, estrellas: number): void {
+    this.porProducto.update((actual) => ({ ...actual, [productoId]: actual[productoId] === estrellas ? 0 : estrellas }));
   }
 
   protected escribir(evento: Event): void {
@@ -71,7 +85,14 @@ export class OrderRating {
     this.enviando.set(true);
     this.error.set(null);
     this.api
-      .crearResena({ pedidoId: this.pedidoId(), calificacion: this.calificacion(), comentario: this.comentario().trim() || null })
+      .crearResena({
+        pedidoId: this.pedidoId(),
+        calificacion: this.calificacion(),
+        comentario: this.comentario().trim() || null,
+        calificaciones: Object.entries(this.porProducto())
+          .filter((par): par is [string, number] => (par[1] ?? 0) > 0)
+          .map(([productoId, estrellas]) => ({ productoId: Number(productoId), estrellas })),
+      })
       .pipe(finalize(() => this.enviando.set(false)))
       .subscribe({
         next: (resena) => this.calificado.emit(resena),

@@ -45,4 +45,8 @@ public class TamanoPizza extends AuditableEntity {
 
     @Column(name = "orden", nullable = false)
     private Integer orden = 0;
+
+    /** Un tamaño inactivo deja de ofrecerse al armar pizzas. */
+    @Column(name = "activo", nullable = false)
+    private boolean activo = true;
 }

@@ -1,186 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap');
-
-$bg-sidebar: #382b24;
-$bg-sidebar-card: #2c211b;
-$bg-canvas: #faf6ee;
-$bg-card: #ffffff;
-$bg-cream-pill: #f6efe2;
-$bg-bar-track: #f5efe3;
-
-$brand-red: #c82828;
-$brand-coral: #e47468;
-$text-primary: #241b16;
-$text-secondary: #7b6f66;
-$text-muted: #9e9289;
-$border-soft: #ede6d9;
-
-$green-text: #1f8a4c;
-$green-bg: #e7f6ed;
-$amber-text: #b7791f;
-$amber-bg: #fef3dc;
-
-.admin-layout {
-  display: flex;
-  min-height: 100vh;
-  background-color: $bg-canvas;
-  color: $text-primary;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-/* ==================== SIDEBAR ==================== */
-.sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  background-color: $bg-sidebar;
-  color: #f4ede4;
-  display: flex;
-  flex-direction: column;
-  padding: 24px 16px;
-
-  &__brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 8px 28px;
-  }
-
-  &__logo-badge {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #fff8ef;
-    border: 2px solid $brand-red;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-  }
-
-  &__logo-top {
-    font-family: 'DM Serif Display', serif;
-    font-size: 9px;
-    font-weight: 700;
-    color: $brand-red;
-  }
-
-  &__logo-sub {
-    font-size: 7px;
-    font-weight: 700;
-    color: $text-primary;
-    letter-spacing: 0.05em;
-  }
-
-  &__brand-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 17px;
-    letter-spacing: 0.04em;
-    color: #ffffff;
-  }
-
-  &__nav {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  &__nav-item {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    padding: 12px 14px;
-    border: none;
-    border-radius: 12px;
-    background: transparent;
-    color: #cbbeb3;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: #ffffff;
-    }
-
-    &--active {
-      background-color: #fbf7f0;
-      color: $brand-red;
-      font-weight: 600;
-
-      &:hover {
-        background-color: #fbf7f0;
-        color: $brand-red;
-      }
-    }
-  }
-
-  &__icon {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-  }
-
-  &__active-pill {
-    position: absolute;
-    right: 10px;
-    width: 3px;
-    height: 18px;
-    border-radius: 99px;
-    background-color: $brand-red;
-  }
-
-  &__shift-card {
-    margin-top: 28px;
-    background-color: $bg-sidebar-card;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 14px;
-    padding: 16px;
-  }
-
-  &__shift-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    color: #55c47f;
-    margin-bottom: 8px;
-  }
-
-  &__shift-hours {
-    font-family: 'DM Serif Display', serif;
-    font-size: 20px;
-    color: #ffffff;
-    margin-bottom: 6px;
-  }
-
-  &__shift-location {
-    font-size: 11.5px;
-    color: #a99b90;
-  }
-
-  &__help-btn {
-    margin-top: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    background: transparent;
-    border: none;
-    color: #a99b90;
-    font-size: 13px;
-    cursor: pointer;
-
-    &:hover {
-      color: #ffffff;
-    }
-  }
-}
+@use 'sass:color';
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/panel/paleta' as *;
+@use '../../../../../styles/panel/comun' as *;
 
 .status-dot {
   width: 7px;
@@ -189,224 +10,14 @@ $amber-bg: #fef3dc;
   display: inline-block;
 
   &--green {
-    background-color: #27ae60;
-    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.2);
-  }
-}
-
-/* ==================== MAIN CONTENT ==================== */
-.main-content {
-  flex: 1;
-  padding: 28px 34px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  overflow-x: hidden;
-}
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-
-  &__title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 32px;
-    font-weight: 400;
-    margin: 0;
-    color: $text-primary;
-  }
-
-  &__subtitle {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: $text-secondary;
-    margin-top: 2px;
-  }
-
-  &__branch-select {
-    border: none;
-    background: transparent;
-    color: $text-secondary;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    outline: none;
-    padding: 2px 4px;
-    border-radius: 6px;
-
-    &:hover {
-      background-color: $bg-cream-pill;
-      color: $text-primary;
-    }
-  }
-
-  &__actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  &__date-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: $bg-cream-pill;
-    border: 1px solid $border-soft;
-    border-radius: 12px;
-    padding: 9px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    color: $text-primary;
-
-    svg {
-      width: 15px;
-      height: 15px;
-      color: $brand-red;
-    }
-  }
-
-  &__bell-btn {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: $bg-card;
-    border: 1px solid $border-soft;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: $text-primary;
-
-    svg {
-      width: 18px;
-      height: 18px;
-    }
-  }
-
-  &__bell-badge {
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    background: $brand-red;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  &__profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background-color: $bg-card;
-    border: 1px solid $border-soft;
-    border-radius: 99px;
-    padding: 5px 14px 5px 6px;
-  }
-
-  &__avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background-color: #f9e6e2;
-    color: $brand-red;
-    font-weight: 700;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  &__user-info {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
-  }
-
-  &__user-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: $text-primary;
-  }
-
-  &__user-role {
-    font-size: 11px;
-    color: $text-secondary;
-  }
-
-  &__chevron {
-    width: 14px;
-    height: 14px;
-    color: $text-secondary;
-  }
-}
-
-/* Notificaciones Popover */
-.notif-wrapper {
-  position: relative;
-}
-
-.notif-popover {
-  position: absolute;
-  right: 0;
-  top: 48px;
-  width: 300px;
-  background: $bg-card;
-  border: 1px solid $border-soft;
-  border-radius: 14px;
-  box-shadow: 0 12px 28px rgba(36, 27, 22, 0.12);
-  z-index: 30;
-  overflow: hidden;
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: $bg-cream-pill;
-    font-size: 12.5px;
-  }
-
-  &__item {
-    padding: 12px 16px;
-    border-top: 1px solid $border-soft;
-    cursor: pointer;
-
-    &--unread {
-      background: #fffaf5;
-    }
-
-    &:hover {
-      background: $bg-canvas;
-    }
-  }
-
-  &__title {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 3px;
-  }
-
-  &__msg {
-    font-size: 12px;
-    color: $text-secondary;
+    background-color: $green-live;
+    box-shadow: 0 0 0 3px rgba($green-live, 0.2);
   }
 }
 
 /* ==================== WELCOME BANNER ==================== */
 .welcome-banner {
-  background: linear-gradient(90deg, #f7efe1 0%, #fbf6ec 100%);
+  background: linear-gradient(90deg, $bg-cream 0%, $bg-canvas 100%);
   border: 1px solid $border-soft;
   border-radius: 16px;
   padding: 18px 24px;
@@ -417,7 +28,7 @@ $amber-bg: #fef3dc;
   gap: 12px;
 
   &__title {
-    font-family: 'DM Serif Display', serif;
+    font-family: $font-titulos;
     font-size: 20px;
     font-weight: 400;
     margin: 0 0 4px;
@@ -442,14 +53,14 @@ $amber-bg: #fef3dc;
 /* ==================== KPI GRID ==================== */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 
   @media (max-width: 1100px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   @media (max-width: 600px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -489,20 +100,20 @@ $amber-bg: #fef3dc;
     }
 
     &--red {
-      background: #fdeceb;
+      background: $red-bg;
       color: $brand-red;
     }
     &--green {
-      background: #e8f5ee;
+      background: $green-bg;
       color: $green-text;
     }
     &--amber {
-      background: #fef3de;
-      color: #c77d1a;
+      background: $amber-bg;
+      color: $amber-text;
     }
     &--blue {
-      background: #eaf1fb;
-      color: #3668b2;
+      background: $green-bg;
+      color: $info-text;
     }
   }
 
@@ -515,7 +126,7 @@ $amber-bg: #fef3dc;
   }
 
   &__value {
-    font-family: 'DM Serif Display', serif;
+    font-family: $font-titulos;
     font-size: 30px;
     font-weight: 400;
     color: $text-primary;
@@ -544,11 +155,11 @@ $amber-bg: #fef3dc;
 /* ==================== ANALYTICS GRID ==================== */
 .analytics-grid {
   display: grid;
-  grid-template-columns: 1.75fr 1fr;
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
   gap: 16px;
 
   @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -572,7 +183,7 @@ $amber-bg: #fef3dc;
   }
 
   &__title {
-    font-family: 'DM Serif Display', serif;
+    font-family: $font-titulos;
     font-size: 19px;
     font-weight: 400;
     margin: 0;
@@ -591,7 +202,7 @@ $amber-bg: #fef3dc;
   margin-bottom: 20px;
 
   &__total {
-    font-family: 'DM Serif Display', serif;
+    font-family: $font-titulos;
     font-size: 26px;
     font-weight: 400;
   }
@@ -602,19 +213,10 @@ $amber-bg: #fef3dc;
   }
 }
 
-.badge-pill--green {
-  background-color: $green-bg;
-  color: $green-text;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 99px;
-}
-
 /* Bar Chart */
 .bar-chart {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 18px;
   align-items: end;
   padding-top: 24px;
@@ -654,20 +256,20 @@ $amber-bg: #fef3dc;
     bottom: calc(100% - 28px);
     left: 50%;
     transform: translateX(-50%);
-    background-color: #241b16;
-    color: #ffffff;
+    background-color: $text-primary;
+    color: $color-blanco;
     padding: 7px 11px;
     border-radius: 8px;
     white-space: nowrap;
     text-align: center;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 16px rgba($shadow-ink, 0.2);
     z-index: 10;
     pointer-events: none;
   }
 
   &__tooltip-day {
     font-size: 10.5px;
-    color: #cbbeb3;
+    color: $border-strong;
   }
 
   &__tooltip-val {
@@ -714,7 +316,7 @@ $amber-bg: #fef3dc;
 
     &--top {
       background-color: $brand-red;
-      color: #ffffff;
+      color: $color-blanco;
     }
   }
 
@@ -757,7 +359,7 @@ $amber-bg: #fef3dc;
 
   &__bar-fill {
     height: 100%;
-    background-color: #dec9a8;
+    background-color: $border-strong;
     border-radius: 99px;
     transition: width 0.4s ease;
 
@@ -821,7 +423,7 @@ $amber-bg: #fef3dc;
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background-color: #fdeceb;
+    background-color: $red-bg;
     color: $brand-red;
     display: flex;
     align-items: center;
@@ -885,7 +487,7 @@ $amber-bg: #fef3dc;
   background: $bg-card;
   border: 1px solid $border-soft;
   border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba($shadow-ink, 0.1);
   z-index: 20;
   min-width: 185px;
   padding: 4px;
@@ -932,7 +534,7 @@ $amber-bg: #fef3dc;
 .btn-primary-sm {
   background: $brand-red;
   border: none;
-  color: #fff;
+  color: $color-blanco;
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 12.5px;
@@ -940,31 +542,14 @@ $amber-bg: #fef3dc;
   cursor: pointer;
 }
 
-.toast-banner {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: #241b16;
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-size: 13px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-  z-index: 50;
-
-  &--error {
-    background: $brand-red;
-  }
-}
-
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(36, 27, 22, 0.45);
+  background: rgba($text-primary, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 40;
+  z-index: $z-modal + 1;
 }
 
 .modal-card {
@@ -973,10 +558,10 @@ $amber-bg: #fef3dc;
   padding: 24px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 16px 36px rgba($shadow-ink, 0.15);
 
   h3 {
-    font-family: 'DM Serif Display', serif;
+    font-family: $font-titulos;
     font-size: 22px;
     font-weight: 400;
     margin: 0 0 6px;
@@ -1016,6 +601,118 @@ $amber-bg: #fef3dc;
 
 .form-row-2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
+}
+.resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.branch-select {
+  padding: 0.5rem 2rem 0.5rem 0.875rem;
+  border: 1px solid $border-soft;
+  border-radius: $radius-pill;
+  background: $bg-card;
+  color: $text-primary;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: $weight-medium;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid $brand-red;
+    outline-offset: 2px;
+  }
+}
+
+.kpi-card__trend--down {
+  color: $brand-red;
+}
+
+.badge-pill {
+  padding: 5px 12px;
+  border-radius: $radius-pill;
+  font-size: 12px;
+  font-weight: $weight-semibold;
+
+  &--green {
+    background-color: $green-bg;
+    color: $green-text;
+  }
+
+  &--red {
+    background-color: $red-bg;
+    color: $brand-red;
+  }
+}
+
+.bar-chart__col {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+
+  &:focus-visible {
+    outline: 2px solid $brand-red;
+    outline-offset: 4px;
+    border-radius: 10px;
+  }
+}
+
+.vacio {
+  @include vacio;
+  grid-column: 1 / -1;
+}
+
+.btn-primary-sm {
+  @include deshabilitado;
+}
+
+.bar-chart__col:last-child .bar-chart__tooltip {
+  right: 0;
+  left: auto;
+  transform: none;
+}
+
+.bar-chart__col:first-child .bar-chart__tooltip {
+  left: 0;
+  transform: none;
+}
+
+.table-responsive {
+  position: relative;
+}
+
+.resumen-extra {
+  gap: 14px;
+}
+
+.alerta-stock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid $red-border;
+  border-radius: 14px;
+  background: $red-bg;
+  color: $brand-red;
+  font-size: 13px;
+  text-decoration: none;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background: color.mix($red-bg, $red-border, 70%);
+  }
+
+  &__accion {
+    margin-left: auto;
+    font-weight: $weight-semibold;
+  }
+}
+
+.action-dropdown__peligro {
+  color: $brand-red !important;
 }

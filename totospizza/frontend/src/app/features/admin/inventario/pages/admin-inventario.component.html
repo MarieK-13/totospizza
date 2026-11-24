@@ -1,0 +1,140 @@
+<ng-template appPanelAcciones>
+  @if (sucursales().length) {
+    <select class="panel-select" aria-label="Sede" (change)="cambiarSucursal($event)">
+      @for (s of sucursales(); track s.id) {
+        <option [value]="s.id" [selected]="s.id === sucursalId()">{{ s.nombre }}{{ s.activa ? '' : ' (inactiva)' }}</option>
+      }
+    </select>
+  }
+</ng-template>
+
+<div class="crud" [attr.aria-busy]="cargando()">
+  @if (!cargandoSedes() && !sucursales().length) {
+    <section class="crud-card">
+      <app-estado-vacio [icono]="Icons.Store" titulo="No hay sedes registradas"
+        mensaje="El inventario se lleva por sede. Crea una sucursal para empezar a controlar el stock." />
+    </section>
+  } @else {
+    <section class="crud-kpis">
+      <app-panel-kpi etiqueta="Ingredientes en stock" [valor]="inventario().length" [icono]="Icons.Boxes" tono="azul"
+        [pie]="(canal() === 'ONLINE' ? 'canal web' : 'canal físico') + (nombreSede() ? ' · ' + nombreSede() : '')" />
+      <app-panel-kpi etiqueta="Stock bajo en esta vista" [valor]="bajos()" [icono]="Icons.TriangleAlert" [tono]="bajos() ? 'rojo' : 'verde'"
+        [pie]="bajos() ? 'por debajo del mínimo' : 'todo sobre el mínimo'" />
+      <app-panel-kpi etiqueta="Alertas en todas las sedes" [valor]="alertasTotales() ?? '—'" [icono]="Icons.PackageMinus" tono="ambar" pie="ingredientes con stock bajo" />
+      @if (masaWeb(); as masa) {
+        <app-panel-kpi etiqueta="Masas para la web" [valor]="(masa.stockActual | number: '1.0-0') ?? 0" [icono]="Icons.Globe" [tono]="masa.stockBajo ? 'rojo' : 'verde'"
+          [pie]="'mínimo ' + masa.stockMinimo + ' · stock web exclusivo'" />
+      } @else {
+        <app-panel-kpi etiqueta="Masas para la web" valor="—" [icono]="Icons.Globe" tono="ambar"
+          [pie]="canal() === 'ONLINE' ? (ingredienteMasaId() ? 'la masa no está en esta sede' : 'configura ingrediente_masa_id') : 'cambia al canal web'" />
+      }
+    </section>
+
+    <section class="crud-toolbar">
+      <div class="crud-toolbar__grupo">
+        <div class="crud-segmento" role="group" aria-label="Canal">
+          <button type="button" [class.is-activo]="canal() === 'ONLINE'" [attr.aria-pressed]="canal() === 'ONLINE'" (click)="cambiarCanal('ONLINE')">Stock web</button>
+          <button type="button" [class.is-activo]="canal() === 'FISICO'" [attr.aria-pressed]="canal() === 'FISICO'" (click)="cambiarCanal('FISICO')">Local físico</button>
+        </div>
+        <label class="crud-buscar">
+          <lucide-icon [img]="Icons.Search" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+          <input type="search" placeholder="Buscar ingrediente" aria-label="Buscar ingrediente" [value]="busqueda()" (input)="busqueda.set(valor($event))" />
+        </label>
+      </div>
+      <div class="crud-fila-switch solo-bajo">
+        <span>Solo stock bajo</span>
+        <button type="button" class="crud-switch" role="switch" aria-label="Solo stock bajo" [attr.aria-checked]="soloBajo()" (click)="soloBajo.set(!soloBajo())"></button>
+      </div>
+    </section>
+
+    <section class="crud-card">
+      <div class="crud-card__cabecera">
+        <h2 class="crud-card__titulo">{{ canal() === 'ONLINE' ? 'Stock web exclusivo' : 'Stock del local' }}</h2>
+        <span class="crud-card__meta">
+          {{ canal() === 'ONLINE' ? 'Reservado para pedidos online: no compite con las ventas del local' : 'Lo que usa el local para sus ventas presenciales' }}
+        </span>
+      </div>
+
+      @if (filtrado().length) {
+        <div class="crud-tabla-wrap">
+          <table class="crud-tabla">
+            <thead>
+              <tr>
+                <th>Ingrediente</th>
+                <th>Stock actual</th>
+                <th>Mínimo</th>
+                <th>Estado</th>
+                <th class="der">Movimiento</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (i of filtrado(); track i.id) {
+                <tr>
+                  <td>
+                    <strong>{{ i.ingredienteNombre }}</strong>
+                    @if (i.ingredienteId === ingredienteMasaId()) {
+                      <span class="crud-badge crud-badge--info marca-masa">Masa web</span>
+                    }
+                  </td>
+                  <td>
+                    <div class="nivel">
+                      <span class="num">{{ i.stockActual | number: '1.0-2' }} {{ unidad(i) }}</span>
+                      <span class="nivel__barra" aria-hidden="true">
+                        <span class="nivel__relleno" [class.is-bajo]="i.stockBajo" [style.width.%]="porcentaje(i)"></span>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="num">{{ i.stockMinimo | number: '1.0-2' }} {{ unidad(i) }}</td>
+                  <td>
+                    <span class="crud-badge" [class.crud-badge--off]="i.stockBajo" [class.crud-badge--ok]="!i.stockBajo">
+                      {{ i.stockBajo ? 'Stock bajo' : 'Suficiente' }}
+                    </span>
+                  </td>
+                  <td class="der">
+                    <div class="crud-acciones">
+                      <button type="button" class="crud-btn crud-btn--sm" (click)="abrirAjuste(i, 'ENTRADA')">Reponer</button>
+                      <button type="button" class="crud-icono-btn" title="Otro movimiento" [attr.aria-label]="'Otro movimiento de ' + i.ingredienteNombre" (click)="abrirAjuste(i, 'SALIDA')">
+                        <lucide-icon [img]="Icons.SlidersHorizontal" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-estado-vacio [cargando]="cargando() || cargandoSedes()" [icono]="Icons.Boxes"
+          [titulo]="inventario().length ? 'Sin coincidencias' : 'Sin inventario en este canal'"
+          [mensaje]="inventario().length ? 'Quita el filtro o cambia la búsqueda.' : 'Esta sede todavía no tiene ingredientes registrados en ' + (canal() === 'ONLINE' ? 'el stock web.' : 'el local físico.')" />
+      }
+    </section>
+  }
+
+  @if (seleccionado(); as item) {
+    <app-panel-modal [titulo]="'Movimiento: ' + item.ingredienteNombre" (cerrar)="cerrar()"
+      [descripcion]="'Stock actual: ' + (item.stockActual | number: '1.0-2') + ' ' + unidad(item) + ' · mínimo ' + (item.stockMinimo | number: '1.0-2')">
+      <form id="form-ajuste" class="crud-form" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        @if (errorFormulario(); as error) {
+          <p class="crud-aviso" role="alert">{{ error }}</p>
+        }
+        <app-select-field label="Tipo de movimiento" [opciones]="opcionesMovimiento" [required]="true" formControlName="tipo" />
+        <app-text-field [label]="'Cantidad (' + unidad(item) + ')'" type="number" inputmode="numeric" [min]="'0.01'" [required]="true" formControlName="cantidad" />
+        <app-text-field label="Motivo" [required]="true" [maxlength]="250" placeholder="Ej. Reposición de las 30 masas del día" formControlName="motivo" />
+        @if (stockResultante(); as resultado) {
+          <p class="resultado" [class.is-negativo]="resultado < 0">
+            Quedarán <strong>{{ resultado | number: '1.0-2' }} {{ unidad(item) }}</strong>
+            @if (resultado < 0) { · no alcanza el stock }
+            @else if (resultado <= item.stockMinimo) { · seguirá en stock bajo }
+          </p>
+        }
+      </form>
+      <div acciones>
+        <button type="button" class="crud-btn" (click)="cerrar()" [disabled]="guardando()">Cancelar</button>
+        <button type="submit" form="form-ajuste" class="crud-btn crud-btn--primario" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : 'Registrar movimiento' }}
+        </button>
+      </div>
+    </app-panel-modal>
+  }
+</div>

@@ -1,0 +1,77 @@
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use '../../../../styles/panel/paleta' as panel;
+
+:host {
+  display: flex;
+  flex: 1 1 100%;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $space-7 $space-4;
+  text-align: center;
+  animation: vacio-entrada $duration-base $ease-out both;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+:host(.is-compacto) {
+  padding: $space-5 $space-3;
+}
+
+.vacio__icono {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: $space-1;
+  border: 1px dashed panel.$border-strong;
+  border-radius: 50%;
+  background: panel.$bg-soft;
+  color: panel.$text-muted;
+
+  &--cargando lucide-icon {
+    display: inline-flex;
+    animation: vacio-giro 900ms linear infinite;
+  }
+}
+
+:host(.is-compacto) .vacio__icono {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.vacio__titulo {
+  margin: 0;
+  color: panel.$text-primary;
+  font-size: 0.875rem;
+  font-weight: $weight-semibold;
+}
+
+.vacio__mensaje {
+  max-width: 34ch;
+  margin: 0;
+  color: panel.$text-muted;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+@keyframes vacio-entrada {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes vacio-giro {
+  to {
+    transform: rotate(360deg);
+  }
+}

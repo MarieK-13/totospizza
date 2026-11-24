@@ -35,14 +35,23 @@
               <p class="gps__titulo">Ubicación guardada</p>
               <p class="gps__detalle">Si te mudaste, vuelve a detectarla.</p>
             }
+            @if (lista.encontrada) {
+              <p class="gps__detalle gps__encontrada">
+                Encontramos: {{ lista.encontrada }} ·
+                <a [href]="mapaDe(lista.latitud, lista.longitud)" target="_blank" rel="noopener">Ver en el mapa</a>
+              </p>
+            }
           </div>
-          <button type="button" class="btn btn--ghost btn--sm" (click)="ubicar()">Volver a detectar</button>
+          <div class="gps__acciones">
+            <button type="button" class="btn btn--ghost btn--sm" (click)="buscarPorDireccion()">Buscar dirección</button>
+            <button type="button" class="btn btn--ghost btn--sm" (click)="ubicar()">Usar mi ubicación</button>
+          </div>
         }
         @case ('buscando') {
           <span class="gps__icono gps__icono--pulso" aria-hidden="true">
             <lucide-icon [img]="GpsIcon" [size]="20" [strokeWidth]="1.8"></lucide-icon>
           </span>
-          <p class="gps__titulo">Detectando tu ubicación…</p>
+          <p class="gps__titulo">{{ $any(ubicacion()).texto }}</p>
         }
         @default {
           <span class="gps__icono" aria-hidden="true">
@@ -54,16 +63,22 @@
               @if (ubicacion().tipo === 'error') {
                 {{ $any(ubicacion()).mensaje }}
               } @else if (faltaUbicacion()) {
-                Detecta la ubicación para saber si llega el delivery.
+                Ubícala para saber si llega el delivery: con tu GPS o buscando la dirección que escribiste.
               } @else {
-                Hazlo estando en el lugar: así el motorizado llega directo.
+                Si estás en el lugar usa tu ubicación; si no, escribe la dirección y búscala en el mapa.
               }
             </p>
           </div>
-          <button type="button" class="btn btn--primary btn--sm gps__boton" (click)="ubicar()">
-            <lucide-icon [img]="GpsIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
-            Usar mi ubicación
-          </button>
+          <div class="gps__acciones">
+            <button type="button" class="btn btn--primary btn--sm gps__boton" (click)="ubicar()">
+              <lucide-icon [img]="GpsIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+              Usar mi ubicación
+            </button>
+            <button type="button" class="btn btn--ghost btn--sm gps__boton" (click)="buscarPorDireccion()">
+              <lucide-icon [img]="SearchIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+              Buscar dirección
+            </button>
+          </div>
         }
       }
     </section>

@@ -11,6 +11,7 @@ import com.totospizza.mapper.pedido.PedidoMapper;
 import com.totospizza.model.entity.pedido.Pedido;
 import com.totospizza.repository.pago.PagoRepository;
 import com.totospizza.repository.pedido.PedidoEstadoHistorialRepository;
+import com.totospizza.repository.resena.ResenaRepository;
 
 @Component
 @RequiredArgsConstructor
@@ -20,12 +21,14 @@ class PedidoAssembler {
     private final PagoMapper pagoMapper;
     private final PagoRepository pagoRepository;
     private final PedidoEstadoHistorialRepository historialRepository;
+    private final ResenaRepository resenaRepository;
 
     PedidoResponse respuesta(Pedido pedido) {
         PagoResponse pago = pagoRepository.findByPedidoIdOrderByCreadoEnDesc(pedido.getId()).stream()
                 .findFirst()
                 .map(pagoMapper::toResponse)
                 .orElse(null);
-        return pedidoMapper.toResponse(pedido, pago, historialRepository.findByPedidoIdOrderByCreadoEnAsc(pedido.getId()));
+        return pedidoMapper.toResponse(pedido, pago, historialRepository.findByPedidoIdOrderByCreadoEnAsc(pedido.getId()),
+                resenaRepository.existsByPedidoId(pedido.getId()));
     }
 }

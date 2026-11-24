@@ -18,9 +18,12 @@ import lombok.RequiredArgsConstructor;
 import com.totospizza.dto.request.operacion.AsignarMotorizadoRequest;
 import com.totospizza.dto.response.operacion.EntregaResponse;
 import com.totospizza.dto.response.operacion.PedidoListoResponse;
+import com.totospizza.dto.response.operacion.ResumenDespachoResponse;
 import com.totospizza.dto.response.seguridad.EmpleadoResponse;
 import com.totospizza.security.userdetails.UsuarioAutenticado;
 import com.totospizza.service.operacion.DespachoService;
+import com.totospizza.dto.request.operacion.MotivoRequest;
+import com.totospizza.dto.request.pedido.CancelarPedidoRequest;
 
 /** Mostrador: entrega pedidos listos al cliente o al motorizado. */
 @RestController
@@ -36,6 +39,11 @@ public class DespachoController {
         return despachoService.pedidosListos(usuario.id());
     }
 
+    @GetMapping("/resumen")
+    public ResumenDespachoResponse resumen(@AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return despachoService.resumen(usuario.id());
+    }
+
     @GetMapping("/motorizados")
     public List<EmpleadoResponse> motorizadosDisponibles(@AuthenticationPrincipal UsuarioAutenticado usuario) {
         return despachoService.motorizadosDisponibles(usuario.id());
@@ -46,6 +54,25 @@ public class DespachoController {
                                              @PathVariable Long id,
                                              @Valid @RequestBody AsignarMotorizadoRequest request) {
         return despachoService.asignarMotorizado(usuario.id(), id, request);
+    }
+
+    @PostMapping("/pedidos/{id}/desbloquear-pin")
+    public PedidoListoResponse desbloquearPin(@AuthenticationPrincipal UsuarioAutenticado usuario, @PathVariable Long id) {
+        return despachoService.desbloquearPin(usuario.id(), id);
+    }
+
+    @PostMapping("/pedidos/{id}/confirmar-sin-pin")
+    public PedidoListoResponse confirmarSinPin(@AuthenticationPrincipal UsuarioAutenticado usuario,
+                                               @PathVariable Long id,
+                                               @Valid @RequestBody MotivoRequest request) {
+        return despachoService.confirmarSinPin(usuario.id(), id, request);
+    }
+
+    @PostMapping("/pedidos/{id}/cancelar")
+    public PedidoListoResponse cancelarEntregaFallida(@AuthenticationPrincipal UsuarioAutenticado usuario,
+                                                      @PathVariable Long id,
+                                                      @Valid @RequestBody CancelarPedidoRequest request) {
+        return despachoService.cancelarEntregaFallida(usuario.id(), id, request);
     }
 
     @PostMapping("/pedidos/{id}/entregar-en-mostrador")

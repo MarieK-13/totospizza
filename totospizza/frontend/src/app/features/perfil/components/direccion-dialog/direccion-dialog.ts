@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, ElementRef, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { CircleAlert, CircleCheck, Crosshair, LucideAngularModule, MapPin, TriangleAlert, X } from 'lucide-angular';
+import { CircleAlert, CircleCheck, Crosshair, LucideAngularModule, MapPin, Search, TriangleAlert, X } from 'lucide-angular';
 import type { CoberturaResponse, DireccionClienteRequest, DireccionClienteResponse } from '../../../../core/models/api';
 import { ClienteApi } from '../../../../core/services/api/cliente.api';
 import { PublicoApi } from '../../../../core/services/api/publico.api';
+import { GeocodificacionService } from '../../../../core/services/geocodificacion.service';
 import { esApiException, mensajeDeError } from '../../../../core/utils/api-exception';
 import { aplicarErroresDeCampo } from '../../../../core/utils/form-errors';
 import { CheckboxField } from '../../../../shared/components/checkbox-field/checkbox-field';
@@ -12,8 +13,15 @@ import { TextField } from '../../../../shared/components/text-field/text-field';
 
 type Ubicacion =
   | { readonly tipo: 'ninguna' }
-  | { readonly tipo: 'buscando' }
-  | { readonly tipo: 'lista'; readonly latitud: number; readonly longitud: number; readonly cobertura: CoberturaResponse | null }
+  | { readonly tipo: 'buscando'; readonly texto: string }
+  | {
+      readonly tipo: 'lista';
+      readonly latitud: number;
+      readonly longitud: number;
+      readonly cobertura: CoberturaResponse | null;
+      /** Si salió de buscar la dirección en el mapa: lo que encontró, para que el cliente lo verifique. */
+      readonly encontrada?: string;
+    }
   | { readonly tipo: 'error'; readonly mensaje: string };
 
 const MENSAJES_GEOLOCALIZACION: Readonly<Record<number, string>> = {
@@ -39,6 +47,7 @@ export class DireccionDialog {
 
   private readonly api = inject(ClienteApi);
   private readonly publico = inject(PublicoApi);
+  private readonly geo = inject(GeocodificacionService);
   private readonly fb = inject(FormBuilder).nonNullable;
   private readonly dialogo = viewChild.required<ElementRef<HTMLDialogElement>>('dialogo');
 
@@ -63,6 +72,7 @@ export class DireccionDialog {
   protected readonly OkIcon = CircleCheck;
   protected readonly WarnIcon = TriangleAlert;
   protected readonly AlertIcon = CircleAlert;
+  protected readonly SearchIcon = Search;
 
   constructor() {
     effect(() => {
@@ -87,12 +97,40 @@ export class DireccionDialog {
       this.ubicacion.set({ tipo: 'error', mensaje: 'Tu navegador no permite detectar la ubicación.' });
       return;
     }
-    this.ubicacion.set({ tipo: 'buscando' });
+    this.ubicacion.set({ tipo: 'buscando', texto: 'Detectando tu ubicación…' });
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => this.consultarCobertura(coords.latitude, coords.longitude),
       (e) => this.ubicacion.set({ tipo: 'error', mensaje: MENSAJES_GEOLOCALIZACION[e.code] ?? MENSAJES_GEOLOCALIZACION[2] }),
       { enableHighAccuracy: true, timeout: 10_000, maximumAge: 60_000 },
     );
+  }
+
+  /** Para quien no está en el lugar: busca en el mapa la dirección (o su referencia) que escribió. */
+  protected buscarPorDireccion(): void {
+    const { direccion, distrito, referencia } = this.form.getRawValue();
+    if (!direccion.trim()) {
+      this.form.controls.direccion.markAsTouched();
+      this.ubicacion.set({ tipo: 'error', mensaje: 'Escribe primero la dirección y el distrito para buscarla en el mapa.' });
+      return;
+    }
+    this.ubicacion.set({ tipo: 'buscando', texto: 'Buscando la dirección en el mapa…' });
+    const zona = [distrito.trim(), 'Ica', 'Perú'].filter(Boolean).join(', ');
+    this.geo
+      .buscar([`${direccion}, ${zona}`, referencia ? `${referencia}, ${zona}` : '', `${direccion}, Perú`])
+      .subscribe((punto) => {
+        if (!punto) {
+          this.ubicacion.set({
+            tipo: 'error',
+            mensaje: 'No encontramos esa dirección en el mapa. Prueba con una referencia conocida (por ejemplo "UTP Ica") o usa tu ubicación.',
+          });
+          return;
+        }
+        this.consultarCobertura(punto.latitud, punto.longitud, punto.descripcion);
+      });
+  }
+
+  protected mapaDe(latitud: number, longitud: number): string {
+    return `https://www.openstreetmap.org/?mlat=${latitud}&mlon=${longitud}#map=18/${latitud}/${longitud}`;
   }
 
   protected enviar(): void {
@@ -101,6 +139,11 @@ export class DireccionDialog {
     this.faltaUbicacion.set(ubicacion.tipo !== 'lista');
     if (this.form.invalid || ubicacion.tipo !== 'lista') {
       this.form.markAllAsTouched();
+      this.error.set(
+        ubicacion.tipo !== 'lista'
+          ? 'Falta ubicar la dirección: usa tu ubicación o búscala en el mapa con "Buscar dirección".'
+          : 'Revisa los campos marcados.',
+      );
       return;
     }
 
@@ -166,11 +209,12 @@ export class DireccionDialog {
     }
   }
 
-  private consultarCobertura(latitud: number, longitud: number): void {
+  private consultarCobertura(latitud: number, longitud: number, encontrada?: string): void {
     this.faltaUbicacion.set(false);
+    this.error.set(null);
     this.publico.cobertura({ latitud, longitud }).subscribe({
-      next: (cobertura) => this.ubicacion.set({ tipo: 'lista', latitud, longitud, cobertura }),
-      error: () => this.ubicacion.set({ tipo: 'lista', latitud, longitud, cobertura: null }),
+      next: (cobertura) => this.ubicacion.set({ tipo: 'lista', latitud, longitud, cobertura, encontrada }),
+      error: () => this.ubicacion.set({ tipo: 'lista', latitud, longitud, cobertura: null, encontrada }),
     });
   }
 }

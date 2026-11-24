@@ -222,3 +222,18 @@
     transform: scale(1.06);
   }
 }
+
+.gps__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.gps__encontrada {
+  margin-top: $space-1;
+
+  a {
+    color: $color-rojo-tomate;
+    font-weight: $weight-semibold;
+  }
+}

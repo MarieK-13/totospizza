@@ -25,6 +25,7 @@ export interface ResenaResponse {
   readonly comentario: string | null;
   readonly creadoEn: Instante;
   readonly destacada: boolean;
+  readonly visible: boolean;
   readonly calificaciones: readonly CalificacionProductoResponse[];
 }
 

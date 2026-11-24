@@ -8,7 +8,7 @@ import { ClienteApi } from '../../../../core/services/api/cliente.api';
 import { ToastService } from '../../../../core/services/toast.service';
 import { mensajeDeError } from '../../../../core/utils/api-exception';
 import { NOMBRE_METODO_PAGO, infoEstado, pedidoCancelable, pedidoEnCurso } from '../../../../core/utils/estado-pedido';
-import { formatearFechaHora } from '../../../../core/utils/fechas';
+import { formatearFechaHora, formatearHora } from '../../../../core/utils/fechas';
 import { formatearSoles } from '../../../../core/utils/money';
 import { AccountShell } from '../../../../shared/components/account-shell/account-shell';
 import { DeliveryCode } from '../../components/delivery-code/delivery-code';
@@ -67,9 +67,26 @@ export class OrderTrackingPage {
     const p = this.pedido();
     return p ? infoEstado(this.seguimiento.value()?.estado ?? p.estado) : null;
   });
+  protected readonly estadoActual = computed(() => {
+    const p = this.pedido();
+    return p ? (this.seguimiento.value()?.estado ?? p.estado) : null;
+  });
   protected readonly mensaje = computed(() => {
     const p = this.pedido();
-    return p ? MENSAJE_ESTADO[this.seguimiento.value()?.estado ?? p.estado] : '';
+    const estado = this.estadoActual();
+    if (!p || !estado) return '';
+    if (estado === 'LISTO') {
+      return p.tipoEntrega === 'RECOJO' ? '¡Tu pedido está listo! Ya puedes recogerlo.' : 'Tu pedido está listo y sale en breve con el motorizado.';
+    }
+    return MENSAJE_ESTADO[estado];
+  });
+  /** Productos del catálogo del pedido (sin repetir), para calificarlos uno por uno. */
+  protected readonly productosCalificables = computed(() => {
+    const vistos = new Map<number, string>();
+    for (const d of this.pedido()?.detalles ?? []) {
+      if (d.productoId !== null && !vistos.has(d.productoId)) vistos.set(d.productoId, d.nombre);
+    }
+    return [...vistos.entries()].map(([productoId, nombre]) => ({ productoId, nombre }));
   });
 
   protected readonly etapas = computed<readonly EtapaSeguimientoResponse[]>(() => {
@@ -84,7 +101,11 @@ export class OrderTrackingPage {
     const p = this.pedido();
     return !!p && pedidoCancelable(p.estado);
   });
-  protected readonly calificable = computed(() => this.pedido()?.estado === 'ENTREGADO' && !this.calificado());
+  protected readonly calificable = computed(() => {
+    const p = this.pedido();
+    return !!p && p.estado === 'ENTREGADO' && !p.resenado && !this.calificado();
+  });
+  protected readonly yaCalificado = computed(() => this.calificado() || !!this.pedido()?.resenado);
   protected readonly garantia = computed(() => this.seguimiento.value()?.garantiaAplicada ?? this.pedido()?.garantiaAplicada ?? false);
 
   protected readonly calificando = signal(false);
@@ -95,6 +116,7 @@ export class OrderTrackingPage {
 
   protected readonly soles = formatearSoles;
   protected readonly fechaHora = formatearFechaHora;
+  protected readonly horaDe = formatearHora;
   protected readonly metodos = NOMBRE_METODO_PAGO;
 
   protected readonly BackIcon = ArrowLeft;
@@ -160,19 +182,24 @@ function etapasDesdeHistorial(p: PedidoResponse): readonly EtapaSeguimientoRespo
   const fecha = (...estados: PedidoResponse['estado'][]) => p.historial.find((h) => estados.includes(h.estado))?.fecha ?? null;
   const orden: PedidoResponse['estado'][] = ['CONFIRMADO', 'EN_PREPARACION', 'EN_HORNO', 'LISTO', 'EN_CAMINO', 'ENTREGADO'];
   const nivel = orden.indexOf(p.estado);
+  const delivery = p.tipoEntrega === 'DELIVERY';
+  // Mismo criterio que el backend (CalculadoraSeguimiento): las etapas que son un hecho quedan completas
+  // al alcanzarse; "En preparación" se completa al pasar a la siguiente.
   const pasos = [
-    { nombre: 'Pedido confirmado', desde: 0, fecha: p.confirmadoEn ?? fecha('CONFIRMADO') },
-    { nombre: 'En preparación', desde: 1, fecha: fecha('EN_PREPARACION', 'EN_HORNO') },
+    { nombre: 'Pedido confirmado', desde: 0, fecha: p.confirmadoEn ?? fecha('CONFIRMADO'), hecho: true },
+    { nombre: 'En preparación', desde: 1, fecha: fecha('EN_PREPARACION', 'EN_HORNO'), hecho: false },
     {
-      nombre: p.tipoEntrega === 'DELIVERY' ? 'En camino' : 'Listo para recoger',
-      desde: p.tipoEntrega === 'DELIVERY' ? 4 : 3,
-      fecha: p.tipoEntrega === 'DELIVERY' ? fecha('EN_CAMINO') : fecha('LISTO'),
+      nombre: !delivery ? 'Listo para recoger' : p.estado === 'LISTO' ? 'Esperando motorizado' : 'En camino',
+      desde: 3,
+      fecha: delivery ? fecha('EN_CAMINO') : fecha('LISTO'),
+      hecho: delivery ? !!fecha('EN_CAMINO') : true,
     },
-    { nombre: 'Entregado', desde: 5, fecha: p.entregadoEn ?? fecha('ENTREGADO') },
+    { nombre: 'Entregado', desde: 5, fecha: p.entregadoEn ?? fecha('ENTREGADO'), hecho: true },
   ];
   return pasos.map((paso, i) => {
     const siguiente = pasos[i + 1]?.desde ?? Infinity;
-    const completada = nivel >= paso.desde;
-    return { nombre: paso.nombre, fecha: paso.fecha, completada, actual: completada && nivel < siguiente && p.estado !== 'ENTREGADO' };
+    const alcanzada = nivel >= paso.desde;
+    const actual = alcanzada && nivel < siguiente && p.estado !== 'ENTREGADO';
+    return { nombre: paso.nombre, fecha: paso.fecha, completada: alcanzada && (!actual || paso.hecho), actual };
   });
 }

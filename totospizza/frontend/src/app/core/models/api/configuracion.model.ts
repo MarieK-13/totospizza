@@ -20,12 +20,12 @@ export interface ConfiguracionPublicaResponse {
 
 export interface PerfilNegocioRequest {
   readonly nombreComercial: string;
-  readonly razonSocial: string;
-  readonly ruc: string;
+  readonly razonSocial: string | null;
+  readonly ruc: string | null;
   readonly logoUrl?: string | null;
-  readonly correoContacto: string;
-  readonly telefonoContacto: string;
-  readonly direccionFiscal: string;
+  readonly correoContacto: string | null;
+  readonly telefonoContacto: string | null;
+  readonly direccionFiscal: string | null;
   readonly instagramUrl?: string | null;
   readonly facebookUrl?: string | null;
   readonly whatsapp?: string | null;

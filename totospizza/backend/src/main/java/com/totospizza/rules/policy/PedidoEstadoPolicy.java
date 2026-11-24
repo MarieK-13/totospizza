@@ -33,7 +33,7 @@ public final class PedidoEstadoPolicy {
         TRANSICIONES.put(EstadoPedido.EN_PREPARACION, EnumSet.of(EstadoPedido.EN_HORNO));
         TRANSICIONES.put(EstadoPedido.EN_HORNO, EnumSet.of(EstadoPedido.LISTO));
         TRANSICIONES.put(EstadoPedido.LISTO,
-                EnumSet.of(EstadoPedido.EN_CAMINO, EstadoPedido.ENTREGADO, EstadoPedido.NO_RECOGIDO));
+                EnumSet.of(EstadoPedido.EN_CAMINO, EstadoPedido.ENTREGADO, EstadoPedido.NO_RECOGIDO, EstadoPedido.CANCELADO));
         TRANSICIONES.put(EstadoPedido.EN_CAMINO, EnumSet.of(EstadoPedido.ENTREGADO));
     }
 
@@ -44,7 +44,7 @@ public final class PedidoEstadoPolicy {
         if (!TRANSICIONES.getOrDefault(actual, Set.of()).contains(nuevo)) {
             return false;
         }
-        if (actual == EstadoPedido.LISTO) {
+        if (actual == EstadoPedido.LISTO && nuevo != EstadoPedido.CANCELADO) {
             boolean delivery = tipoEntrega == TipoEntrega.DELIVERY;
             return nuevo == EstadoPedido.EN_CAMINO ? delivery : !delivery;
         }

@@ -141,6 +141,10 @@ export interface EmpleadoResponse {
   readonly fechaIngreso: Fecha;
   readonly pagoBaseTurno: number | null;
   readonly bonoPorEntrega: number | null;
+  readonly nombres: string;
+  readonly apellidos: string;
+  readonly tipoDocumento: TipoDocumento | null;
+  readonly numeroDocumento: string | null;
 }
 
 export interface FiltroEmpleados {

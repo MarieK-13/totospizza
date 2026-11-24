@@ -74,7 +74,7 @@ public class PizzaPersonalizadaServiceImpl implements PizzaPersonalizadaService 
     @Transactional(readOnly = true)
     public OpcionesPersonalizacionResponse opciones() {
         return new OpcionesPersonalizacionResponse(
-                tamanoMapper.toResponses(tamanoRepository.findAllByOrderByOrdenAsc()),
+                tamanoMapper.toResponses(tamanoRepository.findByActivoTrueOrderByOrdenAsc()),
                 tipoMasaMapper.toResponses(tipoMasaRepository.findByActivaTrueOrderByNombreAsc()),
                 List.of(paso(PasoPersonalizacion.QUESO, TIPOS_QUESO),
                         paso(PasoPersonalizacion.SALSA, TIPOS_SALSA),
@@ -132,6 +132,9 @@ public class PizzaPersonalizadaServiceImpl implements PizzaPersonalizadaService 
     private Seleccion resolver(PizzaPersonalizadaRequest request) {
         TamanoPizza tamano = tamanoRepository.findById(request.tamanoId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Tamaño", request.tamanoId()));
+        if (!tamano.isActivo()) {
+            throw new ReglaNegocioException("TAMANO_NO_DISPONIBLE", "El tamaño elegido ya no está disponible");
+        }
         TipoMasa masa = tipoMasaRepository.findById(request.tipoMasaId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Tipo de masa", request.tipoMasaId()));
         if (!masa.isActiva()) {

@@ -1,0 +1,217 @@
+<ng-template appPanelAcciones>
+  <button type="button" class="panel-cta" (click)="abrirNuevo()">
+    <lucide-icon [img]="Icons.Plus" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+    Nuevo producto
+  </button>
+</ng-template>
+
+<div class="crud" [attr.aria-busy]="cargando()">
+  <section class="crud-kpis">
+    <app-panel-kpi etiqueta="Productos" [valor]="totalElementos()" [icono]="Icons.Pizza" tono="rojo" pie="en el catálogo" />
+    <app-panel-kpi etiqueta="Disponibles" [valor]="disponibles()" [icono]="Icons.Eye" tono="verde"
+      [pie]="productos().length - disponibles() + ' agotados u ocultos'" />
+    <app-panel-kpi etiqueta="Destacados" [valor]="destacados()" [icono]="Icons.Star" tono="ambar" pie="salen en el inicio" />
+    <app-panel-kpi etiqueta="Categorías" [valor]="categorias().length" [icono]="Icons.Layers" tono="azul" pie="secciones del menú" />
+  </section>
+
+  <section class="crud-toolbar">
+    <div class="crud-toolbar__grupo">
+      <label class="crud-buscar">
+        <lucide-icon [img]="Icons.Search" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <input type="search" placeholder="Buscar producto" aria-label="Buscar producto" [value]="busqueda()" (input)="busqueda.set(valor($event))" />
+      </label>
+      <select class="crud-select" aria-label="Categoría" (change)="filtroCategoria.set(valor($event))">
+        <option value="">Todas las categorías</option>
+        @for (c of nombresCategoria(); track c) {
+          <option [value]="c" [selected]="filtroCategoria() === c">{{ c }}</option>
+        }
+      </select>
+      <select class="crud-select" aria-label="Estado" (change)="filtroEstado.set($any(valor($event)))">
+        <option value="">Todos</option>
+        <option value="disponibles">Disponibles</option>
+        <option value="agotados">Agotados u ocultos</option>
+        <option value="destacados">Destacados</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="crud-card">
+    <div class="crud-card__cabecera">
+      <h2 class="crud-card__titulo">Carta</h2>
+      <span class="crud-card__meta">{{ filtrados().length }} de {{ totalElementos() }} productos</span>
+    </div>
+
+    @if (filtrados().length) {
+      <div class="crud-tabla-wrap">
+        <table class="crud-tabla">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th>Precio desde</th>
+              <th>Etiquetas</th>
+              <th>Disponible</th>
+              <th class="der">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of filtrados(); track p.id) {
+              <tr [class.is-apagado]="!p.disponible">
+                <td>
+                  <div class="crud-celda">
+                    @if (p.imagenUrl) {
+                      <img class="crud-celda__img" [src]="p.imagenUrl" alt="" loading="lazy" />
+                    } @else {
+                      <span class="crud-celda__icono crud-celda__img" aria-hidden="true">
+                        <lucide-icon [img]="Icons.Pizza" [size]="18" [strokeWidth]="1.6"></lucide-icon>
+                      </span>
+                    }
+                    <div class="crud-celda__texto">
+                      <strong>
+                        {{ p.nombre }}
+                        @if (p.destacado) {
+                          <lucide-icon class="estrella" [img]="Icons.Star" [size]="13" [strokeWidth]="2" aria-label="Destacado"></lucide-icon>
+                        }
+                      </strong>
+                      <span>{{ p.descripcion || 'Sin descripción' }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="crud-badge">{{ p.categoria }}</span></td>
+                <td class="num">S/ {{ p.precioDesde | number: '1.2-2' }}</td>
+                <td>
+                  <div class="crud-chips">
+                    @for (e of p.etiquetas.slice(0, 3); track e.id) {
+                      <span class="crud-badge" [class]="'crud-badge ' + claseEtiqueta(e)">{{ e.nombre }}</span>
+                    } @empty {
+                      <span class="sin-dato">—</span>
+                    }
+                    @if (p.etiquetas.length > 3) {
+                      <span class="crud-badge">+{{ p.etiquetas.length - 3 }}</span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <button type="button" class="crud-switch" role="switch" [attr.aria-checked]="p.disponible"
+                    [attr.aria-label]="(p.disponible ? 'Marcar agotado ' : 'Marcar disponible ') + p.nombre" (click)="alternarDisponible(p)"></button>
+                </td>
+                <td class="der">
+                  <button type="button" class="crud-icono-btn" title="Editar" [attr.aria-label]="'Editar ' + p.nombre"
+                    [disabled]="cargandoDetalle()" (click)="abrirEdicion(p)">
+                    <lucide-icon [img]="Icons.Pencil" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (hayMas()) {
+        <div class="crud-paginacion">
+          <span>Mostrando {{ productos().length }} de {{ totalElementos() }}</span>
+          <button type="button" class="crud-btn crud-btn--sm" (click)="cargarPagina()" [disabled]="cargandoMas()">
+            {{ cargandoMas() ? 'Cargando…' : 'Cargar más productos' }}
+          </button>
+        </div>
+      }
+    } @else {
+      <app-estado-vacio [cargando]="cargando()" [icono]="Icons.Pizza"
+        [titulo]="productos().length ? 'Sin coincidencias' : 'Aún no hay productos'"
+        [mensaje]="productos().length ? 'Cambia la búsqueda o los filtros.' : 'Agrega tu primera pizza, bebida o salsa al catálogo.'">
+        @if (!productos().length) {
+          <button type="button" class="crud-btn crud-btn--primario crud-btn--sm" (click)="abrirNuevo()">Crear producto</button>
+        }
+      </app-estado-vacio>
+    }
+  </section>
+
+  @if (modalAbierto()) {
+    <app-panel-modal [titulo]="editando() ? 'Editar producto' : 'Nuevo producto'" ancho="xl" (cerrar)="cerrar()"
+      descripcion="Lo que guardes aquí se ve al instante en el menú de la tienda.">
+      <form id="form-producto" class="crud-form" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        @if (errorFormulario(); as error) {
+          <p class="crud-aviso" role="alert">{{ error }}</p>
+        }
+
+        <div class="producto-form">
+          <div>
+            <p class="crud-subtitulo">Datos generales</p>
+            <app-text-field label="Nombre" [required]="true" [maxlength]="120" placeholder="Ej. Pizza Pepperoni" formControlName="nombre" />
+            <app-select-field label="Categoría" [opciones]="opcionesCategoria()" [required]="true" formControlName="categoriaId" />
+            <label class="crud-campo">
+              Descripción
+              <textarea formControlName="descripcion" maxlength="1000" rows="3" placeholder="Qué lleva y por qué es especial"></textarea>
+            </label>
+            <app-imagen-field etiqueta="Imagen" carpeta="PRODUCTOS" formControlName="imagenUrl" />
+
+            <div class="crud-fila-switch">
+              <span>Disponible<small>Agotado = no se puede pedir.</small></span>
+              <button type="button" class="crud-switch" role="switch" aria-label="Disponible" [attr.aria-checked]="form.controls.disponible.value" (click)="alternarSwitch('disponible')"></button>
+            </div>
+            <div class="crud-fila-switch">
+              <span>Destacado<small>Aparece en “Recomendados” del inicio.</small></span>
+              <button type="button" class="crud-switch" role="switch" aria-label="Destacado" [attr.aria-checked]="form.controls.destacado.value" (click)="alternarSwitch('destacado')"></button>
+            </div>
+          </div>
+
+          <div>
+            <p class="crud-subtitulo">Precio</p>
+            <div class="crud-fila-switch">
+              <span>Se vende por tamaño<small>Pizzas: el cliente elige tamaño y masa.</small></span>
+              <button type="button" class="crud-switch" role="switch" aria-label="Se vende por tamaño" [attr.aria-checked]="form.controls.requiereTamano.value" (click)="alternarSwitch('requiereTamano')"></button>
+            </div>
+            <app-text-field [label]="requiereTamano() ? 'Precio base de referencia (S/)' : 'Precio (S/)'" type="number" inputmode="numeric" [min]="'0'" [required]="true" formControlName="precioBase" />
+
+            @if (requiereTamano()) {
+              <div class="precios">
+                @for (t of tamanosOrdenados(); track t.id) {
+                  <div class="precios__fila" [class.is-apagado]="!incluidoTamano(t.id)">
+                    <label class="precios__check">
+                      <input type="checkbox" [checked]="incluidoTamano(t.id)" (change)="alternarTamano(t)" />
+                      <span>{{ t.nombre }} <small>{{ t.diametroCm }} cm{{ t.activo ? '' : ' · inactivo' }}</small></span>
+                    </label>
+                    <input class="precios__monto" type="number" min="0" step="0.1" inputmode="decimal"
+                      [attr.aria-label]="'Precio ' + t.nombre" [disabled]="!incluidoTamano(t.id)"
+                      [value]="precios()[t.id] ?? ''" (input)="cambiarPrecio(t.id, $event)" />
+                  </div>
+                } @empty {
+                  <app-estado-vacio [compacto]="true" [icono]="Icons.Pizza" titulo="No hay tamaños" mensaje="Créalos en Masas y tamaños." />
+                }
+              </div>
+            }
+
+            <p class="crud-subtitulo">Alérgenos y etiquetas <small>({{ etiquetaIds().size }}/10)</small></p>
+            @for (g of gruposEtiquetas(); track g.tipo) {
+              <span class="grupo-titulo">{{ g.tipo }}</span>
+              <div class="crud-seleccion">
+                @for (e of g.items; track e.id) {
+                  <button type="button" [attr.aria-pressed]="etiquetaIds().has(e.id)" (click)="alternarEtiqueta(e.id)">{{ e.nombre }}</button>
+                }
+              </div>
+            } @empty {
+              <app-estado-vacio [compacto]="true" titulo="No hay etiquetas" mensaje="Créalas en Ingredientes y alérgenos." />
+            }
+
+            <p class="crud-subtitulo">Ingredientes que lleva <small>({{ ingredienteIds().size }}/30)</small></p>
+            @for (g of gruposIngredientes(); track g.tipo) {
+              <span class="grupo-titulo">{{ g.tipo }}</span>
+              <div class="crud-seleccion">
+                @for (i of g.items; track i.id) {
+                  <button type="button" [attr.aria-pressed]="ingredienteIds().has(i.id)" (click)="alternarIngrediente(i.id)">{{ i.nombre }}</button>
+                }
+              </div>
+            } @empty {
+              <app-estado-vacio [compacto]="true" titulo="No hay ingredientes" mensaje="Créalos en Ingredientes y alérgenos." />
+            }
+          </div>
+        </div>
+      </form>
+      <div acciones>
+        <button type="button" class="crud-btn" (click)="cerrar()" [disabled]="guardando()">Cancelar</button>
+        <button type="submit" form="form-producto" class="crud-btn crud-btn--primario" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : editando() ? 'Guardar cambios' : 'Crear producto' }}
+        </button>
+      </div>
+    </app-panel-modal>
+  }
+</div>

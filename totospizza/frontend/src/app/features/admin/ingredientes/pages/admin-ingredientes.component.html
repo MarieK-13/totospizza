@@ -1,0 +1,217 @@
+<ng-template appPanelAcciones>
+  <button type="button" class="panel-cta" (click)="nuevo()">
+    <lucide-icon [img]="Icons.Plus" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+    {{ pestana() === 'ingredientes' ? 'Nuevo ingrediente' : 'Nueva etiqueta' }}
+  </button>
+</ng-template>
+
+<div class="crud" [attr.aria-busy]="cargando()">
+  <section class="crud-kpis">
+    <app-panel-kpi etiqueta="Ingredientes" [valor]="ingredientes().length" [icono]="Icons.Carrot" tono="rojo" pie="insumos y adicionales" />
+    <app-panel-kpi etiqueta="Disponibles" [valor]="disponibles()" [icono]="Icons.Carrot" tono="verde"
+      [pie]="ingredientes().length - disponibles() + ' agotados'" />
+    <app-panel-kpi etiqueta="Alérgenos" [valor]="alergenos()" [icono]="Icons.ShieldAlert" tono="ambar" pie="etiquetas “Contiene” y “Sin”" />
+    <app-panel-kpi etiqueta="Filtros del menú" [valor]="filtrosMenu()" [icono]="Icons.Filter" tono="azul" pie="chips que ve el cliente" />
+  </section>
+
+  <section class="crud-toolbar">
+    <div class="crud-toolbar__grupo">
+      <div class="crud-segmento" role="tablist" aria-label="Qué gestionar">
+        <button type="button" role="tab" [class.is-activo]="pestana() === 'ingredientes'" [attr.aria-selected]="pestana() === 'ingredientes'"
+          (click)="cambiarPestana('ingredientes')">Ingredientes</button>
+        <button type="button" role="tab" [class.is-activo]="pestana() === 'etiquetas'" [attr.aria-selected]="pestana() === 'etiquetas'"
+          (click)="cambiarPestana('etiquetas')">Alérgenos y etiquetas</button>
+      </div>
+      @if (pestana() === 'ingredientes') {
+        <select class="crud-select" aria-label="Tipo de ingrediente" (change)="filtroTipo.set($any(valor($event)))">
+          <option value="">Todos los tipos</option>
+          @for (t of tipos; track t) {
+            <option [value]="t" [selected]="filtroTipo() === t">{{ etiquetaTipo(t) }}</option>
+          }
+        </select>
+      }
+    </div>
+    <label class="crud-buscar">
+      <lucide-icon [img]="Icons.Search" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      <input type="search" [placeholder]="pestana() === 'ingredientes' ? 'Buscar ingrediente' : 'Buscar etiqueta'"
+        aria-label="Buscar" [value]="busqueda()" (input)="busqueda.set(valor($event))" />
+    </label>
+  </section>
+
+  @if (pestana() === 'ingredientes') {
+    <section class="crud-card">
+      <div class="crud-card__cabecera">
+        <h2 class="crud-card__titulo">Ingredientes</h2>
+        <span class="crud-card__meta">El precio extra se cobra al agregarlo como adicional o al armar una pizza</span>
+      </div>
+      @if (ingredientesFiltrados().length) {
+        <div class="crud-tabla-wrap">
+          <table class="crud-tabla">
+            <thead>
+              <tr>
+                <th>Ingrediente</th>
+                <th>Tipo</th>
+                <th>Precio extra</th>
+                <th>Disponible</th>
+                <th class="der">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (i of ingredientesFiltrados(); track i.id) {
+                <tr [class.is-apagado]="!i.disponible">
+                  <td>
+                    <div class="crud-celda">
+                      <span class="crud-celda__icono" aria-hidden="true">
+                        <lucide-icon [img]="Icons.Carrot" [size]="16" [strokeWidth]="1.8"></lucide-icon>
+                      </span>
+                      <div class="crud-celda__texto"><strong>{{ i.nombre }}</strong></div>
+                    </div>
+                  </td>
+                  <td><span class="crud-badge">{{ etiquetaTipo(i.tipo) }}</span></td>
+                  <td class="num">S/ {{ i.precioExtra | number: '1.2-2' }}</td>
+                  <td>
+                    <button type="button" class="crud-switch" role="switch" [attr.aria-checked]="i.disponible"
+                      [attr.aria-label]="(i.disponible ? 'Marcar agotado ' : 'Marcar disponible ') + i.nombre" (click)="alternarDisponible(i)"></button>
+                  </td>
+                  <td class="der">
+                    <button type="button" class="crud-icono-btn" title="Editar" [attr.aria-label]="'Editar ' + i.nombre" (click)="abrirIngrediente(i)">
+                      <lucide-icon [img]="Icons.Pencil" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-estado-vacio [cargando]="cargando()" [icono]="Icons.Carrot"
+          [titulo]="busqueda() || filtroTipo() ? 'Sin coincidencias' : 'Aún no hay ingredientes'"
+          [mensaje]="busqueda() || filtroTipo() ? 'Cambia la búsqueda o el tipo.' : 'Registra quesos, salsas y carnes para usarlos en productos y en Arma tu pizza.'" />
+      }
+    </section>
+  } @else {
+    <section class="crud-card">
+      <div class="crud-card__cabecera">
+        <h2 class="crud-card__titulo">Alérgenos y etiquetas</h2>
+        <span class="crud-card__meta">Usa “Contiene …” para alérgenos y “Sin …” para productos libres de ellos</span>
+      </div>
+      @if (etiquetasFiltradas().length) {
+        <div class="crud-tabla-wrap">
+          <table class="crud-tabla">
+            <thead>
+              <tr>
+                <th>Etiqueta</th>
+                <th>Clase</th>
+                <th>Filtro en el menú</th>
+                <th class="der">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (e of etiquetasFiltradas(); track e.id) {
+                <tr>
+                  <td>
+                    <div class="crud-celda">
+                      <span class="crud-celda__icono" aria-hidden="true">
+                        <lucide-icon [img]="tipoDeEtiqueta(e) === 'Rasgo' ? Icons.Tag : Icons.ShieldAlert" [size]="16" [strokeWidth]="1.8"></lucide-icon>
+                      </span>
+                      <div class="crud-celda__texto"><strong>{{ e.nombre }}</strong><span>{{ e.slug }}</span></div>
+                    </div>
+                  </td>
+                  <td><span class="crud-badge" [class]="'crud-badge ' + claseEtiqueta(e)">{{ tipoDeEtiqueta(e) }}</span></td>
+                  <td>
+                    <span class="crud-badge" [class.crud-badge--ok]="e.esFiltro">{{ e.esFiltro ? 'Sí, como chip' : 'No' }}</span>
+                  </td>
+                  <td class="der">
+                    <div class="crud-acciones">
+                      <button type="button" class="crud-icono-btn" title="Editar" [attr.aria-label]="'Editar ' + e.nombre" (click)="abrirEtiqueta(e)">
+                        <lucide-icon [img]="Icons.Pencil" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                      </button>
+                      <button type="button" class="crud-icono-btn crud-icono-btn--peligro" title="Eliminar" [attr.aria-label]="'Eliminar ' + e.nombre" (click)="pedirEliminarEtiqueta(e)">
+                        <lucide-icon [img]="Icons.Trash2" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-estado-vacio [cargando]="cargando()" [icono]="Icons.ShieldAlert"
+          [titulo]="busqueda() ? 'Sin coincidencias' : 'Aún no hay etiquetas'"
+          [mensaje]="busqueda() ? 'Prueba con otro nombre.' : 'Crea alérgenos como “Contiene gluten” o rasgos como “Vegetariana”.'" />
+      }
+    </section>
+  }
+
+  @switch (modal()) {
+    @case ('ingrediente') {
+      <app-panel-modal [titulo]="ingredienteSel() ? 'Editar ingrediente' : 'Nuevo ingrediente'" (cerrar)="cerrar()"
+        descripcion="Los quesos y salsas también aparecen como pasos de Arma tu pizza.">
+        <form id="form-ingrediente" class="crud-form" [formGroup]="formIngrediente" (ngSubmit)="guardarIngrediente()" novalidate>
+          @if (errorFormulario(); as error) {
+            <p class="crud-aviso" role="alert">{{ error }}</p>
+          }
+          <app-text-field label="Nombre" [required]="true" [maxlength]="80" placeholder="Ej. Mozzarella" formControlName="nombre" />
+          <app-select-field label="Tipo" [opciones]="opcionesTipo" [required]="true" formControlName="tipo" />
+          <div class="crud-grid-2">
+            <app-text-field label="Precio extra (S/)" type="number" inputmode="numeric" [min]="'0'" [required]="true" formControlName="precioExtra" />
+            <app-text-field label="Costo operativo (S/)" type="number" inputmode="numeric" [min]="'0'"
+              [hint]="ingredienteSel() ? 'Vacío conserva el costo actual' : 'Opcional, para calcular márgenes'" formControlName="costoOperativoFijo" />
+          </div>
+          <div class="crud-fila-switch">
+            <span>Disponible<small>Si se agota, deja de ofrecerse como adicional.</small></span>
+            <button type="button" class="crud-switch" role="switch" aria-label="Disponible" [attr.aria-checked]="formIngrediente.controls.disponible.value"
+              (click)="formIngrediente.controls.disponible.setValue(!formIngrediente.controls.disponible.value)"></button>
+          </div>
+        </form>
+        <div acciones>
+          <button type="button" class="crud-btn" (click)="cerrar()" [disabled]="guardando()">Cancelar</button>
+          <button type="submit" form="form-ingrediente" class="crud-btn crud-btn--primario" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando…' : ingredienteSel() ? 'Guardar cambios' : 'Crear ingrediente' }}
+          </button>
+        </div>
+      </app-panel-modal>
+    }
+    @case ('etiqueta') {
+      <app-panel-modal [titulo]="etiquetaSel() ? 'Editar etiqueta' : 'Nueva etiqueta'" (cerrar)="cerrar()"
+        descripcion="Las etiquetas se muestran en la ficha de cada producto.">
+        <form id="form-etiqueta" class="crud-form" [formGroup]="formEtiqueta" (ngSubmit)="guardarEtiqueta()" novalidate>
+          @if (errorFormulario(); as error) {
+            <p class="crud-aviso" role="alert">{{ error }}</p>
+          }
+          <p class="crud-subtitulo">Empieza con</p>
+          <div class="crud-seleccion">
+            <button type="button" (click)="usarPrefijo('Contiene')">Contiene… (alérgeno)</button>
+            <button type="button" (click)="usarPrefijo('Sin')">Sin… (libre de)</button>
+          </div>
+          <app-text-field label="Nombre" [required]="true" [maxlength]="60" placeholder="Ej. Contiene gluten" formControlName="nombre" />
+          <div class="crud-fila-switch">
+            <span>Usar como filtro del menú<small>Aparece como chip para filtrar productos.</small></span>
+            <button type="button" class="crud-switch" role="switch" aria-label="Usar como filtro" [attr.aria-checked]="formEtiqueta.controls.esFiltro.value"
+              (click)="formEtiqueta.controls.esFiltro.setValue(!formEtiqueta.controls.esFiltro.value)"></button>
+          </div>
+        </form>
+        <div acciones>
+          <button type="button" class="crud-btn" (click)="cerrar()" [disabled]="guardando()">Cancelar</button>
+          <button type="submit" form="form-etiqueta" class="crud-btn crud-btn--primario" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando…' : etiquetaSel() ? 'Guardar cambios' : 'Crear etiqueta' }}
+          </button>
+        </div>
+      </app-panel-modal>
+    }
+    @case ('eliminar-etiqueta') {
+      @if (etiquetaSel(); as e) {
+        <app-panel-modal titulo="¿Eliminar etiqueta?" (cerrar)="cerrar()"
+          [descripcion]="'“' + e.nombre + '” se quitará de todos los productos que la tengan.'">
+          <div acciones>
+            <button type="button" class="crud-btn" (click)="cerrar()" [disabled]="guardando()">Cancelar</button>
+            <button type="button" class="crud-btn crud-btn--peligro" (click)="eliminarEtiqueta()" [disabled]="guardando()">
+              {{ guardando() ? 'Eliminando…' : 'Eliminar' }}
+            </button>
+          </div>
+        </app-panel-modal>
+      }
+    }
+  }
+</div>

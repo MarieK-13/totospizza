@@ -16,6 +16,8 @@ public record PedidoResumenResponse(
         EstadoPedido estado,
         BigDecimal total,
         Integer cantidadItems,
-        Instant creadoEn
+        Instant creadoEn,
+        String nombreCliente,
+        String telefonoCliente
 ) {
 }

@@ -1,0 +1,143 @@
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use '../../../../styles/panel/paleta' as panel;
+
+:host {
+  position: relative;
+  display: inline-flex;
+}
+
+.campana {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid panel.$border-soft;
+  border-radius: 50%;
+  background-color: panel.$bg-card;
+  color: panel.$text-primary;
+  cursor: pointer;
+  @include transition((border-color, background-color));
+  @include focus-ring;
+
+  &:hover {
+    border-color: panel.$border-strong;
+  }
+
+  // En la cabecera pública va sin borde, como el carrito y la cuenta.
+  &--sitio {
+    border-color: transparent;
+    background-color: transparent;
+
+    &:hover {
+      border-color: transparent;
+      background-color: rgba(panel.$shadow-ink, 0.05);
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    display: grid;
+    place-items: center;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.1875rem;
+    border-radius: $radius-pill;
+    background: panel.$brand-red;
+    color: $color-blanco;
+    font-size: 0.625rem;
+    font-weight: $weight-bold;
+  }
+}
+
+.notif {
+  position: absolute;
+  top: calc(100% + #{$space-2});
+  right: 0;
+  z-index: $z-dropdown;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: 26rem;
+  overflow-y: auto;
+  border: 1px solid panel.$border-soft;
+  border-radius: $radius-lg;
+  background: panel.$bg-card;
+  box-shadow: 0 16px 40px -16px rgba(panel.$shadow-ink, 0.35);
+  text-align: left;
+
+  &__cabecera {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+    padding: $space-3 $space-4;
+    border-bottom: 1px solid panel.$border-soft;
+    background: panel.$bg-card;
+    color: panel.$text-primary;
+    font-size: 0.875rem;
+
+    span {
+      color: panel.$text-secondary;
+      font-size: 0.75rem;
+    }
+  }
+
+  &__todas {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: panel.$brand-red;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: $weight-semibold;
+    cursor: pointer;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    width: 100%;
+    padding: $space-3 $space-4;
+    border: 0;
+    border-bottom: 1px solid panel.$border-soft;
+    background: none;
+    color: panel.$text-primary;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    &.is-nueva {
+      background: panel.$bg-soft;
+      box-shadow: inset 3px 0 0 panel.$brand-red;
+    }
+  }
+
+  &__titulo {
+    font-size: 0.8125rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__mensaje {
+    color: panel.$text-secondary;
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+
+  &__hora {
+    color: panel.$text-muted;
+    font-size: 0.6875rem;
+  }
+
+  &__vacio {
+    margin: 0;
+    padding: $space-5 $space-4;
+    color: panel.$text-secondary;
+    font-size: 0.8125rem;
+    text-align: center;
+  }
+}

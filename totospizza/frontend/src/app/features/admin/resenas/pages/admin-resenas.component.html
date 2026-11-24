@@ -1,0 +1,84 @@
+<div class="crud" [attr.aria-busy]="cargando()">
+  <section class="crud-kpis">
+    <app-panel-kpi etiqueta="Reseñas" [valor]="total()" [icono]="Icons.MessageSquareQuote" tono="rojo" pie="de pedidos entregados" />
+    <app-panel-kpi etiqueta="Calificación promedio" [valor]="resenas().length ? (promedio() | number: '1.1-1') + ' ★' : '—'" [icono]="Icons.Star" tono="ambar"
+      [pie]="resenas().length < total() ? 'de las ' + resenas().length + ' más recientes' : 'de todas las reseñas'" />
+    <app-panel-kpi etiqueta="Destacadas" [valor]="destacadas()" [icono]="Icons.Star" tono="verde" pie="se muestran en el inicio" />
+    <app-panel-kpi etiqueta="Ocultas" [valor]="ocultas()" [icono]="Icons.EyeOff" tono="azul" [pie]="bajas() + ' con 1 o 2 estrellas'" />
+  </section>
+
+  <section class="crud-toolbar">
+    <div class="crud-segmento" role="group" aria-label="Filtrar reseñas">
+      <button type="button" [class.is-activo]="filtro() === 'todas'" [attr.aria-pressed]="filtro() === 'todas'" (click)="filtro.set('todas')">Todas</button>
+      <button type="button" [class.is-activo]="filtro() === 'destacadas'" [attr.aria-pressed]="filtro() === 'destacadas'" (click)="filtro.set('destacadas')">Destacadas</button>
+      <button type="button" [class.is-activo]="filtro() === 'ocultas'" [attr.aria-pressed]="filtro() === 'ocultas'" (click)="filtro.set('ocultas')">Ocultas</button>
+      <button type="button" [class.is-activo]="filtro() === 'bajas'" [attr.aria-pressed]="filtro() === 'bajas'" (click)="filtro.set('bajas')">1–2 ★</button>
+    </div>
+    <label class="crud-buscar">
+      <lucide-icon [img]="Icons.Search" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      <input type="search" placeholder="Buscar por cliente o comentario" aria-label="Buscar reseña" [value]="busqueda()" (input)="busqueda.set(valor($event))" />
+    </label>
+  </section>
+
+  @if (filtradas().length) {
+    <section class="resenas">
+      @for (r of filtradas(); track r.id) {
+        <article class="resena" [class.is-oculta]="!r.visible" [class.is-destacada]="r.destacada">
+          <header class="resena__cabecera">
+            <span class="resena__avatar" aria-hidden="true">{{ inicialesDe(r.autor) }}</span>
+            <div class="resena__autor">
+              <strong>{{ r.autor }}</strong>
+              <span>{{ fecha(r.creadoEn) }}</span>
+            </div>
+            <span class="resena__estrellas" [attr.aria-label]="r.calificacion + ' de 5 estrellas'">
+              @for (n of estrellas; track n) {
+                <span [class.is-llena]="n <= r.calificacion" aria-hidden="true">★</span>
+              }
+            </span>
+          </header>
+
+          <p class="resena__comentario">{{ r.comentario || 'Sin comentario, solo calificación.' }}</p>
+
+          @if (r.calificaciones.length) {
+            <div class="crud-chips">
+              @for (c of r.calificaciones; track c.productoId) {
+                <span class="crud-badge">{{ c.productoNombre }} · {{ c.estrellas }}★</span>
+              }
+            </div>
+          }
+
+          <footer class="resena__pie">
+            <div class="crud-chips">
+              @if (r.destacada) { <span class="crud-badge crud-badge--aviso">Destacada</span> }
+              @if (!r.visible) { <span class="crud-badge crud-badge--off">Oculta</span> }
+            </div>
+            <div class="crud-acciones">
+              <button type="button" class="crud-btn crud-btn--sm" [disabled]="procesando() === r.id" (click)="alternarDestacada(r)">
+                <lucide-icon [img]="Icons.Star" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                {{ r.destacada ? 'Quitar del inicio' : 'Destacar' }}
+              </button>
+              <button type="button" class="crud-btn crud-btn--sm" [class.crud-btn--peligro]="r.visible" [disabled]="procesando() === r.id" (click)="alternarVisible(r)">
+                <lucide-icon [img]="r.visible ? Icons.EyeOff : Icons.Eye" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                {{ r.visible ? 'Ocultar' : 'Mostrar' }}
+              </button>
+            </div>
+          </footer>
+        </article>
+      }
+    </section>
+    @if (hayMas()) {
+      <div class="crud-paginacion">
+        <span>Mostrando {{ resenas().length }} de {{ total() }}</span>
+        <button type="button" class="crud-btn crud-btn--sm" (click)="cargar()" [disabled]="cargandoMas()">
+          {{ cargandoMas() ? 'Cargando…' : 'Cargar más reseñas' }}
+        </button>
+      </div>
+    }
+  } @else {
+    <section class="crud-card">
+      <app-estado-vacio [cargando]="cargando()" [icono]="Icons.MessageSquareQuote"
+        [titulo]="resenas().length ? 'Sin reseñas con este filtro' : 'Aún no hay reseñas'"
+        [mensaje]="resenas().length ? 'Prueba con otro filtro o búsqueda.' : 'Los clientes pueden opinar cuando su pedido se entrega.'" />
+    </section>
+  }
+</div>

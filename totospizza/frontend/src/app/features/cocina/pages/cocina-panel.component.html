@@ -1,211 +1,167 @@
-<div class="staff-shell">
-  <div *ngIf="toastMensaje() as msg" class="toast-banner">{{ msg }}</div>
-
-  <!-- HEADER SUPERIOR -->
-  <header class="staff-topbar">
-    <div class="staff-topbar__left">
-      <div class="brand-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M12 2L2 19h20L12 2z" />
-          <circle cx="12" cy="13" r="1.4" />
-          <circle cx="9.5" cy="16" r="1" />
-          <circle cx="14.5" cy="16" r="1" />
-        </svg>
-        <div>
-          <strong>TOTO'S</strong>
-          <span>PIZZA</span>
-        </div>
-      </div>
-
-      <span class="staff-topbar__divider"></span>
-
-      <div class="staff-topbar__module">
-        <strong>PANEL DE COCINA</strong>
-        <span>Estación de preparación</span>
-      </div>
+<div class="op">
+  <section class="op-cabecera">
+    <div>
+      <span class="op-cabecera__eyebrow">
+        <span class="op-vivo" [class.is-caido]="sinConexion()" aria-hidden="true"></span>
+        {{ sinConexion() ? 'Sin conexión con el servidor' : textoActualizado() }}
+      </span>
+      <h2 class="op-cabecera__titulo">{{ saludo }}</h2>
+      <p class="op-cabecera__subtitulo">
+        Avanza cada pedido de izquierda a derecha.
+        @if (minutosObjetivo()) {
+          El objetivo es tenerlo listo en <strong>{{ minutosObjetivo() }} min</strong> desde que se pagó.
+        }
+      </p>
     </div>
 
-    <div class="staff-topbar__right">
-      <span class="shift-live">
-        <span class="shift-live__dot"></span>
-        Turno activo
-      </span>
+    <ul class="op-resumen" aria-label="Resumen del turno">
+      <li class="op-resumen__item tono-amarillo">
+        <lucide-icon [img]="Icons.ChefHat" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <strong>{{ enCocina() }}</strong>
+        <span>en cocina</span>
+      </li>
+      <li class="op-resumen__item tono-rojo" [class.is-cero]="!atrasados()">
+        <lucide-icon [img]="Icons.Timer" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <strong>{{ atrasados() }}</strong>
+        <span>{{ atrasados() === 1 ? 'atrasado' : 'atrasados' }}</span>
+      </li>
+      <li class="op-resumen__item tono-verde">
+        <lucide-icon [img]="Icons.PackageCheck" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <strong>{{ preparadosHoy() }}</strong>
+        <span>listos hoy</span>
+      </li>
+    </ul>
+  </section>
 
-      <div class="clock-block">
-        <strong>{{ horaReloj() }}</strong>
-        <span>{{ fechaActualTexto() }}</span>
-      </div>
-
-      <button type="button" class="btn-logout" (click)="cerrarSesion()">
-        Cerrar sesión
+  @if (sinConexion()) {
+    <div class="op-aviso" role="alert">
+      No pudimos actualizar el tablero. Se reintentará solo cada 15 segundos.
+      <button type="button" (click)="reintentar()">
+        <lucide-icon [img]="Icons.RefreshCw" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+        Reintentar ahora
       </button>
     </div>
-  </header>
+  }
 
-  <!-- HERO DE PÁGINA -->
-  <main class="staff-main">
-    <section class="page-hero">
-      <div>
-        <span class="page-hero__eyebrow">OPERACIÓN EN VIVO</span>
-        <h1 class="page-hero__title">Cada pedido, en su punto.</h1>
-        <p class="page-hero__subtitle">
-          Organiza la preparación y avanza cada pedido a la siguiente etapa.
-        </p>
-      </div>
+  @if (backendDesactualizado()) {
+    <div class="op-aviso" role="alert">
+      El servidor está corriendo una versión anterior del backend: los pedidos listos, “listos hoy” y el tiempo objetivo no llegan.
+      Detén el backend y vuelve a iniciarlo para cargar la versión nueva.
+    </div>
+  }
 
-      <div class="hero-counter">
-        <strong>{{ totalEnCocina() | number : '2.0-0' }}</strong>
-        <span>pedidos en cocina</span>
-      </div>
-    </section>
-
-    <!-- TABLERO KANBAN 3 COLUMNAS -->
-    <section class="kanban-grid">
-      <!-- COLUMNA 1: PENDIENTES -->
-      <div class="kanban-col">
-        <div class="kanban-col__head">
-          <div>
-            <h2>Pendientes</h2>
-            <span>Por orden de llegada</span>
+  <section class="op-tablero" [attr.aria-busy]="cargando()">
+    @for (col of columnas(); track col.etapa) {
+      <section class="op-columna" [class]="'op-columna tono-' + col.tono" [attr.aria-labelledby]="'col-' + col.etapa">
+        <header class="op-columna__cabecera">
+          <span class="op-columna__icono" aria-hidden="true">
+            <lucide-icon [img]="iconoDe(col.etapa)" [size]="18" [strokeWidth]="1.8"></lucide-icon>
+          </span>
+          <div class="op-columna__titulos">
+            <h2 [id]="'col-' + col.etapa">{{ col.titulo }}</h2>
+            <span>{{ col.ayuda }}</span>
           </div>
-          <span class="col-count col-count--red">{{ pendientes().length }}</span>
+          <span class="op-columna__conteo" [attr.aria-label]="col.tickets.length + ' pedidos'">{{ col.tickets.length }}</span>
+        </header>
+
+        <div class="op-columna__tickets">
+          @for (t of col.tickets; track t.id) {
+            <article class="op-ticket" [class]="'op-ticket ritmo-' + t.ritmo" [class.is-nuevo]="t.esNuevo" [class.is-ocupado]="ocupado() === t.id">
+              <header class="op-ticket__cabecera">
+                <div>
+                  <strong class="op-ticket__numero">#{{ t.numero }}</strong>
+                  <span class="op-ticket__sub">Pagado {{ t.horaIngreso }} · {{ t.totalUnidades }} {{ t.totalUnidades === 1 ? 'unidad' : 'unidades' }}</span>
+                </div>
+                <span class="op-entrega" [class.op-entrega--delivery]="t.tipoEntrega === 'DELIVERY'">
+                  <lucide-icon [img]="t.tipoEntrega === 'DELIVERY' ? Icons.Bike : Icons.Store" [size]="13" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                  {{ t.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo' }}
+                </span>
+              </header>
+
+              @if (col.etapa === 'mostrador') {
+                <p class="op-estado">
+                  <lucide-icon [img]="Icons.PackageCheck" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                  Listo hace {{ t.minutosEnEtapa }} min
+                </p>
+              } @else {
+                <div class="op-tiempo" [attr.aria-label]="'Lleva ' + t.minutosTotales + ' de ' + minutosObjetivo() + ' minutos'">
+                  <div class="op-tiempo__fila">
+                    <span class="op-tiempo__total">
+                      <lucide-icon [img]="Icons.Clock" [size]="14" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      {{ t.minutosTotales }} min
+                      @if (minutosObjetivo()) { <small>/ {{ minutosObjetivo() }}</small> }
+                    </span>
+                    @if (col.etapa === 'horno') {
+                      <span class="op-tiempo__etapa">
+                        <lucide-icon [img]="Icons.Flame" [size]="13" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                        {{ t.minutosEnEtapa }} min en horno
+                      </span>
+                    } @else if (t.ritmo === 'atrasado') {
+                      <span class="op-tiempo__etapa op-tiempo__etapa--alerta">Atrasado</span>
+                    }
+                  </div>
+                  @if (minutosObjetivo()) {
+                    <div class="op-tiempo__barra" aria-hidden="true">
+                      <span class="op-tiempo__relleno" [style.width.%]="t.progreso"></span>
+                    </div>
+                  }
+                </div>
+              }
+
+              <ul class="op-lineas">
+                @for (l of t.lineas; track $index) {
+                  <li class="op-linea">
+                    <span class="op-linea__cantidad">{{ l.cantidad }}×</span>
+                    <div class="op-linea__texto">
+                      <strong>{{ l.nombre }}</strong>
+                      @if (l.descripcion) {
+                        <span class="op-linea__detalle">{{ l.descripcion }}</span>
+                      }
+                      @if (l.adicionales.length) {
+                        <span class="op-linea__extras">
+                          @for (a of l.adicionales; track $index) {
+                            <span class="op-extra">+ {{ a }}</span>
+                          }
+                        </span>
+                      }
+                      @if (l.notas) {
+                        <span class="op-linea__nota">“{{ l.notas }}”</span>
+                      }
+                    </div>
+                  </li>
+                }
+              </ul>
+
+              @if (t.instrucciones) {
+                <p class="op-instrucciones">
+                  <lucide-icon [img]="Icons.MessageSquareWarning" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                  <span>{{ t.instrucciones }}</span>
+                </p>
+              }
+
+              @if (accionDe(col.etapa); as accion) {
+                <footer class="op-ticket__acciones">
+                  <button type="button" class="op-btn" [class]="'op-btn op-btn--' + accion.tono"
+                    [disabled]="ocupado() !== null" (click)="avanzar(t, col.etapa)">
+                    <lucide-icon [img]="accion.icono" [size]="17" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                    {{ ocupado() === t.id ? 'Guardando…' : accion.texto }}
+                  </button>
+                  @if (col.etapa === 'nuevos') {
+                    <button type="button" class="op-btn-icono" [disabled]="ocupado() !== null" (click)="directoAlHorno(t)" title="Pasar directo al horno">
+                      <lucide-icon [img]="Icons.Flame" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                      <span class="sr-only">Directo al horno</span>
+                    </button>
+                  }
+                </footer>
+              }
+            </article>
+          } @empty {
+            <app-estado-vacio [cargando]="cargando()" [compacto]="true" [icono]="iconoDe(col.etapa)"
+              [titulo]="col.etapa === 'nuevos' ? 'Sin pedidos nuevos' : col.etapa === 'preparando' ? 'Nada en preparación' : col.etapa === 'horno' ? 'El horno está libre' : 'Mostrador vacío'"
+              [mensaje]="col.etapa === 'nuevos' ? 'Los pedidos pagados aparecen aquí solos.' : col.etapa === 'mostrador' ? 'Lo que marques como listo espera aquí al despachador.' : ''" />
+          }
         </div>
-
-        <div class="kanban-col__cards">
-          <article class="ticket-card" *ngFor="let p of pendientes()">
-            <div class="ticket-card__top">
-              <strong class="ticket-card__code">{{ p.codigo }}</strong>
-              <span
-                class="delivery-tag"
-                [class.delivery-tag--delivery]="p.tipoEntrega === 'DELIVERY'"
-                [class.delivery-tag--recojo]="p.tipoEntrega === 'RECOJO'"
-              >
-                {{ p.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo' }}
-              </span>
-            </div>
-
-            <div class="ticket-card__meta">
-              <span>Ingreso {{ p.horaIngreso }}</span>
-              <span class="ticket-card__wait">Espera: {{ p.minutosEspera }} min</span>
-            </div>
-
-            <ul class="ticket-card__items">
-              <li *ngFor="let item of p.productos">
-                <span class="bullet-dot"></span>
-                <span>{{ item.cantidad }} × {{ item.nombre }}</span>
-              </li>
-            </ul>
-
-            <div class="ticket-card__note" *ngIf="p.notaEspecial">
-              {{ p.notaEspecial }}
-            </div>
-
-            <button type="button" class="btn-stage-red" (click)="meterAlHorno(p)">
-              🔥 Meter al horno
-            </button>
-          </article>
-        </div>
-      </div>
-
-      <!-- COLUMNA 2: EN EL HORNO -->
-      <div class="kanban-col">
-        <div class="kanban-col__head">
-          <div>
-            <h2>En el horno</h2>
-            <span>Tiempo objetivo · 10 min</span>
-          </div>
-          <span class="col-count">{{ enHorno().length }}</span>
-        </div>
-
-        <div class="kanban-col__cards">
-          <article class="ticket-card" *ngFor="let p of enHorno()">
-            <div class="ticket-card__top">
-              <strong class="ticket-card__code">{{ p.codigo }}</strong>
-              <span
-                class="delivery-tag"
-                [class.delivery-tag--delivery]="p.tipoEntrega === 'DELIVERY'"
-                [class.delivery-tag--recojo]="p.tipoEntrega === 'RECOJO'"
-              >
-                {{ p.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo' }}
-              </span>
-            </div>
-
-            <div class="ticket-card__meta">
-              <span>Ingreso {{ p.horaIngreso }}</span>
-              <span>{{ p.minutosEnHorno }} de {{ p.tiempoObjetivoMin }} min</span>
-            </div>
-
-            <ul class="ticket-card__items">
-              <li *ngFor="let item of p.productos">
-                <span class="bullet-dot"></span>
-                <span>{{ item.cantidad }} × {{ item.nombre }}</span>
-              </li>
-            </ul>
-
-            <div class="oven-progress">
-              <div
-                class="oven-progress__fill"
-                [style.width.%]="calcularProgresoHorno(p)"
-              ></div>
-            </div>
-
-            <button type="button" class="btn-stage-red" (click)="marcarComoListo(p)">
-              ✓ Listo
-            </button>
-          </article>
-        </div>
-      </div>
-
-      <!-- COLUMNA 3: LISTAS -->
-      <div class="kanban-col">
-        <div class="kanban-col__head">
-          <div>
-            <h2>Listas</h2>
-            <span>Preparadas para mostrador</span>
-          </div>
-          <span class="col-count">{{ listas().length }}</span>
-        </div>
-
-        <div class="kanban-col__cards">
-          <article class="ticket-card" *ngFor="let p of listas()">
-            <div class="ticket-card__top">
-              <strong class="ticket-card__code">{{ p.codigo }}</strong>
-              <span
-                class="delivery-tag"
-                [class.delivery-tag--delivery]="p.tipoEntrega === 'DELIVERY'"
-                [class.delivery-tag--recojo]="p.tipoEntrega === 'RECOJO'"
-              >
-                {{ p.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo' }}
-              </span>
-            </div>
-
-            <div class="ticket-card__meta">
-              <span>Finalizado {{ p.horaFinalizado }}</span>
-              <span>hace {{ p.minutosDesdeListo ?? 0 }} min</span>
-            </div>
-
-            <ul class="ticket-card__items">
-              <li *ngFor="let item of p.productos">
-                <span class="bullet-dot"></span>
-                <span>{{ item.cantidad }} × {{ item.nombre }}</span>
-              </li>
-            </ul>
-
-            <div class="dispatch-waiting-pill">
-              📦 Esperando despacho
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <p class="staff-hint">
-      ⓘ Revisa las indicaciones especiales antes de preparar. Mostrador gestiona el despacho de los pedidos listos.
-    </p>
-  </main>
-
-  <footer class="staff-footer">
-    <span>Cocina · {{ totalEnCocina() }} pedidos en producción</span>
-    <span>Toto's Pizza · Sede Miraflores</span>
-  </footer>
+      </section>
+    }
+  </section>
 </div>

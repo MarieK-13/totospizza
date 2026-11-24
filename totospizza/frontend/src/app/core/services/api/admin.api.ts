@@ -6,14 +6,20 @@ import type {
   CambiarDisponibilidadRequest,
   CambiarEstadoPedidoRequest,
   CanalInventario,
+  CarpetaImagen,
+  CategoriaRequest,
+  CategoriaResponse,
   ConteoResponse,
   EmpleadoRequest,
   EmpleadoResponse,
   EstadoEmpleado,
+  EtiquetaRequest,
+  EtiquetaResponse,
   FiltroEmpleados,
   FiltroFinanzas,
   FiltroPedidos,
   FinanzasResponse,
+  ImagenResponse,
   IngredienteRequest,
   IngredienteResponse,
   InventarioIngredienteResponse,
@@ -34,8 +40,8 @@ import type {
   ProductoDetalleResponse,
   ProductoRequest,
   ProductoResumenResponse,
+  PromocionAdminResponse,
   PromocionRequest,
-  PromocionResponse,
   ReembolsoRequest,
   RegistrarPagoMotorizadoRequest,
   ResenaResponse,
@@ -43,6 +49,8 @@ import type {
   ResumenEmpleadosResponse,
   SucursalRequest,
   SucursalResponse,
+  TamanoPizzaRequest,
+  TamanoPizzaResponse,
   TipoMasaRequest,
   TipoMasaResponse,
   TurnoResponse,
@@ -82,6 +90,11 @@ export class AdminApi {
     return this.api.post(`/admin/finanzas/pagos-motorizado/${id}/pagar`);
   }
 
+  /** Solo liquidaciones pendientes; una pagada ya quedó en Finanzas. */
+  eliminarLiquidacion(id: number): Observable<void> {
+    return this.api.delete(`/admin/finanzas/pagos-motorizado/${id}`);
+  }
+
   conciliarPagos(): Observable<ConteoResponse> {
     return this.api.post('/admin/finanzas/pagos/conciliar');
   }
@@ -99,7 +112,7 @@ export class AdminApi {
     return this.api.patch(`/admin/pedidos/${id}/estado`, cuerpo);
   }
 
-  cancelarPedido(id: number, motivo?: string): Observable<PedidoResponse> {
+  cancelarPedido(id: number, motivo: string): Observable<PedidoResponse> {
     return this.api.post(`/admin/pedidos/${id}/cancelar`, { motivo });
   }
 
@@ -126,6 +139,68 @@ export class AdminApi {
 
   disponibilidadProducto(id: number, cuerpo: CambiarDisponibilidadRequest): Observable<ProductoDetalleResponse> {
     return this.api.patch(`/admin/productos/${id}/disponibilidad`, cuerpo);
+  }
+
+  // ---- Categorías ----
+  categorias(): Observable<readonly CategoriaResponse[]> {
+    return this.api.get('/admin/categorias');
+  }
+
+  crearCategoria(cuerpo: CategoriaRequest): Observable<CategoriaResponse> {
+    return this.api.post('/admin/categorias', cuerpo);
+  }
+
+  actualizarCategoria(id: number, cuerpo: CategoriaRequest): Observable<CategoriaResponse> {
+    return this.api.put(`/admin/categorias/${id}`, cuerpo);
+  }
+
+  activarCategoria(id: number, activa: boolean): Observable<CategoriaResponse> {
+    return this.api.patch(`/admin/categorias/${id}/activa`, { disponible: activa });
+  }
+
+  eliminarCategoria(id: number): Observable<void> {
+    return this.api.delete(`/admin/categorias/${id}`);
+  }
+
+  // ---- Etiquetas (alérgenos y rasgos) ----
+  etiquetas(): Observable<readonly EtiquetaResponse[]> {
+    return this.api.get('/admin/etiquetas');
+  }
+
+  crearEtiqueta(cuerpo: EtiquetaRequest): Observable<EtiquetaResponse> {
+    return this.api.post('/admin/etiquetas', cuerpo);
+  }
+
+  actualizarEtiqueta(id: number, cuerpo: EtiquetaRequest): Observable<EtiquetaResponse> {
+    return this.api.put(`/admin/etiquetas/${id}`, cuerpo);
+  }
+
+  eliminarEtiqueta(id: number): Observable<void> {
+    return this.api.delete(`/admin/etiquetas/${id}`);
+  }
+
+  // ---- Tamaños de pizza ----
+  tamanos(): Observable<readonly TamanoPizzaResponse[]> {
+    return this.api.get('/admin/tamanos');
+  }
+
+  crearTamano(cuerpo: TamanoPizzaRequest): Observable<TamanoPizzaResponse> {
+    return this.api.post('/admin/tamanos', cuerpo);
+  }
+
+  actualizarTamano(id: number, cuerpo: TamanoPizzaRequest): Observable<TamanoPizzaResponse> {
+    return this.api.put(`/admin/tamanos/${id}`, cuerpo);
+  }
+
+  activarTamano(id: number, activo: boolean): Observable<TamanoPizzaResponse> {
+    return this.api.patch(`/admin/tamanos/${id}/activo`, { disponible: activo });
+  }
+
+  // ---- Imágenes ----
+  subirImagen(archivo: File, carpeta: CarpetaImagen): Observable<ImagenResponse> {
+    const cuerpo = new FormData();
+    cuerpo.append('archivo', archivo);
+    return this.api.post('/admin/imagenes', cuerpo, { params: { carpeta } });
   }
 
   // ---- Ingredientes, tipos de masa ----
@@ -162,23 +237,23 @@ export class AdminApi {
   }
 
   // ---- Promociones ----
-  promociones(): Observable<readonly PromocionResponse[]> {
+  promociones(): Observable<readonly PromocionAdminResponse[]> {
     return this.api.get('/admin/promociones');
   }
 
-  promocionesEnPerdida(): Observable<readonly PromocionResponse[]> {
+  promocionesEnPerdida(): Observable<readonly PromocionAdminResponse[]> {
     return this.api.get('/admin/promociones/en-perdida');
   }
 
-  crearPromocion(cuerpo: PromocionRequest): Observable<PromocionResponse> {
+  crearPromocion(cuerpo: PromocionRequest): Observable<PromocionAdminResponse> {
     return this.api.post('/admin/promociones', cuerpo);
   }
 
-  actualizarPromocion(id: number, cuerpo: PromocionRequest): Observable<PromocionResponse> {
+  actualizarPromocion(id: number, cuerpo: PromocionRequest): Observable<PromocionAdminResponse> {
     return this.api.put(`/admin/promociones/${id}`, cuerpo);
   }
 
-  activarPromocion(id: number, activa: boolean): Observable<PromocionResponse> {
+  activarPromocion(id: number, activa: boolean): Observable<PromocionAdminResponse> {
     return this.api.patch(`/admin/promociones/${id}/activa`, { disponible: activa });
   }
 
@@ -230,6 +305,11 @@ export class AdminApi {
 
   turnos(id: number, desde: string, hasta: string): Observable<readonly TurnoResponse[]> {
     return this.api.get(`/admin/empleados/${id}/turnos`, { params: { desde, hasta } });
+  }
+
+  /** Turno al que el empleado no asistió: deja de contar para el pago base. */
+  cancelarTurno(empleadoId: number, turnoId: number): Observable<TurnoResponse> {
+    return this.api.post(`/admin/empleados/${empleadoId}/turnos/${turnoId}/cancelar`);
   }
 
   // ---- Sucursales ----

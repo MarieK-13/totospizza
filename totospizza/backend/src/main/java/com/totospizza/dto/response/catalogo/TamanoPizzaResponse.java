@@ -11,6 +11,8 @@ public record TamanoPizzaResponse(
         Integer diametroCm,
         Integer personasMin,
         Integer personasMax,
-        BigDecimal precioBase
+        BigDecimal precioBase,
+        Integer orden,
+        boolean activo
 ) {
 }

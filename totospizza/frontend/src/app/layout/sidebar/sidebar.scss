@@ -1,8 +1,6 @@
 @use '../../../styles/tokens/variables' as *;
 @use '../../../styles/mixins' as *;
-
-$sidebar-width: 16rem;
-$sidebar-line: rgba($color-crema-masa, 0.12);
+@use '../../../styles/panel/paleta' as panel;
 
 :host {
   display: contents;
@@ -12,11 +10,10 @@ $sidebar-line: rgba($color-crema-masa, 0.12);
   position: fixed;
   inset: 0;
   z-index: $z-backdrop;
-  background-color: $overlay-scrim;
-  backdrop-filter: blur($backdrop-blur);
+  background: panel.$scrim;
   opacity: 0;
-  pointer-events: none;
-  @include transition((opacity), $duration-base);
+  visibility: hidden;
+  @include transition((opacity, visibility));
 
   @include up(lg) {
     display: none;
@@ -25,7 +22,7 @@ $sidebar-line: rgba($color-crema-masa, 0.12);
 
 :host(.is-open) .scrim {
   opacity: 1;
-  pointer-events: auto;
+  visibility: visible;
 }
 
 .sidebar {
@@ -34,159 +31,224 @@ $sidebar-line: rgba($color-crema-masa, 0.12);
   z-index: $z-modal;
   display: flex;
   flex-direction: column;
-  width: $sidebar-width;
-  background-color: $color-cafe-tostado;
-  color: rgba($color-crema-masa, 0.78);
+  width: 15rem;
+  padding: $space-6 $space-4;
+  overflow-y: auto;
+  background-color: panel.$bg-sidebar;
+  color: panel.$text-on-dark;
   transform: translateX(-100%);
-  @include transition((transform), $duration-base, $ease-out);
+  @include transition((transform));
 
   @include up(lg) {
     transform: none;
-    z-index: auto;
-  }
-
-  &__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 4rem;
-    padding-inline: $space-5;
-    border-bottom: $border-width solid $sidebar-line;
   }
 
   &__brand {
-    border-radius: $radius-sm;
-    color: $color-text-inverse;
-    @include focus-ring($color-brand-accent);
-  }
-
-  &__brand-name {
-    font-family: $font-titulos;
-    font-size: 1.5rem;
-    line-height: 1.875rem;
-  }
-
-  &__close,
-  &__logout {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    justify-content: center;
-    width: $control-height-sm + 0.5rem;
-    height: $control-height-sm + 0.5rem;
-    padding: 0;
-    border: 0;
-    border-radius: $radius-sm;
-    background: none;
-    color: inherit;
-    cursor: pointer;
-    @include transition((background-color, color));
-    @include focus-ring($color-brand-accent);
+    justify-content: space-between;
+    padding: 0 $space-2 $space-7;
+  }
 
-    &:hover {
-      background-color: rgba($color-crema-masa, 0.1);
-      color: $color-text-inverse;
+  &__brand-link {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    color: inherit;
+    text-decoration: none;
+    @include focus-ring;
+  }
+
+  // Logo oficial sobre una placa crema: el texto "PIZZA" del logo es oscuro y no se leería sobre el menú.
+  &__logo-badge {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0.25rem;
+    border-radius: $radius-md;
+    background: $color-crema-masa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
   }
 
+  &__brand-title {
+    color: $color-blanco;
+    font-family: $font-titulos;
+    font-size: 1.0625rem;
+    letter-spacing: 0.02em;
+  }
+
   &__close {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: panel.$text-on-dark-muted;
+    cursor: pointer;
+    @include focus-ring;
+
     @include up(lg) {
       display: none;
     }
   }
 
-  &__nav {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: $space-1;
-    padding: $space-4 $space-3;
-    overflow-y: auto;
-  }
-
   &__section {
-    margin: $space-4 0 $space-1 $space-3;
-    color: rgba($color-crema-masa, 0.45);
+    margin: $space-4 0 $space-1;
+    padding-inline: $space-3;
+    color: panel.$text-on-dark-muted;
     font-size: 0.6875rem;
     font-weight: $weight-semibold;
-    letter-spacing: 0.12em;
-    line-height: 1rem;
-    text-transform: uppercase;
-
-    &:first-child {
-      margin-top: 0;
-    }
+    letter-spacing: 0.04em;
   }
 
-  &__link {
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding-bottom: $space-4;
+  }
+
+  &__nav-item {
     position: relative;
     display: flex;
     align-items: center;
     gap: $space-3;
-    height: $control-height-md;
-    padding-inline: $space-3;
-    border-radius: $radius-sm;
+    padding: 0.625rem 0.875rem;
+    border-radius: $radius-md;
+    color: panel.$text-on-dark-muted;
     font-size: 0.875rem;
-    font-weight: $weight-semibold;
+    font-weight: $weight-medium;
+    text-decoration: none;
     @include transition((background-color, color));
-    @include focus-ring($color-brand-accent);
+    @include focus-ring;
 
     &:hover {
-      background-color: rgba($color-crema-masa, 0.08);
-      color: $color-text-inverse;
+      background: rgba($color-blanco, 0.06);
+      color: $color-blanco;
     }
 
     &.is-active {
-      background-color: rgba($color-crema-masa, 0.12);
-      color: $color-text-inverse;
-
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0.625rem auto 0.625rem -0.75rem;
-        width: 3px;
-        border-radius: $radius-pill;
-        background-color: $color-brand-accent;
-      }
+      background-color: panel.$bg-soft;
+      color: panel.$brand-red;
+      font-weight: $weight-semibold;
     }
+  }
+
+  &__icon {
+    flex: none;
+  }
+
+  &__active-pill {
+    position: absolute;
+    right: 0.625rem;
+    display: none;
+    width: 3px;
+    height: 1.125rem;
+    border-radius: $radius-pill;
+    background-color: panel.$brand-red;
+  }
+
+  &__nav-item.is-active &__active-pill {
+    display: block;
+  }
+
+  &__session {
+    margin-top: auto;
+    padding: $space-4;
+    border: 1px solid rgba($color-blanco, 0.06);
+    border-radius: $radius-lg;
+    background-color: panel.$bg-sidebar-card;
+  }
+
+  &__session-status {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    margin: 0 0 $space-3;
+    color: panel.$green-live;
+    font-size: 0.6875rem;
+    font-weight: $weight-bold;
+    letter-spacing: 0.06em;
   }
 
   &__user {
     display: flex;
     align-items: center;
     gap: $space-3;
-    padding: $space-4 $space-5;
-    border-top: $border-width solid $sidebar-line;
   }
 
   &__avatar {
-    display: inline-flex;
+    display: grid;
     flex: none;
-    align-items: center;
-    justify-content: center;
+    place-items: center;
     width: 2.25rem;
     height: 2.25rem;
-    border-radius: $radius-pill;
-    background-color: $color-brand-accent;
-    color: $color-cafe-tostado;
-    font-family: $font-datos;
+    border-radius: 50%;
+    background-color: panel.$red-bg;
+    color: panel.$brand-red;
     font-size: 0.8125rem;
-    font-weight: $weight-semibold;
+    font-weight: $weight-bold;
   }
 
   &__user-text {
     display: flex;
-    flex: 1;
     flex-direction: column;
     min-width: 0;
-    font-size: 0.8125rem;
-    line-height: 1.125rem;
+    line-height: 1.3;
 
     strong {
       overflow: hidden;
-      color: $color-text-inverse;
+      color: $color-blanco;
+      font-size: 0.875rem;
       font-weight: $weight-semibold;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    span {
+      color: panel.$text-on-dark-muted;
+      font-size: 0.75rem;
+    }
+  }
+
+  &__inicio {
+    margin-top: $space-3;
+    text-decoration: none;
+
+    & + .sidebar__logout {
+      margin-top: 0;
+    }
+  }
+
+  &__logout {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    margin-top: $space-3;
+    padding: 0.625rem 0.875rem;
+    border: 0;
+    border-radius: $radius-md;
+    background: none;
+    color: panel.$text-on-dark-muted;
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    @include transition((color, background-color));
+    @include focus-ring;
+
+    &:hover {
+      background: rgba($color-blanco, 0.06);
+      color: $color-blanco;
     }
   }
 }
@@ -195,9 +257,10 @@ $sidebar-line: rgba($color-crema-masa, 0.12);
   transform: none;
 }
 
-@include reduced-motion {
-  .sidebar,
-  .scrim {
-    transition: none;
-  }
+.status-dot {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: 50%;
+  background-color: panel.$green-live;
+  box-shadow: 0 0 0 3px rgba(panel.$green-live, 0.2);
 }

@@ -78,8 +78,8 @@ export class ClienteApi {
     return this.api.put('/cliente/perfil', cuerpo);
   }
 
-  direcciones(): Observable<readonly DireccionClienteResponse[]> {
-    return this.api.get('/cliente/direcciones');
+  direcciones(opciones?: OpcionesPeticion): Observable<readonly DireccionClienteResponse[]> {
+    return this.api.get('/cliente/direcciones', opciones);
   }
 
   agregarDireccion(cuerpo: DireccionClienteRequest): Observable<DireccionClienteResponse> {

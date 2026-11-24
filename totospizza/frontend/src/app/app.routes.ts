@@ -142,86 +142,138 @@ export const routes: Routes = [
       ),
   },
 
-  // Panel de Administración (Rol: ADMINISTRADOR)
+  // Panel del administrador: layout con menú lateral, una sección por ruta
   {
     path: 'admin',
+    canActivate: [roleGuard('ADMINISTRADOR')],
+    loadComponent: () => import('./layout/dashboard-layout/dashboard-layout').then((m) => m.DashboardLayout),
     children: [
+      { path: '', redirectTo: 'resumen', pathMatch: 'full' },
       {
         path: 'resumen',
         title: "Resumen | Administración - Toto's Pizza",
+        data: { titulo: 'Resumen', subtitulo: 'Visión general del negocio' },
         loadComponent: () =>
-          import('./features/admin/resumen/pages/admin-resumen.component').then(
-            (m) => m.AdminResumenComponent
-          ),
+          import('./features/admin/resumen/pages/admin-resumen.component').then((m) => m.AdminResumenComponent),
       },
       {
         path: 'pedidos',
         title: "Pedidos | Administración - Toto's Pizza",
+        data: { titulo: 'Pedidos', subtitulo: 'Gestiona pedidos, pagos y entregas en tiempo real' },
         loadComponent: () =>
-          import('./features/admin/pedidos/pages/admin-pedidos.component').then(
-            (m) => m.AdminPedidosComponent
-          ),
+          import('./features/admin/pedidos/pages/admin-pedidos.component').then((m) => m.AdminPedidosComponent),
       },
       {
         path: 'empleados',
         title: "Empleados | Administración - Toto's Pizza",
+        data: { titulo: 'Empleados', subtitulo: 'Equipo, turnos y disponibilidad de la sede' },
         loadComponent: () =>
-          import('./features/admin/empleados/pages/admin-empleados.component').then(
-            (m) => m.AdminEmpleadosComponent
-          ),
+          import('./features/admin/empleados/pages/admin-empleados.component').then((m) => m.AdminEmpleadosComponent),
+      },
+      {
+        path: 'inventario',
+        title: "Inventario | Administración - Toto's Pizza",
+        data: { titulo: 'Inventario', subtitulo: 'Stock por sede y canal, incluido el stock web' },
+        loadComponent: () =>
+          import('./features/admin/inventario/pages/admin-inventario.component').then((m) => m.AdminInventarioComponent),
+      },
+      {
+        path: 'productos',
+        title: "Productos | Administración - Toto's Pizza",
+        data: { titulo: 'Productos', subtitulo: 'Carta, precios por tamaño, ingredientes y alérgenos' },
+        loadComponent: () =>
+          import('./features/admin/productos/pages/admin-productos.component').then((m) => m.AdminProductosComponent),
+      },
+      {
+        path: 'categorias',
+        title: "Categorías | Administración - Toto's Pizza",
+        data: { titulo: 'Categorías', subtitulo: 'Secciones del menú y su orden' },
+        loadComponent: () =>
+          import('./features/admin/categorias/pages/admin-categorias.component').then((m) => m.AdminCategoriasComponent),
+      },
+      {
+        path: 'ingredientes',
+        title: "Ingredientes y alérgenos | Administración - Toto's Pizza",
+        data: { titulo: 'Ingredientes y alérgenos', subtitulo: 'Insumos, adicionales y etiquetas del menú' },
+        loadComponent: () =>
+          import('./features/admin/ingredientes/pages/admin-ingredientes.component').then((m) => m.AdminIngredientesComponent),
+      },
+      {
+        path: 'masas',
+        title: "Masas y tamaños | Administración - Toto's Pizza",
+        data: { titulo: 'Masas y tamaños', subtitulo: 'Tipos de masa con recargo y tamaños de pizza' },
+        loadComponent: () =>
+          import('./features/admin/masas/pages/admin-masas.component').then((m) => m.AdminMasasComponent),
+      },
+      {
+        path: 'promociones',
+        title: "Promociones | Administración - Toto's Pizza",
+        data: { titulo: 'Promociones', subtitulo: 'Combos, descuentos y ofertas por sobreproducción' },
+        loadComponent: () =>
+          import('./features/admin/promociones/pages/admin-promociones.component').then((m) => m.AdminPromocionesComponent),
+      },
+      {
+        path: 'resenas',
+        title: "Reseñas | Administración - Toto's Pizza",
+        data: { titulo: 'Reseñas', subtitulo: 'Opiniones de clientes: destaca o esconde' },
+        loadComponent: () =>
+          import('./features/admin/resenas/pages/admin-resenas.component').then((m) => m.AdminResenasComponent),
+      },
+      {
+        path: 'sucursales',
+        title: "Sucursales | Administración - Toto's Pizza",
+        data: { titulo: 'Sucursales', subtitulo: 'Locales, horarios y zonas de reparto' },
+        loadComponent: () =>
+          import('./features/admin/sucursales/pages/admin-sucursales.component').then((m) => m.AdminSucursalesComponent),
       },
       {
         path: 'finanzas',
         title: "Finanzas | Administración - Toto's Pizza",
+        data: { titulo: 'Finanzas', subtitulo: 'Ingresos, gastos y rentabilidad del negocio' },
         loadComponent: () =>
-          import('./features/admin/finanzas/pages/admin-finanzas.component').then(
-            (m) => m.AdminFinanzasComponent
-          ),
+          import('./features/admin/finanzas/pages/admin-finanzas.component').then((m) => m.AdminFinanzasComponent),
       },
       {
         path: 'configuracion',
         title: "Configuración | Administración - Toto's Pizza",
+        data: { titulo: 'Configuración', subtitulo: "Personaliza la operación de Toto's Pizza" },
         loadComponent: () =>
           import('./features/admin/configuracion/pages/admin-configuracion.component').then(
-            (m) => m.AdminConfiguracionComponent
+            (m) => m.AdminConfiguracionComponent,
           ),
-      },
-      {
-        path: '',
-        redirectTo: 'resumen',
-        pathMatch: 'full',
       },
     ],
   },
 
-  // Panel de Cocina (Rol: PIZZERO)
+  // Pantallas operativas: el mismo layout del panel (menú lateral + barra superior); cada una exige su rol
   {
-    path: 'cocina',
-    title: "Panel de Cocina | Toto's Pizza",
-    loadComponent: () =>
-      import('./features/cocina/pages/cocina-panel.component').then(
-        (m) => m.CocinaPanelComponent
-      ),
-  },
-
-  // Panel de Mostrador (Rol: DESPACHADOR)
-  {
-    path: 'mostrador',
-    title: "Mostrador | Toto's Pizza",
-    loadComponent: () =>
-      import('./features/despacho/pages/mostrador-panel.component').then(
-        (m) => m.MostradorPanelComponent
-      ),
-  },
-
-  // Panel de Reparto (Rol: MOTORIZADO)
-  {
-    path: 'reparto',
-    title: "Mis Entregas | Toto's Pizza",
-    loadComponent: () =>
-      import('./features/reparto/pages/reparto-panel.component').then(
-        (m) => m.RepartoPanelComponent
-      ),
+    path: '',
+    loadComponent: () => import('./layout/dashboard-layout/dashboard-layout').then((m) => m.DashboardLayout),
+    children: [
+      {
+        path: 'cocina',
+        canActivate: [roleGuard('PIZZERO')],
+        title: "Cocina | Toto's Pizza",
+        data: { titulo: 'Cocina', subtitulo: 'Tablero de preparación en vivo' },
+        loadComponent: () => import('./features/cocina/pages/cocina-panel.component').then((m) => m.CocinaPanelComponent),
+      },
+      {
+        path: 'despacho',
+        canActivate: [roleGuard('DESPACHADOR')],
+        title: "Mostrador | Toto's Pizza",
+        data: { titulo: 'Mostrador', subtitulo: 'Despacho y recojo' },
+        loadComponent: () =>
+          import('./features/despacho/pages/mostrador-panel.component').then((m) => m.MostradorPanelComponent),
+      },
+      { path: 'mostrador', redirectTo: 'despacho', pathMatch: 'full' },
+      {
+        path: 'reparto',
+        canActivate: [roleGuard('MOTORIZADO')],
+        title: "Mis entregas | Toto's Pizza",
+        data: { titulo: 'Mis entregas', subtitulo: 'Reparto a domicilio' },
+        loadComponent: () => import('./features/reparto/pages/reparto-panel.component').then((m) => m.RepartoPanelComponent),
+      },
+    ],
   },
 
   { path: '**', redirectTo: '' },

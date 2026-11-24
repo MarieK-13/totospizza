@@ -2,7 +2,7 @@
   @for (etapa of etapas(); track etapa.nombre; let i = $index) {
     <li class="etapa" [class.is-completa]="etapa.completada" [class.is-actual]="etapa.actual" [attr.aria-current]="etapa.actual ? 'step' : null">
       <span class="etapa__marca" aria-hidden="true">
-        @if (etapa.completada && !etapa.actual) {
+        @if (etapa.completada) {
           <lucide-icon [img]="CheckIcon" [size]="16" [strokeWidth]="2.6"></lucide-icon>
         } @else {
           {{ i + 1 }}
@@ -14,11 +14,14 @@
           @if (etapa.fecha) {
             {{ hora(etapa.fecha) }}
           } @else if (etapa.actual) {
-            Ahora
+            En curso
           } @else {
             Pendiente
           }
         </span>
+        @if (etapa.actual) {
+          <span class="etapa__ahora">Estás aquí</span>
+        }
       </span>
     </li>
   }

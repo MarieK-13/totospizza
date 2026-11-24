@@ -7,21 +7,24 @@ import type {
   EmpleadoResponse,
   EntregaAsignadaResponse,
   EntregaResponse,
+  MotivoRequest,
   NotificacionResponse,
   PaginaParams,
   PageResponse,
   PedidoListoResponse,
+  ResumenDespachoResponse,
+  ResumenRepartoResponse,
   TableroCocinaResponse,
 } from '../../models/api';
-import { ApiClient } from './api-client';
+import { ApiClient, type OpcionesPeticion } from './api-client';
 
 @Injectable({ providedIn: 'root' })
 export class OperacionApi {
   private readonly api = inject(ApiClient);
 
   // ---- Cocina ----
-  tableroCocina(): Observable<TableroCocinaResponse> {
-    return this.api.get('/cocina/tablero');
+  tableroCocina(opciones?: OpcionesPeticion): Observable<TableroCocinaResponse> {
+    return this.api.get('/cocina/tablero', opciones);
   }
 
   iniciarPreparacion(pedidoId: number): Observable<TableroCocinaResponse> {
@@ -37,8 +40,12 @@ export class OperacionApi {
   }
 
   // ---- Despacho ----
-  pedidosListos(): Observable<readonly PedidoListoResponse[]> {
-    return this.api.get('/despacho/pedidos-listos');
+  pedidosListos(opciones?: OpcionesPeticion): Observable<readonly PedidoListoResponse[]> {
+    return this.api.get('/despacho/pedidos-listos', opciones);
+  }
+
+  resumenDespacho(opciones?: OpcionesPeticion): Observable<ResumenDespachoResponse> {
+    return this.api.get('/despacho/resumen', opciones);
   }
 
   motorizadosDisponibles(): Observable<readonly EmpleadoResponse[]> {
@@ -53,17 +60,38 @@ export class OperacionApi {
     return this.api.post(`/despacho/pedidos/${pedidoId}/entregar-en-mostrador`);
   }
 
+  desbloquearPin(pedidoId: number): Observable<PedidoListoResponse> {
+    return this.api.post(`/despacho/pedidos/${pedidoId}/desbloquear-pin`);
+  }
+
+  confirmarSinPin(pedidoId: number, cuerpo: MotivoRequest): Observable<PedidoListoResponse> {
+    return this.api.post(`/despacho/pedidos/${pedidoId}/confirmar-sin-pin`, cuerpo);
+  }
+
+  /** Cancela y reembolsa un delivery que el motorizado no pudo entregar. */
+  cancelarEntregaFallida(pedidoId: number, cuerpo: MotivoRequest): Observable<PedidoListoResponse> {
+    return this.api.post(`/despacho/pedidos/${pedidoId}/cancelar`, cuerpo);
+  }
+
   // ---- Reparto ----
-  misEntregas(): Observable<readonly EntregaAsignadaResponse[]> {
-    return this.api.get('/reparto/entregas');
+  misEntregas(opciones?: OpcionesPeticion): Observable<readonly EntregaAsignadaResponse[]> {
+    return this.api.get('/reparto/entregas', opciones);
+  }
+
+  resumenReparto(opciones?: OpcionesPeticion): Observable<ResumenRepartoResponse> {
+    return this.api.get('/reparto/resumen', opciones);
   }
 
   iniciarRuta(entregaId: number): Observable<EntregaResponse> {
     return this.api.post(`/reparto/entregas/${entregaId}/iniciar-ruta`);
   }
 
-  confirmarEntrega(entregaId: number, cuerpo: ConfirmarEntregaRequest): Observable<EntregaResponse> {
-    return this.api.post(`/reparto/entregas/${entregaId}/confirmar`, cuerpo);
+  reportarNoEntregada(entregaId: number, cuerpo: MotivoRequest, opciones?: OpcionesPeticion): Observable<EntregaResponse> {
+    return this.api.post(`/reparto/entregas/${entregaId}/no-entregada`, cuerpo, opciones);
+  }
+
+  confirmarEntrega(entregaId: number, cuerpo: ConfirmarEntregaRequest, opciones?: OpcionesPeticion): Observable<EntregaResponse> {
+    return this.api.post(`/reparto/entregas/${entregaId}/confirmar`, cuerpo, opciones);
   }
 
   // ---- Notificaciones (cualquier rol con sesión) ----
@@ -71,8 +99,8 @@ export class OperacionApi {
     return this.api.get('/notificaciones', { params: paginacion });
   }
 
-  contarNoLeidas(): Observable<ConteoResponse> {
-    return this.api.get('/notificaciones/no-leidas/conteo');
+  contarNoLeidas(opciones?: OpcionesPeticion): Observable<ConteoResponse> {
+    return this.api.get('/notificaciones/no-leidas/conteo', opciones);
   }
 
   marcarNotificacionLeida(id: number): Observable<void> {

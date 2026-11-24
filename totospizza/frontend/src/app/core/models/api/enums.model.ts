@@ -2,7 +2,7 @@
 export type Rol = 'ADMINISTRADOR' | 'CLIENTE' | 'PIZZERO' | 'DESPACHADOR' | 'MOTORIZADO';
 export type TipoDocumento = 'DNI' | 'CE' | 'PASAPORTE';
 export type EstadoEmpleado = 'ACTIVO' | 'EN_TURNO' | 'DISPONIBLE' | 'INACTIVO' | 'CON_LICENCIA';
-export type EstadoTurno = 'PROGRAMADO' | 'EN_CURSO' | 'FINALIZADO';
+export type EstadoTurno = 'PROGRAMADO' | 'EN_CURSO' | 'FINALIZADO' | 'CANCELADO';
 export type EstadoPedido =
   | 'PENDIENTE_PAGO'
   | 'CONFIRMADO'
@@ -31,7 +31,9 @@ export type TipoNotificacion =
   | 'ENTREGA_ASIGNADA'
   | 'STOCK_BAJO'
   | 'ALERTA_OFERTA_FLASH'
-  | 'SISTEMA';
+  | 'SISTEMA'
+  | 'PEDIDO_EN_CAMINO'
+  | 'ENTREGA_FALLIDA';
 export type TipoParametro = 'TEXTO' | 'NUMERO' | 'BOOLEANO';
 export type DiaSemana = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
 

@@ -1,20 +1,16 @@
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
 <app-sidebar
-  [items]="nav"
-  userName="Administrador"
-  userRole="Toto's Pizza"
+  [items]="nav()"
+  [userName]="nombre()"
+  [userRole]="rol()"
   [opened]="sidebarOpen()"
   (closed)="closeSidebar()"
+  (logout)="cerrarSesion()"
 />
 
 <div class="dashboard">
-  <app-topbar [title]="title" (menuToggle)="toggleSidebar()">
-    <button type="button" class="dashboard__bell" aria-label="Notificaciones">
-      <lucide-icon [img]="BellIcon" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
-      <span class="dashboard__dot" aria-hidden="true"></span>
-    </button>
-  </app-topbar>
+  <app-topbar [title]="seccion().titulo" [subtitle]="seccion().subtitulo" (menuToggle)="toggleSidebar()" />
   <main id="contenido" class="dashboard__content" tabindex="-1">
     <router-outlet />
   </main>

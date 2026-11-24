@@ -193,6 +193,18 @@ public class FinanzasServiceImpl implements FinanzasService {
 
     @Override
     @Transactional
+    public void eliminarLiquidacion(Long pagoId) {
+        PagoMotorizado pago = pagoMotorizadoRepository.findById(pagoId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Pago a motorizado", pagoId));
+        if (pago.getEstado() == EstadoPagoPersonal.PAGADO) {
+            throw new ReglaNegocioException("PAGO_YA_REGISTRADO",
+                    "Esta liquidación ya se pagó y quedó en Finanzas; no se puede eliminar");
+        }
+        pagoMotorizadoRepository.delete(pago);
+    }
+
+    @Override
+    @Transactional
     public PagoMotorizadoResponse marcarPagado(Long usuarioId, Long pagoId) {
         PagoMotorizado pago = pagoMotorizadoRepository.findById(pagoId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Pago a motorizado", pagoId));

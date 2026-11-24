@@ -1,419 +1,156 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap');
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use '../../../../styles/panel/paleta' as *;
 
-$bg-canvas: #faf6ee;
-$bg-card: #ffffff;
-$bg-cream: #f6efe0;
-$brand-red: #c82828;
-$text-primary: #241b16;
-$text-secondary: #7b6f66;
-$text-muted: #9e9289;
-$border-soft: #ede6d9;
-$green-text: #1f8a4c;
-$green-bg: #e7f6ed;
+// Solo lo propio del mostrador; el tablero, los tickets y los botones vienen de styles/panel/_operacion.scss.
 
-.staff-shell {
-  min-height: 100vh;
-  background-color: $bg-canvas;
-  color: $text-primary;
-  font-family: 'Inter', sans-serif;
+.barra {
   display: flex;
-  flex-direction: column;
-}
-
-.staff-topbar {
-  background-color: #fdfaf4;
-  border-bottom: 1px solid $border-soft;
-  padding: 14px 36px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
-
-  &__left,
-  &__right {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-  }
-
-  &__divider {
-    width: 1px;
-    height: 28px;
-    background-color: $border-soft;
-  }
-
-  &__module {
-    display: flex;
-    flex-direction: column;
-    strong {
-      font-size: 13px;
-      letter-spacing: 0.04em;
-    }
-    span {
-      font-size: 11.5px;
-      color: $text-muted;
-    }
-  }
-}
-
-.brand-mark {
-  display: flex;
   align-items: center;
-  gap: 10px;
-  svg {
-    width: 28px;
-    height: 28px;
-    color: $brand-red;
-  }
-  div {
-    display: flex;
-    flex-direction: column;
-    line-height: 1;
-    strong {
-      font-family: 'DM Serif Display', serif;
-      font-size: 16px;
-    }
-    span {
-      font-size: 8px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      color: $brand-red;
-    }
-  }
-}
-
-.shift-live {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 12px;
-  font-weight: 600;
-  color: $green-text;
-  &__dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background-color: $green-text;
-  }
-}
-
-.clock-block {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  strong {
-    font-family: 'DM Serif Display', serif;
-    font-size: 19px;
-    font-weight: 400;
-  }
-  span {
-    font-size: 9.5px;
-    color: $text-muted;
-  }
-}
-
-.btn-logout {
-  background-color: $bg-cream;
-  border: 1px solid $border-soft;
-  border-radius: 10px;
-  padding: 8px 14px;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.staff-main {
-  flex: 1;
-  max-width: 1320px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 28px 36px;
-}
-
-.page-hero {
-  display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 22px;
-  flex-wrap: wrap;
-  gap: 16px;
-
-  &__eyebrow {
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: $text-muted;
-  }
-  &__title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 32px;
-    font-weight: 400;
-    margin: 4px 0;
-  }
-  &__subtitle {
-    margin: 0;
-    font-size: 13.5px;
-    color: $text-secondary;
-  }
-}
-
-.kpi-mini-pair {
-  display: flex;
   gap: 12px;
+
+  &__nota {
+    color: $text-muted;
+    font-size: 12.5px;
+  }
 }
 
-.kpi-mini-box {
-  background-color: $bg-card;
+.buscar {
+  display: flex;
+  flex: 0 1 26rem;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid $border-soft;
+  border-radius: 12px;
+  background: $color-blanco;
+  color: $text-muted;
+  @include transition((border-color, box-shadow));
+
+  &:focus-within {
+    border-color: $border-strong;
+    box-shadow: 0 0 0 3px rgba($shadow-ink, 0.05);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: $text-primary;
+    font: inherit;
+    font-size: 13.5px;
+  }
+}
+
+.fallo {
+  border-left-color: $brand-red;
+  background: $red-bg;
+  color: $brand-red;
+}
+
+.modal-nota {
+  margin: 0 0 12px;
+  color: $text-muted;
+  font-size: 12.5px;
+}
+
+.motorizados {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.motorizado {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
   border: 1px solid $border-soft;
   border-radius: 14px;
-  padding: 14px 22px;
-  min-width: 105px;
+  background: $color-blanco;
+  color: $text-primary;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  @include transition((border-color, background-color, box-shadow));
+  @include focus-ring;
 
-  strong {
-    display: block;
-    font-family: 'DM Serif Display', serif;
-    font-size: 24px;
-    font-weight: 400;
+  &:hover {
+    border-color: $border-strong;
   }
-  span {
-    font-size: 12px;
-    color: $text-muted;
+
+  &.is-elegido {
+    border-color: $brand-red;
+    background: $red-bg;
+    box-shadow: 0 0 0 3px rgba($brand-red, 0.1);
   }
-}
 
-.filter-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.filter-pills {
-  display: flex;
-  gap: 8px;
-
-  button {
-    background-color: $bg-card;
-    border: 1px solid $border-soft;
-    border-radius: 10px;
-    padding: 8px 16px;
+  &__avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: $bg-cream;
+    color: $brand-red;
     font-size: 12.5px;
-    font-weight: 600;
-    color: $text-secondary;
-    cursor: pointer;
+    font-weight: $weight-bold;
+  }
 
-    &.active {
-      background-color: #fdeceb;
-      border-color: #f3c4c2;
-      color: $brand-red;
+  &__texto {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    strong {
+      overflow: hidden;
+      font-size: 13.5px;
+      font-weight: $weight-semibold;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    span {
+      color: $text-muted;
+      font-size: 12px;
+    }
+  }
+
+  &__carga {
+    flex: none;
+    padding: 4px 10px;
+    border-radius: $radius-pill;
+    background: $amber-bg;
+    color: $amber-text;
+    font-size: 11.5px;
+    font-weight: $weight-semibold;
+
+    &.is-libre {
+      background: $green-bg;
+      color: $green-text;
     }
   }
 }
 
-.action-legend {
-  display: flex;
-  gap: 18px;
-  font-size: 12px;
-  color: $text-muted;
+.entrega-resumen {
+  margin-bottom: 4px;
+  font-size: 13.5px;
 }
 
-.table-card {
-  background-color: $bg-card;
-  border: 1px solid $border-soft;
-  border-radius: 18px;
-  overflow: hidden;
-
-  &__footer {
-    background-color: $bg-cream;
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: $text-muted;
-  }
-}
-
-.table-scroll {
-  overflow-x: auto;
-}
-
-.dispatch-table {
+// El pie del modal está fuera del tablero: se reusa `.op` para los botones, pero en fila.
+.acciones-modal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
   width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-
-  thead th {
-    background-color: $bg-cream;
-    color: $text-secondary;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-align: left;
-    padding: 13px 18px;
-  }
-
-  tbody td {
-    padding: 15px 18px;
-    border-bottom: 1px solid #f4efe6;
-    vertical-align: middle;
-  }
-}
-
-.cell-primary {
-  font-weight: 600;
-  color: $text-primary;
-}
-
-.cell-sub {
-  font-size: 11.5px;
-  color: $text-muted;
-  margin-top: 2px;
-}
-
-.type-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 11px;
-  border-radius: 99px;
-  font-size: 11.5px;
-  font-weight: 600;
-
-  &--delivery {
-    background-color: #fdeceb;
-    color: $brand-red;
-  }
-  &--recojo {
-    background-color: $green-bg;
-    color: $green-text;
-  }
-}
-
-.row-actions {
-  display: inline-flex;
-  gap: 8px;
-}
-
-.btn-icon-cancel,
-.btn-icon-confirm {
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-icon-cancel {
-  background-color: $bg-card;
-  border: 1px solid $border-soft;
-  color: $text-secondary;
-  &:hover {
-    background-color: #fdeceb;
-    color: $brand-red;
-  }
-}
-
-.btn-icon-confirm {
-  background-color: $brand-red;
-  border: none;
-  color: #ffffff;
-  &:hover {
-    background-color: #b02020;
-  }
-}
-
-.text-right {
-  text-align: right !important;
-}
-
-.staff-hint {
-  margin-top: 16px;
-  font-size: 12px;
-  color: $text-muted;
-}
-
-.staff-footer {
-  border-top: 1px solid $border-soft;
-  padding: 14px 36px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: $text-muted;
-}
-
-.toast-banner {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: #241b16;
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-size: 13px;
-  z-index: 50;
-}
-
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(36, 27, 22, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 40;
-}
-
-.modal-box {
-  background: $bg-card;
-  border-radius: 16px;
-  padding: 24px;
-  width: 100%;
-  max-width: 400px;
-
-  h3 {
-    font-family: 'DM Serif Display', serif;
-    margin: 0 0 6px;
-  }
-  p {
-    font-size: 13px;
-    color: $text-secondary;
-  }
-  input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid $border-soft;
-    border-radius: 10px;
-    margin: 10px 0 16px;
-    box-sizing: border-box;
-  }
-  &__btns {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-  }
-}
-
-.btn-secondary {
-  background: $bg-cream;
-  border: 1px solid $border-soft;
-  padding: 9px 14px;
-  border-radius: 9px;
-  cursor: pointer;
-}
-
-.btn-danger {
-  background: $brand-red;
-  color: #fff;
-  border: none;
-  padding: 9px 14px;
-  border-radius: 9px;
-  font-weight: 600;
-  cursor: pointer;
 }

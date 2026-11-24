@@ -1,0 +1,161 @@
+<ng-template appPanelAcciones>
+  <button type="button" class="panel-cta" (click)="abrirMasa(null)">
+    <lucide-icon [img]="Icons.Plus" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+    Nueva masa
+  </button>
+  <button type="button" class="panel-cta" (click)="abrirTamano(null)">
+    <lucide-icon [img]="Icons.Plus" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+    Nuevo tamaño
+  </button>
+</ng-template>
+
+<div class="crud" [attr.aria-busy]="cargando()">
+  <section class="crud-kpis">
+    <app-panel-kpi etiqueta="Tipos de masa" [valor]="masas().length" [icono]="Icons.Wheat" tono="rojo" pie="registrados" />
+    <app-panel-kpi etiqueta="Masas activas" [valor]="masasActivas()" [icono]="Icons.Wheat" tono="verde" pie="se ofrecen al cliente" />
+    <app-panel-kpi etiqueta="Tamaños" [valor]="tamanos().length" [icono]="Icons.Ruler" tono="ambar" pie="registrados" />
+    <app-panel-kpi etiqueta="Tamaños activos" [valor]="tamanosActivos()" [icono]="Icons.CircleDashed" tono="azul" pie="disponibles al armar pizzas" />
+  </section>
+
+  <div class="crud-columnas">
+    <section class="crud-card">
+      <div class="crud-card__cabecera">
+        <h2 class="crud-card__titulo">Tipos de masa</h2>
+        <span class="crud-card__meta">El recargo se suma al precio de la pizza</span>
+      </div>
+      @if (masasOrdenadas().length) {
+        <div class="crud-tabla-wrap">
+          <table class="crud-tabla crud-tabla--compacta">
+            <thead>
+              <tr>
+                <th>Masa</th>
+                <th>Recargo</th>
+                <th>Activa</th>
+                <th class="der"><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of masasOrdenadas(); track m.id) {
+                <tr [class.is-apagado]="!m.activa">
+                  <td><strong>{{ m.nombre }}</strong></td>
+                  <td class="num">{{ m.recargo > 0 ? '+ S/ ' + (m.recargo | number: '1.2-2') : 'Sin recargo' }}</td>
+                  <td>
+                    <button type="button" class="crud-switch" role="switch" [attr.aria-checked]="m.activa"
+                      [attr.aria-label]="(m.activa ? 'Desactivar ' : 'Activar ') + m.nombre" (click)="alternarMasa(m)"></button>
+                  </td>
+                  <td class="der">
+                    <button type="button" class="crud-icono-btn" title="Editar" [attr.aria-label]="'Editar ' + m.nombre" (click)="abrirMasa(m)">
+                      <lucide-icon [img]="Icons.Pencil" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-estado-vacio [cargando]="cargando()" [icono]="Icons.Wheat" titulo="Aún no hay masas" mensaje="Crea la masa clásica y las especiales con su recargo." [compacto]="true" />
+      }
+    </section>
+
+    <section class="crud-card">
+      <div class="crud-card__cabecera">
+        <h2 class="crud-card__titulo">Tamaños de pizza</h2>
+        <span class="crud-card__meta">Inactivo = no se ofrece al armar pizzas</span>
+      </div>
+      @if (tamanosOrdenados().length) {
+        <div class="crud-tabla-wrap">
+          <table class="crud-tabla crud-tabla--compacta">
+            <thead>
+              <tr>
+                <th>Tamaño</th>
+                <th>Diámetro</th>
+                <th>Personas</th>
+                <th>Precio base</th>
+                <th>Activo</th>
+                <th class="der"><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (t of tamanosOrdenados(); track t.id) {
+                <tr [class.is-apagado]="!t.activo">
+                  <td><strong>{{ t.nombre }}</strong></td>
+                  <td class="num">{{ t.diametroCm }} cm</td>
+                  <td class="num">{{ t.personasMin === t.personasMax ? t.personasMin : t.personasMin + '–' + t.personasMax }}</td>
+                  <td class="num">S/ {{ t.precioBase | number: '1.2-2' }}</td>
+                  <td>
+                    <button type="button" class="crud-switch" role="switch" [attr.aria-checked]="t.activo"
+                      [attr.aria-label]="(t.activo ? 'Desactivar ' : 'Activar ') + t.nombre" (click)="alternarTamano(t)"></button>
+                  </td>
+                  <td class="der">
+                    <button type="button" class="crud-icono-btn" title="Editar" [attr.aria-label]="'Editar ' + t.nombre" (click)="abrirTamano(t)">
+                      <lucide-icon [img]="Icons.Pencil" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-estado-vacio [cargando]="cargando()" [icono]="Icons.Ruler" titulo="Aún no hay tamaños" mensaje="Agrega Personal, Mediana y Familiar con su diámetro y precio." [compacto]="true" />
+      }
+    </section>
+  </div>
+
+  @switch (modal()) {
+    @case ('masa') {
+      <app-panel-modal [titulo]="masaSel() ? 'Editar masa' : 'Nueva masa'" (cerrar)="cerrar()" descripcion="Si no tiene costo adicional, deja el recargo en 0.">
+        <form id="form-masa" class="crud-form" [formGroup]="formMasa" (ngSubmit)="guardarMasa()" novalidate>
+          @if (errorFormulario(); as error) {
+            <p class="crud-aviso" role="alert">{{ error }}</p>
+          }
+          <app-text-field label="Nombre" [required]="true" [maxlength]="60" placeholder="Ej. Borde de queso" formControlName="nombre" />
+          <app-text-field label="Recargo (S/)" type="number" inputmode="numeric" [min]="'0'" [required]="true" formControlName="recargo" />
+          <div class="crud-fila-switch">
+            <span>Activa<small>Se ofrece al elegir la masa de una pizza.</small></span>
+            <button type="button" class="crud-switch" role="switch" aria-label="Activa" [attr.aria-checked]="formMasa.controls.activa.value"
+              (click)="formMasa.controls.activa.setValue(!formMasa.controls.activa.value)"></button>
+          </div>
+        </form>
+        <div acciones>
+          <button type="button" class="crud-btn" (click)="cerrar()" [disabled]="guardando()">Cancelar</button>
+          <button type="submit" form="form-masa" class="crud-btn crud-btn--primario" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando…' : masaSel() ? 'Guardar cambios' : 'Crear masa' }}
+          </button>
+        </div>
+      </app-panel-modal>
+    }
+    @case ('tamano') {
+      <app-panel-modal [titulo]="tamanoSel() ? 'Editar tamaño' : 'Nuevo tamaño'" (cerrar)="cerrar()" descripcion="Las personas alimentan el filtro “para cuántas personas” del menú.">
+        <form id="form-tamano" class="crud-form" [formGroup]="formTamano" (ngSubmit)="guardarTamano()" novalidate>
+          @if (errorFormulario(); as error) {
+            <p class="crud-aviso" role="alert">{{ error }}</p>
+          }
+          @if (formTamano.errors?.['personas'] && formTamano.touched) {
+            <p class="crud-aviso" role="alert">El mínimo de personas no puede ser mayor que el máximo.</p>
+          }
+          <div class="crud-grid-2">
+            <app-text-field label="Nombre" [required]="true" [maxlength]="40" placeholder="Ej. Familiar" formControlName="nombre" />
+            <app-text-field label="Diámetro (cm)" type="number" inputmode="numeric" [min]="'10'" [max]="'80'" [required]="true" formControlName="diametroCm" />
+            <app-text-field label="Personas mínimo" type="number" inputmode="numeric" [min]="'1'" [required]="true" formControlName="personasMin" />
+            <app-text-field label="Personas máximo" type="number" inputmode="numeric" [min]="'1'" [required]="true" formControlName="personasMax" />
+            <app-text-field label="Precio base (S/)" type="number" inputmode="numeric" [min]="'0'" [required]="true" formControlName="precioBase" />
+            <app-text-field label="Orden" type="number" inputmode="numeric" [min]="'0'" formControlName="orden" />
+          </div>
+          <div class="crud-fila-switch">
+            <span>Activo<small>Inactivo = no se ofrece al armar pizzas.</small></span>
+            <button type="button" class="crud-switch" role="switch" aria-label="Activo" [attr.aria-checked]="formTamano.controls.activo.value"
+              (click)="formTamano.controls.activo.setValue(!formTamano.controls.activo.value)"></button>
+          </div>
+        </form>
+        <div acciones>
+          <button type="button" class="crud-btn" (click)="cerrar()" [disabled]="guardando()">Cancelar</button>
+          <button type="submit" form="form-tamano" class="crud-btn crud-btn--primario" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando…' : tamanoSel() ? 'Guardar cambios' : 'Crear tamaño' }}
+          </button>
+        </div>
+      </app-panel-modal>
+    }
+  }
+</div>

@@ -1,0 +1,109 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+@use '../../../../../styles/panel/paleta' as panel;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.imagen__etiqueta {
+  color: panel.$text-primary;
+  font-size: 12.5px;
+  font-weight: $weight-semibold;
+}
+
+.imagen {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px;
+  border: 1px dashed panel.$border-strong;
+  border-radius: 12px;
+  background: panel.$bg-soft;
+
+  &__vista {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: panel.$bg-card;
+    color: panel.$text-muted;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__controles {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+
+    small {
+      color: panel.$text-muted;
+      font-size: 11px;
+    }
+  }
+
+  &__botones {
+    display: flex;
+    gap: 6px;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid panel.$border-soft;
+    border-radius: 8px;
+    background: panel.$bg-card;
+    color: panel.$text-primary;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: $weight-semibold;
+    cursor: pointer;
+    @include transition((background-color, color));
+    @include focus-ring;
+
+    &:hover:not(:disabled) {
+      background: panel.$bg-cream-pill;
+    }
+
+    &--quitar:hover:not(:disabled) {
+      background: panel.$red-bg;
+      color: panel.$brand-red;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+  }
+
+  &__url {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid panel.$border-soft;
+    border-radius: 8px;
+    background: panel.$bg-card;
+    color: panel.$text-primary;
+    font: inherit;
+    font-size: 12.5px;
+
+    &:focus {
+      border-color: panel.$border-strong;
+      outline: none;
+    }
+  }
+}

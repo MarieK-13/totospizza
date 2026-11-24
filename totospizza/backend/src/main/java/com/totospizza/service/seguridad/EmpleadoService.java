@@ -33,4 +33,13 @@ public interface EmpleadoService {
     TurnoResponse asignarHorario(Long empleadoId, AsignarHorarioRequest request);
 
     List<TurnoResponse> turnos(Long empleadoId, LocalDate desde, LocalDate hasta);
+
+    /**
+     * Avanza los turnos según la hora de la sede: PROGRAMADO pasa a EN_CURSO al llegar la hora de inicio
+     * y a FINALIZADO al pasar la hora de fin. Devuelve cuántos cambiaron.
+     */
+    int actualizarTurnos();
+
+    /** Marca como cancelado un turno al que el empleado no asistió: deja de contar para el pago base. */
+    TurnoResponse cancelarTurno(Long empleadoId, Long turnoId);
 }

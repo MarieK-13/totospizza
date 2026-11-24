@@ -1,458 +1,170 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap');
+@use '../../../../styles/tokens/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use '../../../../styles/panel/paleta' as *;
 
-$bg-canvas: #faf6ee;
-$bg-card: #ffffff;
-$bg-cream: #f6efe0;
-$brand-red: #c82828;
-$text-primary: #241b16;
-$text-secondary: #7b6f66;
-$text-muted: #9e9289;
-$border-soft: #ede6d9;
-$green-text: #1f8a4c;
-$green-bg: #e7f6ed;
+// Solo lo propio del reparto; el tablero, los tickets y los botones vienen de styles/panel/_operacion.scss.
 
-.staff-shell {
-  min-height: 100vh;
-  background-color: $bg-canvas;
-  color: $text-primary;
-  font-family: 'Inter', sans-serif;
-  display: flex;
-  flex-direction: column;
-}
-
-.staff-topbar {
-  background-color: #fdfaf4;
-  border-bottom: 1px solid $border-soft;
-  padding: 14px 36px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-
-  &__left,
-  &__right {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-  }
-
-  &__divider {
-    width: 1px;
-    height: 28px;
-    background-color: $border-soft;
-  }
-
-  &__module {
-    display: flex;
-    flex-direction: column;
-    strong {
-      font-size: 14px;
-    }
-    span {
-      font-size: 11.5px;
-      color: $text-muted;
-    }
+// En el celular, lo que está en ruta va primero: es lo que el motorizado atiende con el pedido en la mano.
+.op-tablero--tres > .op-columna:nth-child(2) {
+  @media (max-width: 1100px) {
+    order: -1;
   }
 }
 
-.brand-mark {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  svg {
-    width: 28px;
-    height: 28px;
-    color: $brand-red;
-  }
-  div {
-    display: flex;
-    flex-direction: column;
-    line-height: 1;
-    strong {
-      font-family: 'DM Serif Display', serif;
-      font-size: 16px;
-    }
-    span {
-      font-size: 8px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      color: $brand-red;
-    }
+.op-estado small,
+.op-tiempo__total,
+.op-tiempo__etapa,
+.op-btn {
+  white-space: nowrap;
+}
+
+.op-tiempo__total small {
+  @media (max-width: 420px) {
+    display: none;
   }
 }
 
-.shift-live {
+.solo-ancho {
+  @media (max-width: 480px) {
+    display: none;
+  }
+}
+
+.no-entregada {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-size: 12px;
-  font-weight: 600;
-  color: $green-text;
-  &__dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background-color: $green-text;
-  }
-}
-
-.clock-block {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  strong {
-    font-family: 'DM Serif Display', serif;
-    font-size: 19px;
-    font-weight: 400;
-  }
-  span {
-    font-size: 9.5px;
-    color: $text-muted;
-  }
-}
-
-.btn-logout {
-  background-color: $bg-cream;
-  border: 1px solid $border-soft;
-  border-radius: 10px;
-  padding: 8px 14px;
+  justify-content: center;
+  gap: 6px;
+  margin-top: -4px;
+  padding: 6px;
+  border: 0;
+  background: none;
+  color: $text-muted;
+  font: inherit;
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: $weight-semibold;
   cursor: pointer;
-}
+  @include transition((color));
+  @include focus-ring;
 
-.staff-main {
-  flex: 1;
-  max-width: 1320px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 28px 36px;
-}
-
-.page-hero {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-  gap: 16px;
-
-  &__eyebrow {
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: $text-muted;
+  &:hover:not(:disabled) {
+    color: $brand-red;
+    text-decoration: underline;
   }
-  &__title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 32px;
-    font-weight: 400;
-    margin: 4px 0;
-  }
-  &__subtitle {
-    margin: 0;
-    font-size: 13.5px;
-    color: $text-secondary;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 
-.reparto-stats {
-  display: flex;
-  gap: 28px;
-  div {
+.bloqueo {
+  border-left-color: $brand-red;
+  background: $red-bg;
+  color: $brand-red;
+}
+
+// ---------- Entregas completadas ----------
+.realizada {
+  gap: 8px;
+  padding-block: 14px 12px;
+
+  &__datos {
     display: flex;
-    flex-direction: column;
-    strong {
-      font-family: 'DM Serif Display', serif;
-      font-size: 26px;
-      font-weight: 400;
-    }
-    span {
-      font-size: 11.5px;
-      color: $text-muted;
-    }
-  }
-}
-
-.route-alert-bar {
-  background-color: #f8efde;
-  border: 1px solid #eadcc2;
-  border-radius: 12px;
-  padding: 12px 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12.5px;
-  color: $text-secondary;
-  margin-bottom: 20px;
-}
-
-.deliveries-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.delivery-card {
-  background-color: $bg-card;
-  border: 1px solid $border-soft;
-  border-radius: 18px;
-  padding: 20px 24px;
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 14px;
-    border-bottom: 1px solid #f4efe6;
-    margin-bottom: 16px;
-  }
-
-  &__title-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  &__time {
-    font-size: 12px;
-    color: $text-muted;
-  }
-
-  &__body {
-    display: grid;
-    grid-template-columns: 1.65fr 1fr;
-    gap: 24px;
-    align-items: center;
-
-    @media (max-width: 900px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  &__footer {
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1px solid #f4efe6;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 6px 14px;
+    margin: 0;
+    color: $text-secondary;
+    font-family: $font-datos;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
   }
-
-  &__buttons {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
 }
 
-.order-label {
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: $text-muted;
-}
-
-.order-sep {
-  color: $border-soft;
-}
-
-.order-code {
-  font-family: 'DM Serif Display', serif;
-  font-size: 17px;
-  font-weight: 400;
-}
-
-.status-pill {
-  padding: 3px 10px;
-  border-radius: 99px;
+.sello {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: $radius-pill;
+  background: $green-bg;
+  color: $green-text;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: $weight-semibold;
 
-  &--camino {
-    background-color: $green-bg;
-    color: $green-text;
-  }
-  &--pendiente {
-    background-color: #f6efe0;
-    color: #9b7a44;
+  &--tarde {
+    background: $amber-bg;
+    color: $amber-text;
   }
 }
 
-.delivery-info {
-  &__client-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 6px;
+// ---------- Modal del PIN ----------
+.pin {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
-    h3 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 21px;
-      font-weight: 400;
-      margin: 0;
+  &__etiqueta {
+    color: $text-secondary;
+    font-size: 12.5px;
+    font-weight: $weight-semibold;
+  }
+
+  &__campo {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid $border-soft;
+    border-radius: 14px;
+    background: $color-blanco;
+    color: $text-primary;
+    font-family: $font-datos;
+    font-size: 30px;
+    font-weight: $weight-bold;
+    letter-spacing: 0.6em;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    @include transition((border-color, box-shadow));
+
+    &:focus {
+      border-color: $color-verde-albahaca;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba($color-verde-albahaca, 0.15);
+    }
+
+    &[aria-invalid='true'] {
+      border-color: $brand-red;
+      box-shadow: 0 0 0 3px rgba($brand-red, 0.1);
+    }
+
+    &:disabled {
+      background: $bg-soft;
+      cursor: not-allowed;
     }
   }
 
-  &__address {
-    font-size: 13.5px;
-    font-weight: 600;
-    margin: 0 0 4px;
+  &__error {
+    margin: 8px 0 0;
+    color: $brand-red;
+    font-size: 12.5px;
+    font-weight: $weight-semibold;
   }
 
-  &__ref {
-    font-size: 12px;
+  &__ayuda {
+    margin: 8px 0 4px;
     color: $text-muted;
-    margin: 0 0 14px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #f4efe6;
-  }
-
-  &__products {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    font-size: 12px;
   }
 }
 
-.client-phone {
-  font-size: 12.5px;
-  color: $text-muted;
-}
-
-.products-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: $brand-red;
-}
-
-.products-inline {
-  font-size: 13px;
-  color: $text-primary;
-}
-
-/* Mini mapa referencial */
-.mini-map-card {
-  background-color: #fbf8f1;
-  border: 1px solid $border-soft;
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.mini-map-canvas {
-  height: 115px;
-  background-image:
-    linear-gradient(to right, #eee6d6 1px, transparent 1px),
-    linear-gradient(to bottom, #eee6d6 1px, transparent 1px);
-  background-size: 64px 38px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 10px 14px;
-}
-
-.street-tag {
-  background-color: $bg-card;
-  border: 1px solid $border-soft;
-  border-radius: 6px;
-  padding: 2px 8px;
-  font-size: 10px;
-  color: $text-secondary;
-  width: fit-content;
-  margin: 0 auto;
-}
-
-.map-pin {
-  position: absolute;
-  top: 32%;
-  right: 26%;
-  font-size: 18px;
-}
-
-.mini-map-footer {
-  background-color: $bg-card;
-  border-top: 1px solid $border-soft;
-  padding: 8px 14px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: $text-muted;
-
-  strong {
-    color: $text-primary;
-  }
-}
-
-.payment-info {
-  font-size: 12px;
-  color: $text-secondary;
-}
-
-.btn-outline-red {
-  background-color: $bg-card;
-  border: 1px solid #f1c6c4;
-  color: $brand-red;
-  border-radius: 10px;
-  padding: 9px 14px;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-outline-neutral {
-  background-color: $bg-card;
-  border: 1px solid $border-soft;
-  color: $text-primary;
-  border-radius: 10px;
-  padding: 9px 14px;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-solid-red {
-  background-color: $brand-red;
-  border: none;
-  color: #ffffff;
-  border-radius: 10px;
-  padding: 9px 16px;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #b02020;
-  }
-}
-
-.staff-hint {
-  margin-top: 18px;
-  font-size: 12px;
-  color: $text-muted;
-}
-
-.staff-footer {
-  border-top: 1px solid $border-soft;
-  padding: 14px 36px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: $text-muted;
-}
-
-.toast-banner {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: #241b16;
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-size: 13px;
-  z-index: 50;
+// El pie del modal está fuera del tablero: se reusa `.op` para los botones, pero en fila.
+.acciones-modal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
 }

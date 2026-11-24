@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import com.totospizza.dto.request.catalogo.CambiarDisponibilidadRequest;
 import com.totospizza.dto.request.catalogo.PromocionItemRequest;
 import com.totospizza.dto.request.catalogo.PromocionRequest;
+import com.totospizza.dto.response.catalogo.PromocionAdminResponse;
 import com.totospizza.dto.response.catalogo.PromocionResponse;
 import com.totospizza.exception.RecursoNoEncontradoException;
 import com.totospizza.exception.ReglaNegocioException;
@@ -48,44 +49,44 @@ public class PromocionServiceImpl implements PromocionService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PromocionResponse> listar() {
-        return promocionMapper.toResponses(promocionRepository.findAll().stream()
+    public List<PromocionAdminResponse> listar() {
+        return promocionMapper.toAdminResponses(promocionRepository.findAll().stream()
                 .sorted(Comparator.comparing(Promocion::getOrden, Comparator.nullsLast(Comparator.naturalOrder()))
                         .thenComparing(Promocion::getId))
                 .toList());
     }
 
     @Override
-    public PromocionResponse crear(PromocionRequest request) {
+    public PromocionAdminResponse crear(PromocionRequest request) {
         validarVigencia(request);
         Promocion promocion = promocionMapper.toEntity(request);
         sincronizarItems(promocion, request.items());
         promocionRepository.save(promocion);
         alertarSiHayPerdida(promocion);
-        return promocionMapper.toResponse(promocion);
+        return promocionMapper.toAdminResponse(promocion);
     }
 
     @Override
-    public PromocionResponse actualizar(Long id, PromocionRequest request) {
+    public PromocionAdminResponse actualizar(Long id, PromocionRequest request) {
         validarVigencia(request);
         Promocion promocion = promocion(id);
         promocionMapper.updateEntity(request, promocion);
         sincronizarItems(promocion, request.items());
         alertarSiHayPerdida(promocion);
-        return promocionMapper.toResponse(promocion);
+        return promocionMapper.toAdminResponse(promocion);
     }
 
     @Override
-    public PromocionResponse cambiarActiva(Long id, CambiarDisponibilidadRequest request) {
+    public PromocionAdminResponse cambiarActiva(Long id, CambiarDisponibilidadRequest request) {
         Promocion promocion = promocion(id);
         promocion.setActiva(request.disponible());
-        return promocionMapper.toResponse(promocion);
+        return promocionMapper.toAdminResponse(promocion);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<PromocionResponse> enPerdida() {
-        return promocionMapper.toResponses(promocionRepository.findEnPerdida(TipoPromocion.OFERTA_FLASH));
+    public List<PromocionAdminResponse> enPerdida() {
+        return promocionMapper.toAdminResponses(promocionRepository.findEnPerdida(TipoPromocion.OFERTA_FLASH));
     }
 
     private static void validarVigencia(PromocionRequest request) {

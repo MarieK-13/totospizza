@@ -28,6 +28,10 @@ public interface EmpleadoMapper {
     @Mapping(target = "sucursalNombre", source = "sucursal.nombre")
     @Mapping(target = "horaInicio", source = "horario.horaInicio")
     @Mapping(target = "horaFin", source = "horario.horaFin")
+    @Mapping(target = "nombres", source = "usuario.nombres")
+    @Mapping(target = "apellidos", source = "usuario.apellidos")
+    @Mapping(target = "tipoDocumento", source = "usuario.documento.tipo")
+    @Mapping(target = "numeroDocumento", source = "usuario.documento.numero")
     EmpleadoResponse toResponse(Empleado empleado);
 
     List<EmpleadoResponse> toResponses(List<Empleado> empleados);

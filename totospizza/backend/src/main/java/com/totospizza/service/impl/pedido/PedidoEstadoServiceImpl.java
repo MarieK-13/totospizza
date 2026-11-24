@@ -73,6 +73,17 @@ public class PedidoEstadoServiceImpl implements PedidoEstadoService {
     }
 
     @Override
+    public Pedido devolverAlMostrador(Long pedidoId, Long usuarioId, String comentario) {
+        Pedido pedido = pedidoBloqueado(pedidoId);
+        if (pedido.getEstado() != EstadoPedido.EN_CAMINO || pedido.getTipoEntrega() != TipoEntrega.DELIVERY) {
+            throw new ReglaNegocioException("TRANSICION_INVALIDA", "Solo un delivery en camino puede volver al mostrador");
+        }
+        pedido.setEstado(EstadoPedido.LISTO);
+        registrarHistorial(pedido, EstadoPedido.LISTO, usuarioId, comentario);
+        return pedido;
+    }
+
+    @Override
     public Pedido cancelar(Long pedidoId, Long usuarioId, String motivo) {
         Pedido pedido = pedidoBloqueado(pedidoId);
         PedidoEstadoPolicy.validar(pedido.getEstado(), EstadoPedido.CANCELADO, pedido.getTipoEntrega());

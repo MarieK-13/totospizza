@@ -81,6 +81,12 @@ public class AdminFinanzasController {
         return finanzasService.marcarPagado(usuario.id(), id);
     }
 
+    @DeleteMapping("/pagos-motorizado/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void eliminarLiquidacion(@PathVariable Long id) {
+        finanzasService.eliminarLiquidacion(id);
+    }
+
     @PostMapping("/pagos/conciliar")
     public ConteoResponse conciliarPagos() {
         return new ConteoResponse(pagoService.conciliarPendientes());

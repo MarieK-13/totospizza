@@ -1,0 +1,173 @@
+<ng-template appPanelAcciones>
+  <button type="button" class="panel-cta" (click)="abrirNueva()">
+    <lucide-icon [img]="Icons.Plus" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+    Nueva sede
+  </button>
+</ng-template>
+
+<div class="crud" [attr.aria-busy]="cargando()">
+  <section class="crud-kpis">
+    <app-panel-kpi etiqueta="Sedes" [valor]="sucursales().length" [icono]="Icons.Store" tono="rojo" pie="registradas" />
+    <app-panel-kpi etiqueta="Activas" [valor]="activas()" [icono]="Icons.Store" tono="verde" pie="reciben pedidos online" />
+    <app-panel-kpi etiqueta="Abiertas ahora" [valor]="abiertas()" [icono]="Icons.Clock" tono="ambar" pie="según su horario de hoy" />
+    <app-panel-kpi etiqueta="Zonas de reparto" [valor]="zonasTotales()" [icono]="Icons.Route" tono="azul" pie="tarifas por distancia" />
+  </section>
+
+  @if (ordenadas().length) {
+    <section class="sedes">
+      @for (s of ordenadas(); track s.id) {
+        <article class="sede" [class.is-inactiva]="!s.activa">
+          <div class="sede__foto">
+            @if (s.imagenUrl) {
+              <img [src]="s.imagenUrl" alt="" loading="lazy" />
+            } @else {
+              <lucide-icon [img]="Icons.Store" [size]="28" [strokeWidth]="1.4" aria-hidden="true"></lucide-icon>
+            }
+            <span class="crud-badge sede__estado" [class.crud-badge--ok]="s.activa && s.abiertoAhora" [class.crud-badge--off]="!s.activa">
+              {{ !s.activa ? 'Inactiva' : s.abiertoAhora ? 'Abierta ahora' : 'Cerrada ahora' }}
+            </span>
+          </div>
+          <div class="sede__cuerpo">
+            <div class="sede__titulo">
+              <h3>{{ s.nombre }}</h3>
+              <button type="button" class="crud-switch" role="switch" [attr.aria-checked]="s.activa"
+                [attr.aria-label]="(s.activa ? 'Desactivar ' : 'Activar ') + s.nombre" (click)="alternarActiva(s)"></button>
+            </div>
+            <ul class="sede__datos">
+              <li>
+                <lucide-icon [img]="Icons.MapPin" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                <a [href]="mapa(s)" target="_blank" rel="noopener">{{ s.direccion.direccion }}, {{ s.direccion.distrito }}</a>
+              </li>
+              <li>
+                <lucide-icon [img]="Icons.Phone" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                <a [href]="'tel:' + s.telefono">{{ s.telefono }}</a>
+              </li>
+              <li>
+                <lucide-icon [img]="Icons.Clock" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                <span>{{ resumenHorario(s) }}</span>
+              </li>
+            </ul>
+            @if (s.activa && s.personalFaltante?.length) {
+              <p class="sede__personal" role="note">
+                <lucide-icon [img]="Icons.TriangleAlert" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                <span>
+                  <strong>No recibe deliveries:</strong> falta {{ faltantes(s) }} activo.
+                  <a routerLink="/admin/empleados">Asignar personal</a>
+                </span>
+              </p>
+            }
+            <div class="crud-chips">
+              <span class="crud-badge crud-badge--info">Radio {{ s.radioCoberturaKm | number: '1.1-1' }} km</span>
+              @for (z of s.zonas; track z.id) {
+                <span class="crud-badge">{{ z.nombre }}: {{ z.costoEnvio > 0 ? 'S/ ' + (z.costoEnvio | number: '1.2-2') : 'gratis' }}</span>
+              } @empty {
+                <span class="crud-badge crud-badge--aviso">Sin zonas: usa el costo base</span>
+              }
+            </div>
+            <button type="button" class="crud-btn crud-btn--sm sede__editar" (click)="abrirEdicion(s)">
+              <lucide-icon [img]="Icons.Pencil" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+              Editar sede
+            </button>
+          </div>
+        </article>
+      }
+    </section>
+  } @else {
+    <section class="crud-card">
+      <app-estado-vacio [cargando]="cargando()" [icono]="Icons.Store" titulo="Aún no hay sedes"
+        mensaje="Registra tu primer local con su dirección, horario y zonas de reparto.">
+        <button type="button" class="crud-btn crud-btn--primario crud-btn--sm" (click)="abrirNueva()">Crear sede</button>
+      </app-estado-vacio>
+    </section>
+  }
+
+  @if (modalAbierto()) {
+    <app-panel-modal [titulo]="editando() ? 'Editar sede' : 'Nueva sede'" ancho="xl" (cerrar)="cerrar()"
+      descripcion="La ubicación y el radio definen hasta dónde llega el delivery.">
+      <form id="form-sede" class="crud-form" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        @if (errorFormulario(); as error) {
+          <p class="crud-aviso" role="alert">{{ error }}</p>
+        }
+        <div class="sede-form">
+          <div>
+            <p class="crud-subtitulo">Datos de la sede</p>
+            <div class="crud-grid-2">
+              <app-text-field label="Nombre" [required]="true" [maxlength]="100" placeholder="Ej. Toto's Calle Lima" formControlName="nombre" />
+              <app-text-field label="Teléfono" type="tel" inputmode="tel" [maxlength]="9" placeholder="9XXXXXXXX" [required]="true" formControlName="telefono" />
+            </div>
+            <app-imagen-field etiqueta="Foto del local" carpeta="SUCURSALES" formControlName="imagenUrl" />
+
+            <div formGroupName="direccion">
+              <p class="crud-subtitulo">Ubicación</p>
+              <app-text-field label="Dirección" [required]="true" [maxlength]="200" formControlName="direccion" />
+              <div class="crud-grid-2">
+                <app-text-field label="Distrito" [required]="true" [maxlength]="80" formControlName="distrito" />
+                <app-text-field label="Referencia" [maxlength]="200" formControlName="referencia" />
+                <app-text-field label="Latitud" type="number" inputmode="numeric" [required]="true" placeholder="-14.0678" formControlName="latitud" />
+                <app-text-field label="Longitud" type="number" inputmode="numeric" [required]="true" placeholder="-75.7286" formControlName="longitud" />
+              </div>
+            </div>
+            <button type="button" class="crud-btn crud-btn--sm" (click)="usarMiUbicacion()">
+              <lucide-icon [img]="Icons.MapPin" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+              Usar mi ubicación actual
+            </button>
+          </div>
+
+          <div>
+            <p class="crud-subtitulo">Horario de atención</p>
+            <div class="horario" formArrayName="horarios">
+              @for (h of horarios.controls; track $index; let i = $index) {
+                <div class="horario__fila" [formGroupName]="i" [class.is-cerrado]="h.controls.cerrado.value">
+                  <button type="button" class="crud-switch" role="switch" [attr.aria-checked]="!h.controls.cerrado.value"
+                    [attr.aria-label]="dias[i].etiqueta + (h.controls.cerrado.value ? ' cerrado' : ' abierto')" (click)="alternarDia(i)"></button>
+                  <span class="horario__dia">{{ dias[i].etiqueta }}</span>
+                  @if (h.controls.cerrado.value) {
+                    <span class="horario__cerrado">Cerrado</span>
+                  } @else {
+                    <input type="time" formControlName="horaApertura" [attr.aria-label]="'Apertura ' + dias[i].etiqueta" />
+                    <span aria-hidden="true">–</span>
+                    <input type="time" formControlName="horaCierre" [attr.aria-label]="'Cierre ' + dias[i].etiqueta" />
+                  }
+                </div>
+              }
+            </div>
+            <small class="nota">Si el cierre es antes que la apertura, el horario cruza la medianoche.</small>
+
+            <p class="crud-subtitulo">Reparto</p>
+            <app-text-field label="Radio de cobertura (km)" type="number" inputmode="numeric" [min]="'0.5'" [max]="'10'" [required]="true" formControlName="radioCoberturaKm" />
+            <div class="crud-lista-editable" formArrayName="zonas">
+              @for (z of zonas.controls; track z; let i = $index) {
+                <div class="crud-lista-editable__fila" [formGroupName]="i">
+                  <div class="zona">
+                    <app-text-field label="Zona" [required]="true" [maxlength]="60" formControlName="nombre" />
+                    <app-text-field label="Desde (km)" type="number" inputmode="numeric" [min]="'0'" [required]="true" formControlName="distanciaDesdeKm" />
+                    <app-text-field label="Hasta (km)" type="number" inputmode="numeric" [min]="'0'" [required]="true" formControlName="distanciaHastaKm" />
+                    <app-text-field label="Envío (S/)" type="number" inputmode="numeric" [min]="'0'" [required]="true" formControlName="costoEnvio" />
+                  </div>
+                  <button type="button" class="crud-icono-btn crud-icono-btn--peligro" [attr.aria-label]="'Quitar zona ' + (i + 1)" (click)="quitarZona(i)">
+                    <lucide-icon [img]="Icons.Trash2" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                  </button>
+                </div>
+              } @empty {
+                <app-estado-vacio [compacto]="true" [icono]="Icons.Route" titulo="Sin zonas" mensaje="Se cobrará el costo de delivery base de Configuración." />
+              }
+            </div>
+            <button type="button" class="crud-btn crud-btn--sm" (click)="agregarZona()" [disabled]="zonas.length >= 10">+ Agregar zona</button>
+
+            <div class="crud-fila-switch activa">
+              <span>Sede activa<small>Inactiva = no recibe pedidos online.</small></span>
+              <button type="button" class="crud-switch" role="switch" aria-label="Sede activa" [attr.aria-checked]="form.controls.activa.value"
+                (click)="form.controls.activa.setValue(!form.controls.activa.value)"></button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div acciones>
+        <button type="button" class="crud-btn" (click)="cerrar()" [disabled]="guardando()">Cancelar</button>
+        <button type="submit" form="form-sede" class="crud-btn crud-btn--primario" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : editando() ? 'Guardar cambios' : 'Crear sede' }}
+        </button>
+      </div>
+    </app-panel-modal>
+  }
+</div>

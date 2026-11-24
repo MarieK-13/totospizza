@@ -28,6 +28,7 @@ public record PedidoResponse(
         Instant vencimientoRecojo,
         boolean garantiaAplicada,
         PagoResponse pago,
-        List<HistorialEstadoResponse> historial
+        List<HistorialEstadoResponse> historial,
+        boolean resenado
 ) {
 }

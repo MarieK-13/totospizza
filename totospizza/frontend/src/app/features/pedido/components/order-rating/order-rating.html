@@ -18,6 +18,26 @@
   </div>
   <p class="opinion__nota" aria-live="polite">{{ textos[sobre() || calificacion()] || 'Toca una estrella' }}</p>
 
+  @if (productos().length) {
+    <div class="productos">
+      <p class="productos__titulo">Califica cada producto <span>(opcional)</span></p>
+      @for (prod of productos(); track prod.productoId) {
+        <div class="productos__fila">
+          <span class="productos__nombre">{{ prod.nombre }}</span>
+          <span class="productos__estrellas" role="radiogroup" [attr.aria-label]="'Calificación de ' + prod.nombre">
+            @for (n of estrellas; track n) {
+              <button type="button" role="radio" class="productos__estrella" [class.is-llena]="(porProducto()[prod.productoId] ?? 0) >= n"
+                [attr.aria-checked]="porProducto()[prod.productoId] === n" [attr.aria-label]="n + (n === 1 ? ' estrella' : ' estrellas')"
+                (click)="calificarProducto(prod.productoId, n)">
+                <lucide-icon [img]="StarIcon" [size]="20" [strokeWidth]="1.6" aria-hidden="true"></lucide-icon>
+              </button>
+            }
+          </span>
+        </div>
+      }
+    </div>
+  }
+
   <label class="opinion__etiqueta" for="opinion-comentario">Cuéntanos más <span>(opcional)</span></label>
   <textarea id="opinion-comentario" class="opinion__comentario" rows="3" [attr.maxlength]="maxComentario"
     placeholder="La masa, el tiempo de entrega, el motorizado…" [value]="comentario()" (input)="escribir($event)"></textarea>
