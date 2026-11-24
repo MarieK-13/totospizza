@@ -55,19 +55,19 @@
                 <div class="campo">
                   <label class="campo__etiqueta" for="entrega-direccion">Calle y número</label>
                   <input id="entrega-direccion" class="campo__input" [class.is-error]="errorDireccion()" type="text" autocomplete="street-address" placeholder="Ej. Av. San Martín 450"
-                    [maxlength]="MAX_DIRECCION" [value]="direccion()" (input)="escribir('direccion', $event)" [attr.aria-invalid]="!!errorDireccion()" aria-describedby="error-direccion" />
+                    [attr.maxlength]="MAX_DIRECCION" [value]="direccion()" (input)="escribir('direccion', $event)" [attr.aria-invalid]="!!errorDireccion()" aria-describedby="error-direccion" />
                   <p id="error-direccion" class="campo__error">{{ errorDireccion() }}</p>
                 </div>
                 <div class="campo">
                   <label class="campo__etiqueta" for="entrega-distrito">Distrito</label>
                   <input id="entrega-distrito" class="campo__input" [class.is-error]="errorDistrito()" type="text" autocomplete="address-level2" placeholder="Ej. Ica"
-                    [maxlength]="MAX_DISTRITO" [value]="distrito()" (input)="escribir('distrito', $event)" [attr.aria-invalid]="!!errorDistrito()" aria-describedby="error-distrito" />
+                    [attr.maxlength]="MAX_DISTRITO" [value]="distrito()" (input)="escribir('distrito', $event)" [attr.aria-invalid]="!!errorDistrito()" aria-describedby="error-distrito" />
                   <p id="error-distrito" class="campo__error">{{ errorDistrito() }}</p>
                 </div>
                 <div class="campo campo--ancho">
                   <label class="campo__etiqueta" for="entrega-referencia">Referencia <small>opcional</small></label>
                   <input id="entrega-referencia" class="campo__input" type="text" placeholder="Ej. frente al parque, casa verde"
-                    [maxlength]="MAX_REFERENCIA" [value]="referencia()" (input)="escribir('referencia', $event)" />
+                    [attr.maxlength]="MAX_REFERENCIA" [value]="referencia()" (input)="escribir('referencia', $event)" />
                 </div>
               </div>
             } @else {
