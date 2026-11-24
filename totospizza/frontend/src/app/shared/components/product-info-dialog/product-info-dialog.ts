@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, ElementRef, computed, effect, input, output, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ChefHat, FileText, Info, LucideAngularModule, ShieldCheck, TriangleAlert, X } from 'lucide-angular';
+import { LucideAngularModule, Pizza, ShieldCheck, TriangleAlert, X } from 'lucide-angular';
 import type { ProductoResumenResponse } from '../../../core/models/api';
 import { formatearSoles } from '../../../core/utils/money';
 import { nombreCorto, separarEtiquetas } from '../../../core/utils/etiquetas';
+import { imagenDeProducto } from '../../../core/utils/producto-imagen';
 
 /** Datos mínimos que necesita la ficha; sirven tanto el resumen del menú como el detalle. */
-export type FichaProducto = Pick<ProductoResumenResponse, 'nombre' | 'slug' | 'descripcion' | 'ingredientes' | 'etiquetas' | 'precioDesde'>;
+export type FichaProducto = Pick<ProductoResumenResponse, 'nombre' | 'slug' | 'descripcion' | 'ingredientes' | 'etiquetas' | 'precioDesde' | 'imagenUrl'>;
 
 /**
  * Ficha informativa de un producto (alérgenos y descripción) en un modal.
@@ -29,18 +30,26 @@ export class ProductInfoDialog {
   private readonly dialogo = viewChild.required<ElementRef<HTMLDialogElement>>('dialogo');
 
   protected readonly grupos = computed(() => separarEtiquetas(this.producto()?.etiquetas ?? []));
-  protected readonly contiene = computed(() => this.grupos().contiene.map(nombreCorto).join(', '));
-  protected readonly libres = computed(() =>
-    this.grupos()
-      .libres.map((e) => e.nombre.replace(/^sin\s+/i, ''))
-      .join(', '),
+  /** Alérgenos presentes, uno por chip: ["Gluten", "Lácteos"]. */
+  protected readonly contiene = computed(() => this.grupos().contiene.map(nombreCorto));
+  /** Garantías de ausencia: ["Sin lácteos"]. */
+  protected readonly libres = computed(() => this.grupos().libres.map((e) => e.nombre));
+  /** "Masa, salsa de tomate y mozzarella" → ["Masa", "Salsa de tomate", "Mozzarella"]. */
+  protected readonly ingredientes = computed(() =>
+    (this.producto()?.ingredientes ?? '')
+      .split(/,|\sy\s/)
+      .map((i) => i.trim().replace(/\.$/, ''))
+      .filter(Boolean)
+      .map((i) => i.charAt(0).toUpperCase() + i.slice(1)),
   );
+  protected readonly imagen = computed(() => {
+    const p = this.producto();
+    return p ? imagenDeProducto(p) : null;
+  });
   protected readonly precio = computed(() => formatearSoles(this.producto()?.precioDesde ?? 0));
 
   protected readonly CloseIcon = X;
-  protected readonly InfoIcon = Info;
-  protected readonly DescIcon = FileText;
-  protected readonly IngredientesIcon = ChefHat;
+  protected readonly PizzaIcon = Pizza;
   protected readonly AlertIcon = TriangleAlert;
   protected readonly SafeIcon = ShieldCheck;
 

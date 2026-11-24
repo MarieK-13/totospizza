@@ -1,67 +1,76 @@
 <dialog #dialogo class="info" aria-labelledby="info-titulo" (click)="alPulsar($event)" (cancel)="alCancelar($event)">
   @if (producto(); as p) {
-    <header class="info__cabecera">
-      <div>
-        <p class="info__sobre">
-          <lucide-icon [img]="InfoIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
-          Información adicional
+    <div class="info__desliza">
+      <figure class="portada">
+        @if (imagen(); as src) {
+          <img class="portada__foto" [src]="src" alt="" />
+        } @else {
+          <span class="portada__vacia"><lucide-icon [img]="PizzaIcon" [size]="56" [strokeWidth]="1" aria-hidden="true"></lucide-icon></span>
+        }
+        <button type="button" class="portada__cerrar" (click)="cerrar()" aria-label="Cerrar">
+          <lucide-icon [img]="CloseIcon" [size]="18" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
+        </button>
+      </figure>
+
+      <div class="info__cuerpo">
+        <header class="info__cabecera">
+          <h2 id="info-titulo" class="info__titulo">{{ p.nombre }}</h2>
+          <p class="info__descripcion">{{ p.descripcion }}</p>
+        </header>
+
+        <!-- Lo importante para la salud va primero y destacado -->
+        @if (contiene().length > 0) {
+          <section class="alerta" aria-labelledby="alerta-titulo">
+            <span class="alerta__icono"><lucide-icon [img]="AlertIcon" [size]="20" [strokeWidth]="2" aria-hidden="true"></lucide-icon></span>
+            <div>
+              <h3 id="alerta-titulo" class="alerta__titulo">Contiene alérgenos</h3>
+              <ul class="chips">
+                @for (a of contiene(); track a) {
+                  <li class="chip chip--alerta">{{ a }}</li>
+                }
+              </ul>
+            </div>
+          </section>
+        }
+
+        @if (libres().length > 0) {
+          <section class="bloque" aria-labelledby="libre-titulo">
+            <h3 id="libre-titulo" class="bloque__titulo">
+              <lucide-icon [img]="SafeIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+              Apto para ti si evitas
+            </h3>
+            <ul class="chips">
+              @for (l of libres(); track l) {
+                <li class="chip chip--libre">{{ l }}</li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (ingredientes().length > 0) {
+          <section class="bloque" aria-labelledby="ingredientes-titulo">
+            <h3 id="ingredientes-titulo" class="bloque__titulo">Lo que lleva</h3>
+            <ul class="chips">
+              @for (i of ingredientes(); track i) {
+                <li class="chip">{{ i }}</li>
+              }
+            </ul>
+          </section>
+        }
+
+        <p class="info__nota">
+          @if (contiene().length === 0 && libres().length === 0) {
+            Este producto aún no tiene alérgenos registrados. Si tienes una alergia, escríbenos antes de pedir.
+          } @else {
+            ¿Alergia severa? Escríbenos antes de pedir: en cocina compartimos superficies y puede haber trazas.
+          }
         </p>
-        <h2 id="info-titulo" class="info__titulo">{{ p.nombre }}</h2>
       </div>
-      <button type="button" class="info__cerrar" (click)="cerrar()" aria-label="Cerrar">
-        <lucide-icon [img]="CloseIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
-      </button>
-    </header>
-
-    <div class="info__cuerpo">
-      <section class="dato">
-        <span class="dato__icono"><lucide-icon [img]="DescIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon></span>
-        <div>
-          <h3 class="dato__titulo">Descripción</h3>
-          <p class="dato__texto">{{ p.descripcion }}</p>
-        </div>
-      </section>
-
-      @if (p.ingredientes) {
-        <section class="dato">
-          <span class="dato__icono"><lucide-icon [img]="IngredientesIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon></span>
-          <div>
-            <h3 class="dato__titulo">Ingredientes</h3>
-            <p class="dato__texto">{{ p.ingredientes }}</p>
-          </div>
-        </section>
-      }
-
-      @if (contiene()) {
-        <section class="dato dato--alerta">
-          <span class="dato__icono"><lucide-icon [img]="AlertIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon></span>
-          <div>
-            <h3 class="dato__titulo">Contiene alérgenos</h3>
-            <p class="dato__texto">{{ contiene() }}</p>
-          </div>
-        </section>
-      }
-
-      @if (libres()) {
-        <section class="dato dato--libre">
-          <span class="dato__icono"><lucide-icon [img]="SafeIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon></span>
-          <div>
-            <h3 class="dato__titulo">Libre de</h3>
-            <p class="dato__texto">{{ libres() }}</p>
-          </div>
-        </section>
-      }
-
-      @if (!contiene() && !libres()) {
-        <p class="info__vacio">Este producto no tiene información de alérgenos registrada. Si tienes una alergia, consúltanos antes de pedir.</p>
-      } @else {
-        <p class="info__nota">Si tienes una alergia severa, consúltanos antes de pedir: podría haber trazas por producción compartida.</p>
-      }
     </div>
 
     <footer class="info__pie">
       @if (conEnlace()) {
-        <a class="info__accion" [routerLink]="['/menu', p.slug]" (click)="cerrar()">Ver detalle y pedir · desde {{ precio() }}</a>
+        <a class="info__accion" [routerLink]="['/menu', p.slug]" (click)="cerrar()">Elegir tamaño y pedir, desde {{ precio() }}</a>
       } @else {
         <button type="button" class="info__accion" (click)="cerrar()">Entendido</button>
       }

@@ -8,7 +8,8 @@ import { LocalesService } from '../../../core/services/locales.service';
 import { mensajeDeError } from '../../../core/utils/api-exception';
 import { formatearSoles } from '../../../core/utils/money';
 
-export type AccionEntrega = 'agregar' | 'comprar';
+/** agregar / comprar: confirma y sigue con la compra. elegir: solo guarda cómo se recibe el pedido. */
+export type AccionEntrega = 'agregar' | 'comprar' | 'elegir';
 
 type Consulta =
   | { readonly tipo: 'inicial' }
@@ -20,6 +21,12 @@ const MENSAJES_GEOLOCALIZACION: Readonly<Record<number, string>> = {
   1: 'Necesitamos permiso para ver tu ubicación. Actívalo en el navegador e intenta de nuevo.',
   2: 'No pudimos detectar tu ubicación. Revisa que el GPS esté activo.',
   3: 'Tardamos demasiado en detectar tu ubicación. Intenta de nuevo.',
+};
+
+const TEXTO_BOTON: Readonly<Record<AccionEntrega, string>> = {
+  agregar: 'Confirmar y agregar',
+  comprar: 'Confirmar y comprar',
+  elegir: 'Guardar',
 };
 
 /** Límites de DireccionRequest en el backend. */
@@ -75,7 +82,7 @@ export class EntregaDialog {
   protected readonly puedeConfirmar = computed(() =>
     this.tipo() === 'RECOJO' ? this.locales().some((l) => l.abiertoAhora) : !!this.cobertura()?.dentroCobertura && this.cobertura()?.sucursalId != null,
   );
-  protected readonly textoBoton = computed(() => (this.accion() === 'comprar' ? 'Confirmar y comprar' : 'Confirmar y agregar'));
+  protected readonly textoBoton = computed(() => TEXTO_BOTON[this.accion() ?? 'elegir']);
 
   protected readonly soles = formatearSoles;
   protected readonly MAX_DIRECCION = MAX_DIRECCION;

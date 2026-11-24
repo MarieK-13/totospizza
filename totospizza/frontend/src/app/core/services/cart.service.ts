@@ -1,7 +1,7 @@
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { EMPTY, Observable, catchError, concatMap, from, map, of, switchMap, tap, toArray } from 'rxjs';
 import { peticionSilenciosa } from '../interceptors/http-context';
-import type { ActualizarItemCarritoRequest, AgregarProductoRequest, CarritoResponse } from '../models/api';
+import type { ActualizarItemCarritoRequest, AgregarProductoRequest, CarritoResponse, ItemCarritoResponse } from '../models/api';
 import { ClienteApi } from './api/cliente.api';
 import { AuthService } from './auth.service';
 import { ToastService } from './toast.service';
@@ -12,7 +12,28 @@ const CLAVE_INVITADO = 'toto.carrito.invitado';
 export interface ReferenciaItem {
   readonly nombre: string;
   readonly precioUnitario: number;
+  readonly imagenUrl: string | null;
+  /** Opciones elegidas en texto: "Personal, Clásica, Queso extra". */
+  readonly detalle: string;
 }
+
+/** Línea del carrito lista para mostrar, venga del backend o del navegador. */
+export interface LineaCarrito {
+  readonly clave: string;
+  /** id del ítem en el backend; null si es del carrito del invitado. */
+  readonly itemId: number | null;
+  /** posición en el carrito del invitado; null si es del backend. */
+  readonly indice: number | null;
+  readonly nombre: string;
+  readonly detalle: string;
+  readonly imagenUrl: string | null;
+  readonly cantidad: number;
+  readonly precioUnitario: number;
+  readonly subtotal: number;
+  readonly notas: string | null;
+}
+
+export const CANTIDAD_MAXIMA_ITEM = 20;
 
 /** Ítem guardado en el navegador mientras no hay sesión; se envía al backend al iniciar sesión. */
 export interface ItemInvitado extends ReferenciaItem {
@@ -51,6 +72,27 @@ export class CartService {
       : (this._carrito()?.montos.total ?? 0),
   );
   readonly vacio = computed(() => this.cantidad() === 0);
+
+  readonly lineas = computed<readonly LineaCarrito[]>(() =>
+    this.esInvitado()
+      ? this._invitado().map((item, indice) => ({
+          clave: `local-${indice}`,
+          itemId: null,
+          indice,
+          nombre: item.nombre,
+          detalle: item.detalle ?? '',
+          imagenUrl: item.imagenUrl ?? null,
+          cantidad: item.solicitud.cantidad,
+          precioUnitario: item.precioUnitario,
+          subtotal: redondear(item.precioUnitario * item.solicitud.cantidad),
+          notas: item.solicitud.notas ?? null,
+        }))
+      : (this._carrito()?.items ?? []).map(lineaDelBackend),
+  );
+  /** Suma de productos sin envío. */
+  readonly subtotal = computed(() =>
+    this.esInvitado() ? this.total() : (this._carrito()?.montos.subtotal ?? 0),
+  );
 
   constructor() {
     effect(() => {
@@ -91,9 +133,34 @@ export class CartService {
     return this.api.quitarItem(itemId).pipe(tap((c) => this._carrito.set(c)));
   }
 
-  /** Quita un ítem del carrito del invitado por su posición. */
-  quitarInvitado(indice: number): void {
-    this.guardarInvitado(this._invitado().filter((_, i) => i !== indice));
+  /** Cambia la cantidad de una línea (1–20), esté en el backend o en el navegador. */
+  cambiarCantidad(linea: LineaCarrito, cantidad: number): Observable<void> {
+    const nueva = Math.min(CANTIDAD_MAXIMA_ITEM, Math.max(1, cantidad));
+    if (linea.indice !== null) {
+      this.guardarInvitado(
+        this._invitado().map((item, i) => (i === linea.indice ? { ...item, solicitud: { ...item.solicitud, cantidad: nueva } } : item)),
+      );
+      return of(undefined);
+    }
+    if (linea.itemId === null) return of(undefined);
+    return this.actualizar(linea.itemId, { cantidad: nueva, notas: linea.notas }).pipe(map(() => undefined));
+  }
+
+  quitarLinea(linea: LineaCarrito): Observable<void> {
+    if (linea.indice !== null) {
+      this.guardarInvitado(this._invitado().filter((_, i) => i !== linea.indice));
+      return of(undefined);
+    }
+    if (linea.itemId === null) return of(undefined);
+    return this.quitar(linea.itemId).pipe(map(() => undefined));
+  }
+
+  vaciarTodo(): Observable<void> {
+    if (this.esInvitado()) {
+      this.guardarInvitado([]);
+      return of(undefined);
+    }
+    return this.vaciar().pipe(map(() => undefined));
   }
 
   vaciar(): Observable<CarritoResponse> {
@@ -148,6 +215,22 @@ function leerInvitado(): readonly ItemInvitado[] {
   } catch {
     return [];
   }
+}
+
+function lineaDelBackend(item: ItemCarritoResponse): LineaCarrito {
+  const extras = item.adicionales.map((a) => (a.cantidad > 1 ? `${a.nombre} ×${a.cantidad}` : a.nombre));
+  return {
+    clave: `item-${item.id}`,
+    itemId: item.id,
+    indice: null,
+    nombre: item.nombre,
+    detalle: [item.tamano, item.tipoMasa, ...extras].filter(Boolean).join(', '),
+    imagenUrl: item.imagenUrl,
+    cantidad: item.cantidad,
+    precioUnitario: item.precioUnitario,
+    subtotal: item.subtotal,
+    notas: item.notas,
+  };
 }
 
 function redondear(monto: number): number {

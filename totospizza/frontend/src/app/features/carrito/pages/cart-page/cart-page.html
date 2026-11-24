@@ -1,0 +1,138 @@
+<div class="wrap carrito">
+  <header class="carrito__cabecera">
+    <div>
+      <h1 class="carrito__titulo">Tu carrito</h1>
+      @if (!cart.vacio()) {
+        <p class="carrito__conteo">{{ cart.cantidad() }} {{ cart.cantidad() === 1 ? 'producto' : 'productos' }}</p>
+      }
+    </div>
+    @if (!cart.vacio()) {
+      <button type="button" class="btn btn--secondary btn--sm" (click)="vaciar()" [disabled]="ocupado() !== null">
+        <lucide-icon [img]="TrashIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        Vaciar carrito
+      </button>
+    }
+  </header>
+
+  @if (cart.vacio()) {
+    <div class="vacio">
+      <span class="vacio__icono"><lucide-icon [img]="BagIcon" [size]="32" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon></span>
+      <h2 class="vacio__titulo">Tu carrito está vacío</h2>
+      <p class="vacio__texto">Elige tus pizzas, bebidas y salsas en el menú.</p>
+      <a routerLink="/menu" class="btn btn--primary">Ver el menú</a>
+    </div>
+  } @else {
+    <div class="carrito__cuerpo">
+      <ul class="lineas" aria-label="Productos en tu carrito">
+        @for (linea of lineas(); track linea.clave) {
+          <li class="linea" [class.is-ocupada]="ocupado() === linea.clave">
+            <span class="linea__foto">
+              @if (linea.imagenUrl) {
+                <img [src]="linea.imagenUrl" alt="" loading="lazy" />
+              } @else {
+                <lucide-icon [img]="PizzaIcon" [size]="28" [strokeWidth]="1.2" aria-hidden="true"></lucide-icon>
+              }
+            </span>
+
+            <div class="linea__texto">
+              <p class="linea__nombre">{{ linea.nombre }}</p>
+              @if (linea.detalle) {
+                <p class="linea__detalle">{{ linea.detalle }}</p>
+              }
+              @if (linea.notas) {
+                <p class="linea__notas">Nota: {{ linea.notas }}</p>
+              }
+              <p class="linea__unitario">{{ soles(linea.precioUnitario) }} c/u</p>
+            </div>
+
+            <div class="contador" role="group" [attr.aria-label]="'Cantidad de ' + linea.nombre">
+              <button type="button" class="contador__boton" [disabled]="linea.cantidad <= 1 || ocupado() !== null" (click)="cambiarCantidad(linea, -1)" aria-label="Una menos">
+                <lucide-icon [img]="MinusIcon" [size]="14" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
+              </button>
+              <output class="contador__valor">{{ linea.cantidad }}</output>
+              <button type="button" class="contador__boton" [disabled]="linea.cantidad >= CANTIDAD_MAXIMA || ocupado() !== null" (click)="cambiarCantidad(linea, 1)" aria-label="Una más">
+                <lucide-icon [img]="PlusIcon" [size]="14" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
+              </button>
+            </div>
+
+            <p class="linea__subtotal">{{ soles(linea.subtotal) }}</p>
+
+            <button type="button" class="linea__quitar" [disabled]="ocupado() !== null" (click)="quitar(linea)" [attr.aria-label]="'Quitar ' + linea.nombre">
+              <lucide-icon [img]="RemoveIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+            </button>
+          </li>
+        }
+      </ul>
+
+      <aside class="resumen" aria-labelledby="resumen-titulo">
+        <div class="resumen__cabecera">
+          <h2 id="resumen-titulo" class="resumen__titulo">Resumen y entrega</h2>
+          @if (entrega(); as e) {
+            <span class="etiqueta-entrega">
+              <lucide-icon [img]="e.tipo === 'RECOJO' ? StoreIcon : BikeIcon" [size]="14" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+              {{ e.tipo === 'RECOJO' ? 'Recojo en tienda' : 'Delivery' }}
+            </span>
+          }
+        </div>
+
+        <div class="destino">
+          @if (entrega(); as e) {
+            <p class="destino__texto">
+              <lucide-icon [img]="PinIcon" [size]="15" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+              {{ e.tipo === 'RECOJO' ? e.sucursalNombre : e.direccion.direccion + ', ' + e.direccion.distrito }}
+            </p>
+            <button type="button" class="destino__cambiar" (click)="elegirEntrega()">Cambiar</button>
+          } @else {
+            <p class="destino__texto destino__texto--falta">Elige delivery o recojo en tienda para ver el envío.</p>
+            <button type="button" class="destino__cambiar" (click)="elegirEntrega()">Elegir</button>
+          }
+        </div>
+
+        @if (mostrarEnvioGratis()) {
+          <div class="gratis">
+            <p class="gratis__texto">
+              @if (faltaEnvioGratis() > 0) {
+                Te faltan <strong>{{ soles(faltaEnvioGratis()) }}</strong> para el envío gratis
+              } @else {
+                <strong>Tu envío es gratis</strong>
+              }
+            </p>
+            <div class="gratis__barra" role="progressbar" aria-label="Avance al envío gratis" [attr.aria-valuenow]="avanceEnvioGratis()" aria-valuemin="0" aria-valuemax="100">
+              <span class="gratis__relleno" [style.width.%]="avanceEnvioGratis()"></span>
+            </div>
+          </div>
+        }
+
+        <dl class="montos">
+          <div class="montos__fila">
+            <dt>Subtotal</dt>
+            <dd>{{ soles(subtotal()) }}</dd>
+          </div>
+          <div class="montos__fila">
+            <dt>Envío</dt>
+            <dd>{{ envio() === null ? 'Por elegir' : envio() === 0 ? 'Gratis' : soles(envio()) }}</dd>
+          </div>
+          <div class="montos__fila montos__fila--total">
+            <dt>Total</dt>
+            <dd>{{ soles(total()) }}</dd>
+          </div>
+        </dl>
+        <p class="resumen__nota">{{ aviso() ?? 'El total final se confirma al pagar online.' }}</p>
+
+        @if (esPersonal()) {
+          <p class="resumen__nota">Las cuentas del personal no hacen pedidos.</p>
+        } @else if (cart.esInvitado()) {
+          <p class="resumen__login">Inicia sesión para pagar online. Tu carrito se guarda.</p>
+          <a routerLink="/login" [queryParams]="{ returnUrl: '/carrito' }" class="btn btn--primary btn--lg btn--block">Iniciar sesión</a>
+          <p class="resumen__registro">¿Primera vez? <a routerLink="/registro" [queryParams]="{ returnUrl: '/carrito' }">Crea tu cuenta</a></p>
+        } @else {
+          <a routerLink="/checkout" class="btn btn--primary btn--lg btn--block" [class.is-bloqueado]="!entrega()" [attr.aria-disabled]="!entrega()">Continuar al pago</a>
+        }
+
+        <a routerLink="/menu" class="resumen__seguir">Seguir comprando</a>
+      </aside>
+    </div>
+  }
+</div>
+
+<app-entrega-dialog [accion]="accionEntrega()" (confirmado)="accionEntrega.set(null)" (cerrado)="accionEntrega.set(null)" />

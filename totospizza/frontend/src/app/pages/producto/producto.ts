@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal, untracked } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ArrowLeft, Check, Info, LucideAngularModule, Minus, Pizza, Plus, Star } from 'lucide-angular';
+import { ArrowLeft, Bike, Check, Info, LucideAngularModule, MapPin, Minus, Pizza, Plus, Star, Store } from 'lucide-angular';
 import { finalize, map, timeout } from 'rxjs';
 import { peticionSilenciosa } from '../../core/interceptors/http-context';
 import type { IngredienteResponse, TipoIngrediente } from '../../core/models/api';
 import { CatalogoService } from '../../core/services/catalogo.service';
 import { CartService } from '../../core/services/cart.service';
+import { EntregaService } from '../../core/services/entrega.service';
 import { ToastService } from '../../core/services/toast.service';
 import { esApiException } from '../../core/utils/api-exception';
 import { separarEtiquetas } from '../../core/utils/etiquetas';
@@ -42,6 +43,7 @@ export class Producto {
   private readonly toast = inject(ToastService);
   private readonly cart = inject(CartService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly entrega = inject(EntregaService);
 
   private readonly slug = toSignal(this.route.paramMap.pipe(map((p) => p.get('slug') ?? '')), { initialValue: '' });
 
@@ -104,6 +106,29 @@ export class Producto {
   protected readonly tieneCalificacion = computed(() => (this.producto()?.totalResenas ?? 0) > 0);
   protected readonly puedeComprar = this.cart.puedeComprar;
 
+  /** Opciones elegidas en texto, para la línea del carrito: "Familiar, Delgada, Queso extra ×2". */
+  private readonly detalleSeleccion = computed(() => {
+    const p = this.producto();
+    if (!p?.requiereTamano) return '';
+    const tamano = p.precios.find((x) => x.tamanoId === this.tamanoId())?.tamanoNombre;
+    const masa = p.tiposMasa.find((m) => m.id === this.tipoMasaId())?.nombre;
+    const extras = p.adicionales
+      .filter((i) => this.cantidadExtra(i) > 0)
+      .map((i) => (this.cantidadExtra(i) > 1 ? `${i.nombre} ×${this.cantidadExtra(i)}` : i.nombre));
+    return [tamano, masa, ...extras].filter(Boolean).join(', ');
+  });
+  protected readonly tieneEntrega = computed(() => this.entrega.actual() !== null);
+
+  /** Resumen de cómo recibe el pedido (columna de información). */
+  protected readonly resumenEntrega = computed(() => {
+    const e = this.entrega.actual();
+    if (!e) return null;
+    if (e.tipo === 'RECOJO') return { titulo: `Recojo en ${e.sucursalNombre}`, detalle: 'Sin costo de envío' };
+    const costo = e.costoEnvio === null ? null : e.costoEnvio === 0 ? 'Envío gratis' : `Envío ${formatearSoles(e.costoEnvio)}`;
+    const tiempo = e.minutosEstimados ? `llega en ${e.minutosEstimados} min aprox.` : null;
+    return { titulo: `Delivery a ${e.direccion.direccion}`, detalle: [costo, tiempo].filter(Boolean).join(', ') };
+  });
+
   protected readonly formatear = formatearSoles;
   protected readonly CANTIDAD_MAXIMA = CANTIDAD_MAXIMA;
   protected readonly EXTRA_MAXIMO = EXTRA_MAXIMO;
@@ -115,6 +140,9 @@ export class Producto {
   protected readonly MinusIcon = Minus;
   protected readonly InfoIcon = Info;
   protected readonly CheckIcon = Check;
+  protected readonly StoreIcon = Store;
+  protected readonly BikeIcon = Bike;
+  protected readonly PinIcon = MapPin;
 
   constructor() {
     // Al cargar otro producto se reinicia la selección con valores razonables (primer tamaño y primera masa)
@@ -165,26 +193,36 @@ export class Producto {
     this.notas.set((evento.target as HTMLTextAreaElement).value);
   }
 
-  /** "Agregar" y "Comprar ahora" pasan primero por el modal de entrega (delivery o recojo). */
+  /**
+   * La entrega es obligatoria: si aún no se eligió, "Agregar" y "Comprar ahora" abren primero el modal.
+   * Agregar: suma al carrito y se queda aquí. Comprar ahora: suma y lleva a /carrito (ahí se inicia sesión).
+   */
   protected agregar(evento: Event): void {
     evento.preventDefault();
-    this.abrirEntrega('agregar');
+    this.continuar('agregar');
   }
 
   protected comprarAhora(): void {
-    this.abrirEntrega('comprar');
+    this.continuar('comprar');
+  }
+
+  private continuar(accion: Exclude<AccionEntrega, 'elegir'>): void {
+    if (!this.producto() || this.enviando() || !this.puedeComprar() || !this.opcionesCompletas()) return;
+    if (this.entrega.actual()) this.enviar(accion === 'comprar');
+    else this.accionEntrega.set(accion);
+  }
+
+  /** "Elegir" / "Cambiar" en la columna de información: solo define la entrega. */
+  protected elegirEntrega(): void {
+    this.accionEntrega.set('elegir');
   }
 
   protected alConfirmarEntrega(): void {
     const accion = this.accionEntrega();
     this.accionEntrega.set(null);
-    if (accion) this.enviar(accion === 'comprar');
+    if (accion === 'agregar' || accion === 'comprar') this.enviar(accion === 'comprar');
   }
 
-  private abrirEntrega(accion: AccionEntrega): void {
-    if (!this.producto() || this.enviando() || !this.puedeComprar() || !this.opcionesCompletas()) return;
-    this.accionEntrega.set(accion);
-  }
 
   /** Agrega al carrito (con o sin sesión); con `irAlCarrito` continúa a /carrito (botón "Comprar ahora"). */
   private enviar(irAlCarrito: boolean): void {
@@ -205,7 +243,7 @@ export class Producto {
         cantidad: this.cantidad(),
         notas: this.notas().trim() || null,
         adicionales,
-      }, { nombre: p.nombre, precioUnitario: unitario })
+      }, { nombre: p.nombre, precioUnitario: unitario, imagenUrl: this.imagen(), detalle: this.detalleSeleccion() })
       .pipe(finalize(() => this.enviando.set(false)))
       .subscribe({
         next: () => {

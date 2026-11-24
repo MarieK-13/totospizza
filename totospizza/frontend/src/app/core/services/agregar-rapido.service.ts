@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { EMPTY, Observable, catchError, map, of, switchMap, tap } from 'rxjs';
 import { peticionSilenciosa } from '../interceptors/http-context';
+import { imagenDeProducto } from '../utils/producto-imagen';
 import { CatalogoService } from './catalogo.service';
 import { CartService } from './cart.service';
 import { ToastService } from './toast.service';
@@ -37,7 +38,7 @@ export class AgregarRapidoService {
           void this.router.navigate(['/menu', slug]);
           return of('opciones');
         }
-        return this.cart.agregar({ productoId: detalle.id, cantidad: 1 }, { nombre: detalle.nombre, precioUnitario: detalle.precioBase }).pipe(
+        return this.cart.agregar({ productoId: detalle.id, cantidad: 1 }, { nombre: detalle.nombre, precioUnitario: detalle.precioBase, imagenUrl: imagenDeProducto(detalle), detalle: '' }).pipe(
           tap(() => this.toast.success('Agregado al carrito', nombre)),
           map(() => 'agregado' as const),
         );

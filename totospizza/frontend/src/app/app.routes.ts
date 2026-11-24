@@ -40,6 +40,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/producto/producto').then((m) => m.Producto),
       },
       {
+        path: 'carrito',
+        title: "Tu carrito | Toto's Pizza",
+        loadComponent: () => import('./features/carrito/pages/cart-page/cart-page').then((m) => m.CartPage),
+      },
+      {
         path: 'terminos',
         title: "Términos y condiciones | Toto's Pizza",
         loadComponent: () => import('./pages/terminos/terminos').then((m) => m.Terminos),
