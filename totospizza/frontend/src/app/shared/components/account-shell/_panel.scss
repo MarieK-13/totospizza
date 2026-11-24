@@ -1,9 +1,6 @@
 @use '../../../../styles/tokens/variables' as *;
 @use '../../../../styles/mixins' as *;
 
-// Piezas visuales compartidas por las páginas de "Mi cuenta" (perfil y pedidos).
-
-/** Bloque con borde suave: cada sección de la cuenta. */
 @mixin panel {
   padding: $space-5;
   border: $border-width solid $color-border-default;
@@ -39,7 +36,6 @@
   line-height: 1.45;
 }
 
-/** Distintivo de estado del pedido: el color sale de la clase `--<tono>`. */
 @mixin estado {
   display: inline-flex;
   align-items: center;
@@ -85,7 +81,6 @@
   }
 }
 
-/** Aviso de error dentro de un formulario. */
 @mixin alerta {
   display: flex;
   align-items: flex-start;
@@ -100,7 +95,6 @@
   line-height: 1.4;
 }
 
-/** Estado vacío o de error de una lista. */
 @mixin vacio {
   display: flex;
   flex-direction: column;
@@ -125,7 +119,6 @@
   }
 }
 
-/** Botón principal en el marrón de la marca (igual que los modales de entrega). */
 @mixin boton-marron {
   border-color: $color-marron-suave;
   background-color: $color-marron-suave;

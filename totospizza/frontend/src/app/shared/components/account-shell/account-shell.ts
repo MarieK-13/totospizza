@@ -4,10 +4,6 @@ import { LogOut, LucideAngularModule, Package, UserRound } from 'lucide-angular'
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 
-/**
- * Marco común de "Mi cuenta": tarjeta del cliente + navegación lateral (pestañas en móvil)
- * y el contenido de cada página proyectado a la derecha.
- */
 @Component({
   selector: 'app-account-shell',
   imports: [RouterLink, RouterLinkActive, LucideAngularModule],

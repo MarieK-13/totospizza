@@ -1,7 +1,7 @@
 @use '../../../styles/tokens/variables' as *;
 @use '../../../styles/mixins' as *;
 
-$footer-bg: #3d322a; // Café cálido del prototipo
+$footer-bg: #3d322a;
 $footer-text: rgba($color-crema-masa, 0.78);
 $footer-line: rgba($color-crema-masa, 0.16);
 
@@ -54,7 +54,6 @@ $footer-line: rgba($color-crema-masa, 0.16);
     gap: $space-4;
   }
 
-  // El logo tiene fondo crema: se muestra sobre una pastilla crema
   &__logo {
     display: inline-flex;
     padding: $space-2 $space-4;

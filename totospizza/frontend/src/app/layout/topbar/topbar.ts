@@ -10,7 +10,6 @@ import { LucideAngularModule, Menu } from 'lucide-angular';
 })
 export class Topbar {
   readonly title = input('');
-  /** Muestra el botón que abre el panel lateral (solo en pantallas pequeñas). */
   readonly showMenuButton = input(true);
 
   readonly menuToggle = output<void>();

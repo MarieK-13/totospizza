@@ -10,18 +10,12 @@ import { OPCIONES_ORDEN, esOrdenMenu, ordenarMenu, type OrdenMenu } from '../../
 import { ProductCard } from '../../shared/components/product-card/product-card';
 import { ProductInfoDialog } from '../../shared/components/product-info-dialog/product-info-dialog';
 
-/** Máximo que acepta el backend por página; el menú de una pizzería cabe de sobra. */
 const TAMANO_PAGINA = 100;
-/** Si el servidor no responde, se muestra el error con "Reintentar" en vez de cargar para siempre. */
 const ESPERA_MAXIMA_MS = 15_000;
 const CLAVE_VISTA = 'toto.menu.vista';
 
 type Vista = 'grilla' | 'lista';
 
-/**
- * Menú. Categoría, etiqueta, búsqueda y orden viven en la URL
- * (?categoria=&etiqueta=&q=&orden=): se puede compartir un enlace y recargar no pierde nada.
- */
 @Component({
   selector: 'app-menu',
   imports: [LucideAngularModule, ProductCard, ProductInfoDialog],
@@ -39,7 +33,6 @@ export class Menu {
   protected readonly categoria = computed(() => this.params().get('categoria') ?? '');
   protected readonly etiqueta = computed(() => this.params().get('etiqueta') ?? '');
   protected readonly busqueda = computed(() => this.params().get('q') ?? '');
-  /** Tamaño elegido en "¿Para cuántos?" (?tamano=id). */
   protected readonly tamanoPizza = computed(() => {
     const valor = Number(this.params().get('tamano'));
     return Number.isInteger(valor) && valor > 0 ? valor : null;
@@ -95,14 +88,12 @@ export class Menu {
   protected readonly GroupIcon = Users;
 
   constructor() {
-    // El texto escrito se vuelca a la URL sin llenar el historial
     toObservable(this.texto)
       .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe((valor) => {
         if (valor.trim() !== this.busqueda()) this.navegar({ q: valor.trim() || null }, true);
       });
 
-    // Si la URL cambia desde afuera (limpiar filtros, atrás), el buscador la sigue
     effect(() => {
       const enUrl = this.busqueda();
       untracked(() => {
@@ -153,7 +144,6 @@ export class Menu {
     try {
       localStorage.setItem(CLAVE_VISTA, vista);
     } catch {
-      /* sin almacenamiento: la vista vale solo para esta visita */
     }
   }
 

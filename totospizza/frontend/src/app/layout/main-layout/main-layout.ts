@@ -5,7 +5,6 @@ import { SiteFooter } from '../footer/footer';
 import { SiteHeader } from '../header/header';
 import { OrderFab } from '../order-fab/order-fab';
 
-/** Estructura de las páginas públicas: aviso, header, contenido y footer. */
 @Component({
   selector: 'app-main-layout',
   imports: [RouterOutlet, AnnouncementBar, SiteHeader, SiteFooter, OrderFab],
@@ -16,7 +15,6 @@ import { OrderFab } from '../order-fab/order-fab';
 export class MainLayout {
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
 
-  /** Al cambiar de página: vuelve arriba y hace una entrada suave del contenido. */
   protected onPageActivate(): void {
     window.scrollTo({ top: 0 });
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;

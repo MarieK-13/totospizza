@@ -79,7 +79,6 @@
     line-height: 1.25;
   }
 
-  // Toda la tarjeta es clicable: el enlace del título cubre el área
   &__link {
     color: inherit;
     text-decoration: none;
@@ -104,7 +103,6 @@
     -webkit-box-orient: vertical;
   }
 
-  // Botón "i": por encima del enlace que cubre la tarjeta
   &__info {
     position: absolute;
     top: $space-3;
@@ -155,7 +153,6 @@
     }
   }
 
-  // Botón "+" cuadrado y rojo, por encima del enlace que cubre la tarjeta
   &__add {
     position: relative;
     z-index: 1;
@@ -202,7 +199,6 @@
   }
 }
 
-// ── Vista de lista: foto a un lado, datos al otro ───────────────────────────
 :host(.es-lista) .card {
   @include up(sm) {
     flex-direction: row;

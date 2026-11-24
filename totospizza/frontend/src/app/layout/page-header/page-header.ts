@@ -4,7 +4,6 @@ import { ChevronRight, LucideAngularModule } from 'lucide-angular';
 
 export interface Breadcrumb {
   readonly label: string;
-  /** Sin ruta = página actual. */
   readonly route?: string;
 }
 

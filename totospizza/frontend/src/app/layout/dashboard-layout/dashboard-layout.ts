@@ -5,7 +5,6 @@ import { Bell, LucideAngularModule } from 'lucide-angular';
 import { Sidebar } from '../sidebar/sidebar';
 import { Topbar } from '../topbar/topbar';
 
-/** Estructura del panel de administración: sidebar + topbar + contenido. */
 @Component({
   selector: 'app-dashboard-layout',
   imports: [RouterOutlet, Sidebar, Topbar, LucideAngularModule],

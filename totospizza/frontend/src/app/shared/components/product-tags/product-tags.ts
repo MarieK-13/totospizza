@@ -3,10 +3,6 @@ import { Leaf, LucideAngularModule, ShieldCheck, TriangleAlert } from 'lucide-an
 import type { EtiquetaResponse } from '../../../core/models/api';
 import { nombreCorto, separarEtiquetas } from '../../../core/utils/etiquetas';
 
-/**
- * Etiquetas de un producto. `compacto` cabe en una tarjeta; `completo` es la ficha del detalle
- * con los alérgenos en su propio bloque, para que no se pasen por alto.
- */
 @Component({
   selector: 'app-product-tags',
   imports: [LucideAngularModule],

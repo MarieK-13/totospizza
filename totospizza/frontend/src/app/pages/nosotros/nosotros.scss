@@ -5,7 +5,6 @@
   display: block;
 }
 
-// ── 1. Portada ────────────────────────────────────────────────────────────────
 .portada {
   padding-block: clamp(2.5rem, 6vw, 5rem);
   background-color: $color-background-canvas;
@@ -43,7 +42,6 @@
   }
 }
 
-// Collage: la foto principal manda; las otras dos la acompañan y el sello es el único acento
 .collage {
   position: relative;
   width: 100%;
@@ -113,7 +111,6 @@
   }
 }
 
-// ── 2. Datos ──────────────────────────────────────────────────────────────────
 .datos-franja {
   border-block: $border-width solid $color-border-default;
   background-color: $color-background-raised;
@@ -132,7 +129,6 @@
     padding: $space-5 $space-4;
     text-align: center;
 
-    // Separadores finos: agrupan las cifras sin encerrarlas en cajas
     & + & {
       border-left: $border-width solid $color-border-default;
     }
@@ -173,7 +169,6 @@
   }
 }
 
-// ── 3. Recorrido ──────────────────────────────────────────────────────────────
 .recorrido {
   --nodo: 2.75rem;
   --sangria: #{$space-4};
@@ -202,7 +197,6 @@
     align-items: center;
   }
 
-  // Tramos de línea entre un nodo y el siguiente: gris de fondo y rojo que avanza al hacer scroll
   &:not(:last-child)::before,
   &:not(:last-child)::after {
     content: '';
@@ -293,7 +287,6 @@
     }
   }
 
-  // Las etapas pares cambian de lado: se lee en zigzag sin perder el hilo
   @include up(md) {
     &--invertida &__foto {
       grid-column: 3;
@@ -333,7 +326,6 @@
   }
 }
 
-// El recorrido se dibuja con el scroll (solo donde el navegador lo soporta; si no, queda dibujado)
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .etapa {
@@ -369,7 +361,6 @@
   }
 }
 
-// ── 4. Cierre ─────────────────────────────────────────────────────────────────
 .cierre {
   padding-top: 0;
   background-color: $color-background-canvas;

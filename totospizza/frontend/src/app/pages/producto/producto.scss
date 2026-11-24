@@ -5,15 +5,11 @@
   display: block;
 }
 
-// Ocupa todo el ancho del contenedor (.wrap, hasta 1600px)
 .pagina {
   padding-block: $space-4 $space-7;
 }
 
-// Distancia desde arriba para lo que se queda fijo al hacer scroll
 $tope-fijo: calc(#{$header-height} + #{$space-4});
-// Escritorio: aviso + header + migas arriba y la barra de compra abajo ocupan ~16rem;
-// el panel de opciones toma el resto de la ventana para que la página no tenga que bajar.
 $alto-fuera-del-panel: 16rem;
 
 .migas {
@@ -37,7 +33,6 @@ $alto-fuera-del-panel: 16rem;
   }
 }
 
-// Móvil: una columna. Tablet: foto fija + (info y opciones). Escritorio: 3 columnas, foto e info fijas.
 .ficha {
   display: grid;
   grid-template-areas: 'media' 'info' 'opciones';
@@ -86,7 +81,6 @@ $alto-fuera-del-panel: 16rem;
     }
   }
 
-  // En escritorio la página no se mueve: solo este panel (pasos 1, 2, 3 y notas) se desliza
   &__opciones {
     grid-area: opciones;
     min-width: 0;
@@ -105,7 +99,6 @@ $alto-fuera-del-panel: 16rem;
   }
 }
 
-// Foto mediana y cuadrada; en pantallas grandes no pasa de 34rem
 .escenario {
   position: relative;
   width: 100%;
@@ -120,7 +113,6 @@ $alto-fuera-del-panel: 16rem;
     aspect-ratio: 1;
   }
 
-  // Que foto + botón de ingredientes quepan en la ventana sin bajar
   @include up(xl) {
     max-width: min(34rem, calc(100dvh - 20rem));
   }
@@ -152,7 +144,6 @@ $alto-fuera-del-panel: 16rem;
   }
 }
 
-// Debajo de la foto, fuera de ella
 .info-boton {
   display: inline-flex;
   align-items: center;
@@ -176,7 +167,6 @@ $alto-fuera-del-panel: 16rem;
   }
 }
 
-// ── Cómo recibirlo ──────────────────────────────────────────────────────────
 .recibir {
   margin: 0;
 
@@ -331,7 +321,6 @@ $alto-fuera-del-panel: 16rem;
   }
 }
 
-// Precio vivo: cambia con tamaño, masa y extras
 .precio {
   display: flex;
   align-items: baseline;
@@ -353,7 +342,6 @@ $alto-fuera-del-panel: 16rem;
   }
 }
 
-// ── Compra ───────────────────────────────────────────────────────────────────
 .compra {
   display: flex;
   flex-direction: column;
@@ -616,7 +604,6 @@ $alto-fuera-del-panel: 16rem;
   @include focus-ring;
 }
 
-// ── Barra de compra fija ─────────────────────────────────────────────────────
 .barra {
   position: sticky;
   bottom: 0;
@@ -625,7 +612,6 @@ $alto-fuera-del-panel: 16rem;
   background-color: rgba($color-background-raised, 0.96);
   backdrop-filter: blur(8px);
 
-  // Compacta y centrada: los botones quedan cerca unos de otros
   &__contenido {
     display: flex;
     align-items: center;
@@ -680,7 +666,6 @@ $alto-fuera-del-panel: 16rem;
     }
   }
 
-  // En móvil: contador y botones más compactos para que quepan en una sola fila
   @include down(sm) {
     &__contenido {
       gap: $space-2;
@@ -728,7 +713,6 @@ $alto-fuera-del-panel: 16rem;
   }
 }
 
-// ── Estados ──────────────────────────────────────────────────────────────────
 .estado {
   display: flex;
   flex-direction: column;

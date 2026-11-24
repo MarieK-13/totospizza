@@ -1,7 +1,6 @@
 @use '../../../../styles/tokens/variables' as *;
 @use '../../../../styles/mixins' as *;
 
-// Ficha de producto: foto arriba, alérgenos destacados, ingredientes como chips fáciles de escanear
 .info {
   width: min(100% - #{$space-6}, 32rem);
   max-height: calc(100dvh - #{$space-8});
@@ -100,14 +99,12 @@
   }
 }
 
-// ── Foto ────────────────────────────────────────────────────────────────────
 .portada {
   position: relative;
   height: 13rem;
   margin: 0;
   background-color: $color-crema-claro;
 
-  // Funde la foto con el cuerpo blanco
   &::after {
     content: '';
     position: absolute;
@@ -155,7 +152,6 @@
   }
 }
 
-// ── Alérgenos: el único bloque con fondo, para que se lea primero ───────────
 .alerta {
   display: flex;
   gap: $space-3;
@@ -232,7 +228,6 @@
   }
 }
 
-// Móvil: hoja inferior
 @include down(sm) {
   .info {
     width: 100%;

@@ -1,4 +1,3 @@
-<!-- 1. Encabezado -->
 <section class="band cabecera">
   <div class="wrap">
     <header class="section-head section-head--center">
@@ -17,7 +16,6 @@
       </p>
     </header>
 
-    <!-- 2. Selector + detalle: una sola tarjeta para que se lea como un conjunto -->
     @if (activa(); as sede) {
       <div class="visor">
         <div class="lista" role="tablist" aria-label="Locales de Toto's Pizza" aria-orientation="vertical" (keydown)="onTeclas($event)">
@@ -50,7 +48,6 @@
           </a>
         </div>
 
-        <!-- El panel se vuelve a crear al cambiar de local para que entre con una transición corta -->
         @for (actual of [sede]; track actual.id) {
           <article class="detalle" id="panel-local" role="tabpanel" [attr.aria-labelledby]="'tab-local-' + actual.id" tabindex="0">
             <div class="detalle__foto">
@@ -120,7 +117,6 @@
   </div>
 </section>
 
-<!-- 3. Delivery: es una secuencia, por eso va numerada y unida por una línea -->
 <section class="band band--tint delivery" aria-labelledby="delivery-titulo">
   <div class="wrap">
     <header class="section-head section-head--center">
@@ -151,7 +147,6 @@
   </div>
 </section>
 
-<!-- 4. Galería -->
 <section class="band galeria" aria-labelledby="galeria-titulo">
   <div class="wrap">
     <header class="section-head">

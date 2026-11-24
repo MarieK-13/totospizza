@@ -5,14 +5,6 @@ import { AgregarRapidoService } from '../../core/services/agregar-rapido.service
 
 const DURACION_AGREGADO_MS = 1600;
 
-/**
- * Convierte cualquier botón en "agregar al carrito" para un producto del menú.
- * Producto simple: lo agrega (con o sin sesión). Pizza: lleva al detalle para elegir tamaño y masa.
- *
- *   <button [appAgregarProducto]="producto" #agregar="agregar">
- *     {{ agregar.agregado() ? 'Agregado' : 'Agregar' }}
- *   </button>
- */
 @Directive({
   selector: '[appAgregarProducto]',
   exportAs: 'agregar',
@@ -45,7 +37,7 @@ export class AgregarProductoDirective {
           const espera = setTimeout(() => this.agregado.set(false), DURACION_AGREGADO_MS);
           this.destroyRef.onDestroy(() => clearTimeout(espera));
         },
-        error: () => undefined, // el aviso de error lo muestra el interceptor
+        error: () => undefined, 
       });
   }
 }

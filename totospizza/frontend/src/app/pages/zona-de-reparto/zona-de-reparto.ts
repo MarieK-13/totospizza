@@ -21,7 +21,6 @@ const MENSAJES_GEOLOCALIZACION: Readonly<Record<number, string>> = {
   3: 'Tardamos demasiado en detectar tu ubicación. Intenta de nuevo.',
 };
 
-/** Consulta si Toto's llega a la ubicación del cliente y muestra los costos de envío por zona. */
 @Component({
   selector: 'app-zona-de-reparto',
   imports: [RouterLink, LucideAngularModule],

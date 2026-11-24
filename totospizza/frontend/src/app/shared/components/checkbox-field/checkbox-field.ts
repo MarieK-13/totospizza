@@ -4,12 +4,6 @@ import { Check, LucideAngularModule } from 'lucide-angular';
 
 let nextId = 0;
 
-/**
- * Casilla reutilizable para formularios reactivos. La etiqueta es contenido proyectado,
- * así puede llevar enlaces (ej. "Acepto los <a>términos</a>").
- *
- *   <app-checkbox-field formControlName="recordarme">Recordarme</app-checkbox-field>
- */
 @Component({
   selector: 'app-checkbox-field',
   imports: [LucideAngularModule],

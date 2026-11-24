@@ -9,7 +9,6 @@
   background-color: $color-background-canvas;
 }
 
-// Estado general: confirma de un vistazo si hay locales abiertos
 .estado-general {
   display: inline-flex;
   align-items: center;
@@ -37,7 +36,6 @@
   }
 }
 
-// ── Selector + detalle ────────────────────────────────────────────────────────
 .visor {
   display: grid;
   overflow: hidden;
@@ -52,7 +50,6 @@
   }
 }
 
-// Fondo crema: el local activo (blanco) destaca sobre los demás
 .lista {
   display: flex;
   gap: $space-2;
@@ -294,7 +291,6 @@
   }
 }
 
-// Datos de contacto: icono + texto siempre con la misma forma (similitud)
 .datos {
   display: flex;
   flex-direction: column;
@@ -329,7 +325,6 @@
   }
 }
 
-// Horario semanal: el día de hoy es la figura, el resto es fondo
 .semana {
   &__titulo {
     margin: 0 0 $space-3;
@@ -391,7 +386,6 @@
   }
 }
 
-// ── Delivery ──────────────────────────────────────────────────────────────────
 .pasos {
   position: relative;
   display: grid;
@@ -405,7 +399,6 @@
     grid-template-columns: repeat(3, 1fr);
     gap: $space-6;
 
-    // Línea que une los tres círculos
     &::before {
       content: '';
       position: absolute;
@@ -492,7 +485,6 @@
   }
 }
 
-// ── Galería ───────────────────────────────────────────────────────────────────
 .galeria {
   background-color: $color-background-canvas;
 }
@@ -520,7 +512,6 @@
       aspect-ratio: auto;
     }
 
-    // La primera foto manda: ocupa 2×2 y las demás se ordenan a su alrededor
     &:first-child {
       grid-column: span 2;
       grid-row: span 2;

@@ -5,7 +5,6 @@
   display: block;
 }
 
-// ── Categorías: texto en negrita con subrayado rojo en la activa ────────────
 .barra {
   position: sticky;
   top: 4.25rem;
@@ -70,7 +69,6 @@
   }
 }
 
-// ── Resultados y herramientas ────────────────────────────────────────────────
 .resultados {
   padding-block: $space-5 $space-10;
 }
@@ -234,7 +232,6 @@
   }
 }
 
-// ── ¿Para cuántos? ──────────────────────────────────────────────────────────
 .porciones {
   display: flex;
   flex-wrap: wrap;
@@ -361,7 +358,6 @@
   }
 }
 
-// ── Cuadrícula ───────────────────────────────────────────────────────────────
 .grilla {
   display: grid;
   gap: $space-3;
@@ -384,7 +380,6 @@
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
-  // Lista: una columna con foto al costado (en móvil sigue siendo una columna de tarjetas)
   &.es-lista {
     grid-template-columns: minmax(0, 1fr);
 

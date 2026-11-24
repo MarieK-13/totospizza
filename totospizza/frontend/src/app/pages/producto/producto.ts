@@ -19,10 +19,8 @@ import { EntregaDialog, type AccionEntrega } from '../../shared/components/entre
 import { ProductInfoDialog, type FichaProducto } from '../../shared/components/product-info-dialog/product-info-dialog';
 
 const CANTIDAD_MAXIMA = 20;
-/** El backend guarda la masa como ingrediente para el stock web; no es un extra que se elija. */
 const ES_MASA_DE_STOCK = /^masa(\s+de\s+pizza)?$/i;
 const EXTRA_MAXIMO = 5;
-/** El backend acepta hasta 10 adicionales distintos por ítem. */
 const EXTRAS_DISTINTOS_MAXIMOS = 10;
 
 const GRUPOS_ADICIONALES: readonly { readonly tipo: TipoIngrediente; readonly titulo: string }[] = [
@@ -54,10 +52,6 @@ export class Producto {
     params: () => this.slug(),
     stream: ({ params }) => this.api.producto(params, { context: peticionSilenciosa() }).pipe(timeout(15_000)),
   });
-  /**
-   * Producto con los precios sin repetir (un tamaño una sola vez) y sin la "Masa de pizza"
-   * del stock web entre los adicionales. Protege la vista aunque el backend mande datos duplicados.
-   */
   protected readonly producto = computed(() => {
     const p = this.recurso.error() ? undefined : this.recurso.value();
     if (!p) return undefined;
@@ -71,7 +65,6 @@ export class Producto {
   });
   protected readonly falloCarga = computed(() => !!this.recurso.error() && !this.noEncontrado());
 
-  // ── Selección ──────────────────────────────────────────────────────────────
   protected readonly tamanoId = signal<number | null>(null);
   protected readonly tipoMasaId = signal<number | null>(null);
   protected readonly extras = signal<Readonly<Record<number, number>>>({});
@@ -81,7 +74,6 @@ export class Producto {
   protected readonly infoAbierta = signal(false);
   protected readonly enviando = signal(false);
   protected readonly agregado = signal(false);
-  /** Botón que abrió el modal de entrega; null = cerrado. */
   protected readonly accionEntrega = signal<AccionEntrega | null>(null);
 
   protected readonly unitario = computed(() => {
@@ -100,10 +92,8 @@ export class Producto {
     return GRUPOS_ADICIONALES.map((g) => ({ titulo: g.titulo, items: todos.filter((i) => i.tipo === g.tipo && i.disponible) })).filter((g) => g.items.length > 0);
   });
 
-  /** Insignias no alérgenas (Picante, Vegetariana...). Los alérgenos van en la ficha de información. */
   protected readonly insignias = computed(() => separarEtiquetas(this.producto()?.etiquetas ?? []).otras);
 
-  /** Datos para la ficha de alérgenos. */
   protected readonly ficha = computed<FichaProducto | null>(() => {
     const p = this.producto();
     if (!p) return null;
@@ -119,7 +109,6 @@ export class Producto {
   protected readonly tieneCalificacion = computed(() => (this.producto()?.totalResenas ?? 0) > 0);
   protected readonly puedeComprar = this.cart.puedeComprar;
 
-  /** Opciones elegidas en texto, para la línea del carrito: "Familiar, Delgada, Queso extra ×2". */
   private readonly detalleSeleccion = computed(() => {
     const p = this.producto();
     if (!p?.requiereTamano) return '';
@@ -132,7 +121,6 @@ export class Producto {
   });
   protected readonly tieneEntrega = computed(() => this.entrega.actual() !== null);
 
-  /** Resumen de cómo recibe el pedido (columna de información). */
   protected readonly resumenEntrega = computed(() => {
     const e = this.entrega.actual();
     if (!e) return null;
@@ -158,12 +146,10 @@ export class Producto {
   protected readonly PinIcon = MapPin;
 
   constructor() {
-    // En escritorio la ventana queda quieta y solo se desliza el panel de opciones (ver .vista-fija)
     const body = inject(DOCUMENT).body;
     body.classList.add('vista-fija');
     this.destroyRef.onDestroy(() => body.classList.remove('vista-fija'));
 
-    // Al cargar otro producto se reinicia la selección con valores razonables (primer tamaño y primera masa)
     effect(() => {
       const p = this.producto();
       untracked(() => {
@@ -213,10 +199,6 @@ export class Producto {
     this.notas.set((evento.target as HTMLTextAreaElement).value);
   }
 
-  /**
-   * La entrega es obligatoria: si aún no se eligió, "Agregar" y "Comprar ahora" abren primero el modal.
-   * Agregar: suma al carrito y se queda aquí. Comprar ahora: suma y lleva a /carrito (ahí se inicia sesión).
-   */
   protected agregar(evento: Event): void {
     evento.preventDefault();
     this.continuar('agregar');
@@ -232,7 +214,6 @@ export class Producto {
     else this.accionEntrega.set(accion);
   }
 
-  /** "Elegir" / "Cambiar" en la columna de información: solo define la entrega. */
   protected elegirEntrega(): void {
     this.accionEntrega.set('elegir');
   }
@@ -244,7 +225,6 @@ export class Producto {
   }
 
 
-  /** Agrega al carrito (con o sin sesión); con `irAlCarrito` continúa a /carrito (botón "Comprar ahora"). */
   private enviar(irAlCarrito: boolean): void {
     const p = this.producto();
     const unitario = this.unitario();
@@ -276,7 +256,6 @@ export class Producto {
           const espera = setTimeout(() => this.agregado.set(false), 2500);
           this.destroyRef.onDestroy(() => clearTimeout(espera));
         },
-        // El error (stock web agotado, producto no disponible...) ya se muestra como aviso
         error: () => undefined,
       });
   }

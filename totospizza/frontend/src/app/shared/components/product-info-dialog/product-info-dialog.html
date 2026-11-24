@@ -18,7 +18,6 @@
           <p class="info__descripcion">{{ p.descripcion }}</p>
         </header>
 
-        <!-- Lo importante para la salud va primero y destacado -->
         @if (contiene().length > 0) {
           <section class="alerta" aria-labelledby="alerta-titulo">
             <span class="alerta__icono"><lucide-icon [img]="AlertIcon" [size]="20" [strokeWidth]="2" aria-hidden="true"></lucide-icon></span>

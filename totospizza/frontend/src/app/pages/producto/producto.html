@@ -10,7 +10,6 @@
     </nav>
 
     <div class="ficha">
-      <!-- Columna 1: la foto se queda fija mientras bajan las opciones -->
       <aside class="ficha__media">
         <div class="escenario">
           @if (imagen(); as src) {
@@ -28,7 +27,6 @@
         </button>
       </aside>
 
-      <!-- Columna 2: qué es, cuánto cuesta y cómo llega -->
       <div class="ficha__info">
         <header class="cabecera">
           <div class="cabecera__chips">
@@ -87,7 +85,6 @@
         </dl>
       </div>
 
-      <!-- Columna 3: arma tu pedido. En escritorio es lo único que se desliza -->
       <form id="compra" class="ficha__opciones compra" (submit)="agregar($event)">
         @if (p.requiereTamano) {
           <div class="paso" role="radiogroup" aria-labelledby="tamano-titulo">

@@ -16,7 +16,7 @@
   min-height: 100dvh;
 
   @include up(lg) {
-    padding-left: 16rem; // ancho del sidebar
+    padding-left: 16rem;
   }
 
   &__content {

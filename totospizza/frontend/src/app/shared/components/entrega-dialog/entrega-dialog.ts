@@ -10,7 +10,6 @@ import { LocalesService } from '../../../core/services/locales.service';
 import { mensajeDeError } from '../../../core/utils/api-exception';
 import { formatearSoles } from '../../../core/utils/money';
 
-/** agregar / comprar: confirma y sigue con la compra. elegir: solo guarda cómo se recibe el pedido. */
 export type AccionEntrega = 'agregar' | 'comprar' | 'elegir';
 
 type Consulta =
@@ -31,17 +30,10 @@ const TEXTO_BOTON: Readonly<Record<AccionEntrega, string>> = {
   elegir: 'Guardar',
 };
 
-/** Límites de DireccionRequest en el backend. */
 const MAX_DIRECCION = 200;
 const MAX_DISTRITO = 80;
 const MAX_REFERENCIA = 200;
 
-/**
- * Modal "Dirección de entrega": se abre desde "Agregar" y "Comprar ahora".
- * - Delivery: ubica al cliente (GPS) y valida cobertura con POST /publico/cobertura; luego pide la dirección escrita.
- * - Recojo en tienda: elige un local abierto (GET /publico/locales).
- * Al confirmar guarda la elección en EntregaService y avisa con `confirmado`.
- */
 @Component({
   selector: 'app-entrega-dialog',
   imports: [LucideAngularModule],
@@ -54,7 +46,6 @@ export class EntregaDialog {
   private readonly entrega = inject(EntregaService);
   private readonly localesService = inject(LocalesService);
 
-  /** null = cerrado. Cambia el texto del botón final. */
   readonly accion = input<AccionEntrega | null>(null);
   readonly confirmado = output<Entrega>();
   readonly cerrado = output<void>();
@@ -74,7 +65,6 @@ export class EntregaDialog {
     const c = this.consulta();
     return c.tipo === 'resultado' ? c.cobertura : null;
   });
-  /** Sin backend (modo prueba) todos los locales cuentan como abiertos para poder probar a cualquier hora. */
   protected readonly modoPrueba = environment.entregaDatosDePrueba;
   protected readonly locales = computed(() =>
     this.modoPrueba ? this.localesService.locales().map((l) => ({ ...l, abiertoAhora: true })) : this.localesService.locales(),
@@ -84,7 +74,6 @@ export class EntregaDialog {
   protected readonly errorDistrito = computed(() => (this.intentoConfirmar() && !this.distrito().trim() ? 'Indica tu distrito.' : ''));
   protected readonly errorLocal = computed(() => (this.intentoConfirmar() && this.localId() === null ? 'Elige un local para recoger.' : ''));
 
-  /** El botón final se habilita cuando ya hay algo que confirmar; los campos vacíos se marcan al pulsarlo. */
   protected readonly puedeConfirmar = computed(() =>
     this.tipo() === 'RECOJO' ? this.locales().some((l) => l.abiertoAhora) : !!this.cobertura()?.dentroCobertura && this.cobertura()?.sucursalId != null,
   );
@@ -159,12 +148,10 @@ export class EntregaDialog {
     this.cerrado.emit();
   }
 
-  /** Clic en el fondo (fuera del panel) cierra. */
   protected alPulsar(evento: MouseEvent): void {
     if (evento.target === this.dialogo().nativeElement) this.cerrar();
   }
 
-  /** Esc: se cierra por el estado del padre, no solo por el navegador. */
   protected alCancelar(evento: Event): void {
     evento.preventDefault();
     this.cerrar();
@@ -190,7 +177,6 @@ export class EntregaDialog {
     };
   }
 
-  /** Al abrir, se retoma lo último que eligió el cliente en esta visita. */
   private restaurar(): void {
     const previa = this.entrega.actual();
     this.intentoConfirmar.set(false);
@@ -226,7 +212,6 @@ export class EntregaDialog {
     });
   }
 
-  /** POST /publico/cobertura, o una respuesta simulada con el primer local si no hay backend. */
   private cobertura$(latitud: number, longitud: number): Observable<CoberturaResponse> {
     if (!this.modoPrueba) return this.api.cobertura({ latitud, longitud }, { context: peticionSilenciosa() });
     const local = this.locales()[0];

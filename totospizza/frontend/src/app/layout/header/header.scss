@@ -1,11 +1,9 @@
 @use '../../../styles/tokens/variables' as *;
 @use '../../../styles/mixins' as *;
 
-// Crema cálido y claro del carrito (entre Crema Masa y Beige Horno)
 $cart-bg: #f9eedb;
 $cart-bg-hover: #f4e3c6;
 
-// Header plano a todo el ancho: logo a la izquierda, navegación al centro, acciones a la derecha
 :host {
   display: block;
   position: sticky;
@@ -86,7 +84,6 @@ $cart-bg-hover: #f4e3c6;
 
 }
 
-// Enlaces: subrayado rojo que crece desde el centro
 .nav-link {
   position: relative;
   padding: $space-2 0;
@@ -144,7 +141,6 @@ $cart-bg-hover: #f4e3c6;
   }
 }
 
-// Usuario: icono + saludo en dos líneas
 .user {
   display: none;
   align-items: center;
@@ -180,7 +176,6 @@ $cart-bg-hover: #f4e3c6;
   }
 }
 
-// Carrito: píldora crema clara, sin borde, para destacar frente a "Hola, inicia sesión"
 .cart {
   position: relative;
   display: inline-flex;
@@ -245,7 +240,6 @@ $cart-bg-hover: #f4e3c6;
   }
 }
 
-// Menú móvil a pantalla completa
 .sheet {
   position: fixed;
   inset: 0;
@@ -347,7 +341,6 @@ $cart-bg-hover: #f4e3c6;
   }
 }
 
-// Cuenta: el saludo se vuelve un botón que abre un menú corto
 .account {
   position: relative;
 }

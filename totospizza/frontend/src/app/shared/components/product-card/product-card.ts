@@ -7,11 +7,6 @@ import { AgregarRapidoService } from '../../../core/services/agregar-rapido.serv
 import { formatearSoles } from '../../../core/utils/money';
 import { imagenDeProducto } from '../../../core/utils/producto-imagen';
 
-/**
- * Tarjeta de producto del menú: foto, nombre, descripción y precio. Toda la tarjeta lleva al detalle;
- * el botón "+" agrega al carrito (o lleva a elegir opciones si el producto las pide) y el "i" abre
- * la ficha de alérgenos. Alérgenos y valoraciones no se muestran en la tarjeta.
- */
 @Component({
   selector: 'app-product-card',
   imports: [RouterLink, LucideAngularModule],
@@ -26,9 +21,7 @@ export class ProductCard {
 
   readonly producto = input.required<ProductoResumenResponse>();
   readonly vista = input<'grilla' | 'lista'>('grilla');
-  /** Id del tamaño elegido en el filtro "¿Para cuántos?": el detalle se abre con ese tamaño. */
   readonly tamanoSugerido = input<number | null>(null);
-  /** Si hay quien escuche, la tarjeta muestra el botón "i" que pide la ficha de alérgenos. */
   readonly conInfo = input(false);
   readonly informacion = output<ProductoResumenResponse>();
 
@@ -62,7 +55,7 @@ export class ProductCard {
           const espera = setTimeout(() => this.agregado.set(false), 1600);
           this.destroyRef.onDestroy(() => clearTimeout(espera));
         },
-        error: () => undefined, // el aviso de error ya lo muestra el interceptor
+        error: () => undefined,
       });
   }
 }

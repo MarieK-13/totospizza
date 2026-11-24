@@ -6,14 +6,8 @@ import { formatearSoles } from '../../../core/utils/money';
 import { nombreCorto, separarEtiquetas } from '../../../core/utils/etiquetas';
 import { imagenDeProducto } from '../../../core/utils/producto-imagen';
 
-/** Datos mínimos que necesita la ficha; sirven tanto el resumen del menú como el detalle. */
 export type FichaProducto = Pick<ProductoResumenResponse, 'nombre' | 'slug' | 'descripcion' | 'ingredientes' | 'etiquetas' | 'precioDesde' | 'imagenUrl'>;
 
-/**
- * Ficha informativa de un producto (alérgenos y descripción) en un modal.
- * Usa <dialog> nativo: trampa de foco, Esc para cerrar y fondo inerte sin código extra.
- * Se abre al recibir un producto y avisa con `cerrado` al cerrarse.
- */
 @Component({
   selector: 'app-product-info-dialog',
   imports: [RouterLink, LucideAngularModule],
@@ -23,18 +17,14 @@ export type FichaProducto = Pick<ProductoResumenResponse, 'nombre' | 'slug' | 'd
 })
 export class ProductInfoDialog {
   readonly producto = input<FichaProducto | null>(null);
-  /** En el menú ofrece ir al detalle; en el propio detalle se oculta. */
   readonly conEnlace = input(true);
   readonly cerrado = output<void>();
 
   private readonly dialogo = viewChild.required<ElementRef<HTMLDialogElement>>('dialogo');
 
   protected readonly grupos = computed(() => separarEtiquetas(this.producto()?.etiquetas ?? []));
-  /** Alérgenos presentes, uno por chip: ["Gluten", "Lácteos"]. */
   protected readonly contiene = computed(() => this.grupos().contiene.map(nombreCorto));
-  /** Garantías de ausencia: ["Sin lácteos"]. */
   protected readonly libres = computed(() => this.grupos().libres.map((e) => e.nombre));
-  /** "Masa, salsa de tomate y mozzarella" → ["Masa", "Salsa de tomate", "Mozzarella"]. */
   protected readonly ingredientes = computed(() =>
     (this.producto()?.ingredientes ?? '')
       .split(/,|\sy\s/)
@@ -68,12 +58,10 @@ export class ProductInfoDialog {
     this.cerrado.emit();
   }
 
-  /** Clic en el fondo (fuera del panel) cierra. */
   protected alPulsar(evento: MouseEvent): void {
     if (evento.target === this.dialogo().nativeElement) this.cerrar();
   }
 
-  /** Esc: se cierra por el estado del padre, no solo por el navegador. */
   protected alCancelar(evento: Event): void {
     evento.preventDefault();
     this.cerrar();

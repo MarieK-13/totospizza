@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
 import { LogOut, LucideAngularModule } from 'lucide-angular';
 
-/** Estructura de las pantallas operativas (cocina, despacho, reparto): sin sidebar, contenido amplio. */
 @Component({
   selector: 'app-staff-layout',
   imports: [RouterOutlet, RouterLink, LucideAngularModule],

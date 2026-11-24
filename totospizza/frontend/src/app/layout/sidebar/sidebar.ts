@@ -15,7 +15,6 @@ export class Sidebar {
   readonly items = input.required<readonly NavItem[]>();
   readonly userName = input('Usuario');
   readonly userRole = input('');
-  /** Controla el panel deslizante en pantallas pequeñas. */
   readonly opened = input(false);
 
   readonly closed = output<void>();

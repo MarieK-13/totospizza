@@ -4,7 +4,6 @@ import { Check, ChevronDown, LucideAngularModule, MapPin } from 'lucide-angular'
 import type { SucursalResponse } from '../../core/models/api';
 import { LocalesService } from '../../core/services/locales.service';
 
-/** Barra verde: avisos en movimiento a la izquierda y selector de local a la derecha. */
 @Component({
   selector: 'app-announcement-bar',
   imports: [RouterLink, LucideAngularModule],
@@ -31,7 +30,6 @@ export class AnnouncementBar {
     'Paga online con tarjeta, Yape o Plin',
   ] as const;
 
-  /** El grupo se repite dos veces para que el bucle no tenga cortes. */
   protected readonly copies = [0, 1] as const;
 
   protected readonly locales = this.localesService.locales;

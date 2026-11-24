@@ -4,7 +4,6 @@ import type { LucideIconData } from 'lucide-angular';
 
 export type KpiTone = 'rojo' | 'verde' | 'amarillo' | 'neutro';
 
-/** Indicador reutilizable para dashboards (ganancias, pedidos, ranking...). */
 @Component({
   selector: 'app-kpi-card',
   imports: [LucideAngularModule],
@@ -18,9 +17,7 @@ export class KpiCard {
   readonly value = input.required<string | number>();
   readonly icon = input<LucideIconData>();
   readonly tone = input<KpiTone>('neutro');
-  /** Texto de apoyo debajo del valor ("Mes actual"). */
   readonly hint = input<string>();
-  /** Variación porcentual respecto al periodo anterior. Positivo sube, negativo baja. */
   readonly trend = input<number>();
 
   protected readonly TrendUp = TrendingUp;

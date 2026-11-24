@@ -39,7 +39,6 @@ export class SiteHeader {
   private readonly cart = inject(CartService);
   protected readonly auth = inject(AuthService);
 
-  /** En /login no se ofrece "Iniciar sesión": ya estás ahí. */
   protected readonly enLogin = toSignal(
     this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd),
@@ -73,7 +72,6 @@ export class SiteHeader {
   protected readonly LogoutIcon = LogOut;
 
   constructor() {
-    // Bloquea el scroll del fondo mientras el menú móvil está abierto.
     effect(() => {
       document.body.style.overflow = this.menuOpen() ? 'hidden' : '';
     });

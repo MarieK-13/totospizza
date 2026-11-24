@@ -9,7 +9,6 @@ export interface Opcion<T extends string = string> {
   readonly etiqueta: string;
 }
 
-/** Selector reutilizable (usa el <select> nativo: teclado y lectores de pantalla ya funcionan). */
 @Component({
   selector: 'app-select-field',
   imports: [LucideAngularModule],

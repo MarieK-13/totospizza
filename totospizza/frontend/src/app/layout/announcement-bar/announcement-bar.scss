@@ -162,7 +162,6 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  // Difumina los bordes para que los avisos no se corten de golpe
   mask-image: linear-gradient(to right, transparent, #000 2rem, #000 calc(100% - 2rem), transparent);
 
   &__track {

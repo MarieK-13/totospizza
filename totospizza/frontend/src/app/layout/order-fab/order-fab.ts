@@ -4,7 +4,6 @@ import { NavigationEnd, Router } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 import { LucideAngularModule, Pizza } from 'lucide-angular';
 
-/** Botón flotante "Arma tu pedido": lleva al armador de pizzas (/arma-tu-pizza). */
 @Component({
   selector: 'app-order-fab',
   imports: [LucideAngularModule],
@@ -15,7 +14,6 @@ import { LucideAngularModule, Pizza } from 'lucide-angular';
 export class OrderFab {
   private readonly router = inject(Router);
 
-  /** Se oculta en el menú, el detalle y el propio armador: taparía los botones de agregar al carrito. */
   protected readonly visible = toSignal(
     this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd),

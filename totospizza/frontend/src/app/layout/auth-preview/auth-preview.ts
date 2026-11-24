@@ -5,10 +5,6 @@ import { PASSWORD_RULES, passwordValidator } from '../../core/utils/form-validat
 import { ToastService } from '../../core/services/toast.service';
 import { TextField } from '../../shared/components/text-field/text-field';
 
-/**
- * TEMPORAL: formulario de ejemplo para ver el layout de acceso y la validación.
- * Se reemplaza por la página de registro/login real.
- */
 @Component({
   selector: 'app-auth-preview',
   imports: [ReactiveFormsModule, TextField],

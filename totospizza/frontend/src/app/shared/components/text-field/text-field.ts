@@ -14,11 +14,6 @@ const DEFAULT_MESSAGES: Record<string, (error: any) => string> = {
   pattern: () => 'El formato no es válido',
 };
 
-/**
- * Campo de texto reutilizable compatible con formularios reactivos (formControlName / formControl).
- * - Muestra el error en rojo cuando el campo fue tocado.
- * - type="password": botón mostrar/ocultar y, si recibe [rules], checklist de requisitos.
- */
 @Component({
   selector: 'app-text-field',
   imports: [LucideAngularModule],
@@ -33,12 +28,10 @@ export class TextField implements ControlValueAccessor {
   readonly hint = input<string>();
   readonly autocomplete = input<string>();
   readonly required = input(false);
-  /** Límites para type="date" (formato yyyy-MM-dd). */
   readonly max = input<string>();
   readonly min = input<string>();
   readonly maxlength = input<number>();
   readonly inputmode = input<'text' | 'numeric' | 'tel' | 'email'>();
-  /** Requisitos de contraseña (solo type="password"). */
   readonly rules = input<readonly PasswordRule[]>([]);
 
   protected readonly id = `field-${++nextId}`;
@@ -88,7 +81,6 @@ export class TextField implements ControlValueAccessor {
     return this.type() === 'password' && this.rules().length > 0 && (this.focused() || this.value().length > 0 || !!this.control?.touched);
   }
 
-  /** Una regla se pinta en rojo solo cuando ya hay interacción y no se cumple. */
   protected ruleState(rule: PasswordRule): 'pending' | 'ok' | 'fail' {
     if (rule.test(this.value())) return 'ok';
     return this.value().length > 0 || this.control?.touched ? 'fail' : 'pending';

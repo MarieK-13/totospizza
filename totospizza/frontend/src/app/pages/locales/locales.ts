@@ -66,7 +66,6 @@ export class Locales {
 
   private readonly elegidaId = signal<number | null>(null);
 
-  /** Local que se ve en el detalle: el que tocó la persona, el que ya había elegido o el primero. */
   protected readonly activa = computed<SedeVista | null>(() => {
     const sedes = this.sedes();
     const id = this.elegidaId() ?? this.localesService.seleccionada()?.id ?? null;
@@ -93,7 +92,6 @@ export class Locales {
     this.elegidaId.set(id);
   }
 
-  /** Flechas, Inicio y Fin cambian de local, como en cualquier lista de pestañas. */
   protected onTeclas(evento: KeyboardEvent): void {
     const sedes = this.sedes();
     const actual = sedes.findIndex((s) => s.id === this.activa()?.id);
