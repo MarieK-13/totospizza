@@ -1,0 +1,448 @@
+<div class="admin-layout">
+  <!-- SIDEBAR IZQUIERDO -->
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="sidebar__logo-badge">
+        <span class="sidebar__logo-top">TOTO'S</span>
+        <span class="sidebar__logo-sub">PIZZA</span>
+      </div>
+      <span class="sidebar__brand-title">TOTO'S PIZZA</span>
+    </div>
+
+    <nav class="sidebar__nav">
+      <button type="button" class="sidebar__nav-item" (click)="navegarA('resumen')">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" />
+          <rect x="14" y="3" width="7" height="7" rx="1.5" />
+          <rect x="3" y="14" width="7" height="7" rx="1.5" />
+          <rect x="14" y="14" width="7" height="7" rx="1.5" />
+        </svg>
+        <span>Resumen</span>
+      </button>
+
+      <button type="button" class="sidebar__nav-item" (click)="navegarA('pedidos')">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+          <rect x="9" y="3" width="6" height="4" rx="1" />
+          <path d="M9 12h6M9 16h4" />
+        </svg>
+        <span>Pedidos</span>
+      </button>
+
+      <button type="button" class="sidebar__nav-item" (click)="navegarA('empleados')">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+        </svg>
+        <span>Empleados</span>
+      </button>
+
+      <button type="button" class="sidebar__nav-item sidebar__nav-item--active" (click)="navegarA('finanzas')">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+          <polyline points="17 6 23 6 23 12" />
+        </svg>
+        <span>Finanzas</span>
+        <span class="sidebar__active-pill"></span>
+      </button>
+
+      <button type="button" class="sidebar__nav-item" (click)="navegarA('configuracion')">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
+          />
+        </svg>
+        <span>Configuración</span>
+      </button>
+    </nav>
+
+    <div class="sidebar__shift-card">
+      <div class="sidebar__shift-status">
+        <span class="status-dot status-dot--green"></span>
+        <span>TURNO ACTIVO</span>
+      </div>
+      <div class="sidebar__shift-hours">12:00 — 22:30</div>
+      <div class="sidebar__shift-location">Sede Miraflores · Caja principal</div>
+    </div>
+
+    <button
+      type="button"
+      class="sidebar__help-btn"
+      (click)="mostrarToast('ok', 'Soporte técnico Toto\'s Pizza disponible.')"
+    >
+      <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
+      </svg>
+      <span>Ayuda y soporte</span>
+    </button>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-content">
+    <div
+      *ngIf="toastMensaje() as toast"
+      class="toast-banner"
+      [class.toast-banner--error]="toast.tipo === 'error'"
+    >
+      {{ toast.texto }}
+    </div>
+
+    <!-- HEADER SUPERIOR -->
+    <header class="topbar">
+      <div class="topbar__titles">
+        <h1 class="topbar__title">Finanzas</h1>
+        <p class="topbar__subtitle">Ingresos, gastos y rentabilidad del negocio</p>
+      </div>
+
+      <div class="topbar__actions">
+        <button type="button" class="btn-export-top" (click)="exportarReportePDF()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="12" y1="18" x2="12" y2="12" />
+            <polyline points="9 15 12 18 15 15" />
+          </svg>
+          <span>Exportar reporte</span>
+        </button>
+
+        <div class="topbar__date-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          <span>{{ fechaHoraActual() }}</span>
+        </div>
+
+        <button type="button" class="topbar__bell-btn" aria-label="Notificaciones">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 01-3.46 0" />
+          </svg>
+          <span class="topbar__bell-badge" *ngIf="notificacionesNoLeidas() > 0"></span>
+        </button>
+
+        <div class="topbar__profile">
+          <div class="topbar__avatar">{{ usuario().iniciales }}</div>
+          <div class="topbar__user-info">
+            <span class="topbar__user-name">{{ usuario().nombres }} {{ usuario().apellidos }}</span>
+            <span class="topbar__user-role">{{ usuario().rolEtiqueta }}</span>
+          </div>
+          <svg class="topbar__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+      </div>
+    </header>
+
+    <!-- FILA 1: 5 TARJETAS KPI -->
+    <section class="kpi-grid-5">
+      <!-- KPI 1: Ventas del día -->
+      <article class="kpi-card">
+        <div class="kpi-card__top">
+          <span class="kpi-card__label">Ventas del día</span>
+          <div class="kpi-card__icon kpi-card__icon--green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="2" y="6" width="20" height="12" rx="2" />
+              <circle cx="12" cy="12" r="2" />
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-card__middle">
+          <strong class="kpi-card__value">S/ {{ ventasDia() | number : '1.0-0' }}</strong>
+          <span class="kpi-card__trend kpi-card__trend--up">↗ +12.8%</span>
+        </div>
+        <div class="kpi-card__footer">{{ transaccionesDia() }} transacciones</div>
+      </article>
+
+      <!-- KPI 2: Ventas del mes -->
+      <article class="kpi-card">
+        <div class="kpi-card__top">
+          <span class="kpi-card__label">Ventas del mes</span>
+          <div class="kpi-card__icon kpi-card__icon--green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-card__middle">
+          <strong class="kpi-card__value">S/ {{ formatearMontoCorto(ventasMes()) }}</strong>
+          <span class="kpi-card__trend kpi-card__trend--up">↗ +9.6%</span>
+        </div>
+        <div class="kpi-card__footer">vs. mes anterior</div>
+      </article>
+
+      <!-- KPI 3: Ganancia neta -->
+      <article class="kpi-card">
+        <div class="kpi-card__top">
+          <span class="kpi-card__label">Ganancia neta</span>
+          <div class="kpi-card__icon kpi-card__icon--green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+              <polyline points="17 6 23 6 23 12" />
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-card__middle">
+          <strong class="kpi-card__value">S/ {{ formatearMontoCorto(gananciaNeta()) }}</strong>
+          <span class="kpi-card__trend kpi-card__trend--up">↗ +7.2%</span>
+        </div>
+        <div class="kpi-card__footer">margen {{ margenNetoPorcentaje() }}%</div>
+      </article>
+
+      <!-- KPI 4: Gastos -->
+      <article class="kpi-card">
+        <div class="kpi-card__top">
+          <span class="kpi-card__label">Gastos</span>
+          <div class="kpi-card__icon kpi-card__icon--red">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+              <polyline points="17 18 23 18 23 12" />
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-card__middle">
+          <strong class="kpi-card__value">S/ {{ formatearMontoCorto(gastosMes()) }}</strong>
+          <span class="kpi-card__trend kpi-card__trend--up">↗ -3.4%</span>
+        </div>
+        <div class="kpi-card__footer">{{ porcentajeGastosSobreVentas() }}% de ventas</div>
+      </article>
+
+      <!-- KPI 5: Ticket promedio -->
+      <article class="kpi-card">
+        <div class="kpi-card__top">
+          <span class="kpi-card__label">Ticket promedio</span>
+          <div class="kpi-card__icon kpi-card__icon--amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="4" y="2" width="16" height="20" rx="2" />
+              <line x1="8" y1="8" x2="16" y2="8" />
+              <line x1="8" y1="12" x2="16" y2="12" />
+              <line x1="8" y1="16" x2="12" y2="16" />
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-card__middle">
+          <strong class="kpi-card__value">S/ {{ ticketPromedio() | number : '1.2-2' }}</strong>
+          <span class="kpi-card__trend kpi-card__trend--up">↗ +5.2%</span>
+        </div>
+        <div class="kpi-card__footer">meta S/ 45.00</div>
+      </article>
+    </section>
+
+    <!-- FILA 2: BARRA DE FILTROS Y REPORTES -->
+    <section class="toolbar-row">
+      <div class="toolbar-row__left">
+        <div class="date-range-pill">
+          <span>01 oct — 31 oct 2026</span>
+          <input type="date" [(ngModel)]="fechaDesde" (change)="cargarDatosFinancieros()" aria-label="Desde" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+        </div>
+
+        <select
+          class="filter-select"
+          [ngModel]="filtroTipoMovimiento()"
+          (ngModelChange)="filtroTipoMovimiento.set($event)"
+        >
+          <option value="">Todos los tipos</option>
+          <option value="VENTA">Venta</option>
+          <option value="DELIVERY">Delivery</option>
+          <option value="COMPRA_INSUMOS">Compra de insumos</option>
+          <option value="PAGO_EMPLEADOS">Pago a empleados</option>
+          <option value="OTROS_GASTOS">Otros gastos</option>
+        </select>
+
+        <div class="segmented-control">
+          <button
+            type="button"
+            [class.segmented-control__btn--active]="granularidad() === 'DIA'"
+            (click)="cambiarGranularidad('DIA')"
+          >
+            Día
+          </button>
+          <button
+            type="button"
+            [class.segmented-control__btn--active]="granularidad() === 'SEMANA'"
+            (click)="cambiarGranularidad('SEMANA')"
+          >
+            Semana
+          </button>
+          <button
+            type="button"
+            [class.segmented-control__btn--active]="granularidad() === 'MES'"
+            (click)="cambiarGranularidad('MES')"
+          >
+            Mes
+          </button>
+        </div>
+      </div>
+
+      <div class="toolbar-row__right">
+        <button type="button" class="btn-csv" (click)="descargarCSV()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <line x1="3" y1="9" x2="21" y2="9" />
+            <line x1="3" y1="15" x2="21" y2="15" />
+            <line x1="9" y1="9" x2="9" y2="21" />
+          </svg>
+          <span>Descargar CSV</span>
+        </button>
+
+        <button type="button" class="btn-report-red" (click)="exportarReportePDF()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          <span>Generar reporte</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- FILA 3: 3 TARJETAS DE ANALÍTICA -->
+    <section class="analytics-grid-3">
+      <!-- CARD 1: Ventas por día -->
+      <article class="panel-card">
+        <div class="panel-card__header">
+          <h2 class="panel-card__title">Ventas por día</h2>
+          <span class="panel-card__meta">Octubre 2026</span>
+        </div>
+
+        <div class="sales-summary-row">
+          <strong class="sales-summary-row__amount">
+            S/ {{ totalVentasPeriodoGrafico() | number : '1.0-0' }}
+          </strong>
+          <span class="meta-badge">● Meta 92%</span>
+        </div>
+
+        <div class="bars-chart">
+          <div class="bar-col" *ngFor="let b of barrasVentas()">
+            <div class="bar-col__track" [title]="b.fecha + ': S/ ' + b.total">
+              <div
+                class="bar-col__fill"
+                [class.bar-col__fill--highlight]="b.destacada"
+                [style.height.%]="b.alturaPorcentaje"
+              ></div>
+            </div>
+            <span class="bar-col__label" [class.bar-col__label--active]="b.destacada">
+              {{ b.diaNumero }}
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 2: Métodos de pago (Donut) -->
+      <article class="panel-card">
+        <div class="panel-card__header">
+          <h2 class="panel-card__title">Métodos de pago</h2>
+          <span class="panel-card__meta">Por ventas</span>
+        </div>
+
+        <div class="donut-wrapper">
+          <div class="donut-ring" [style.background]="donutGradient()">
+            <div class="donut-ring__hole">100%</div>
+          </div>
+
+          <ul class="donut-legend">
+            <li *ngFor="let m of metodosPago()">
+              <span class="donut-legend__dot" [style.background-color]="m.color"></span>
+              <span class="donut-legend__name">{{ m.etiqueta }}</span>
+              <strong class="donut-legend__pct">{{ m.porcentaje }}%</strong>
+            </li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- CARD 3: Mayor ingreso por pizza -->
+      <article class="panel-card">
+        <div class="panel-card__header">
+          <h2 class="panel-card__title">Mayor ingreso por pizza</h2>
+          <span class="panel-card__meta">Este mes</span>
+        </div>
+
+        <div class="top-pizzas-list">
+          <div class="pizza-bar-item" *ngFor="let p of topPizzasIngresos(); let i = index">
+            <div class="pizza-bar-item__top">
+              <strong>{{ p.nombre }}</strong>
+              <span class="pizza-bar-item__amount">S/ {{ formatearMontoCorto(p.ingresos) }}</span>
+            </div>
+            <div class="pizza-bar-item__track">
+              <div
+                class="pizza-bar-item__fill"
+                [class.pizza-bar-item__fill--primary]="i === 0"
+                [style.width.%]="p.porcentaje"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- FILA 4: TABLA MOVIMIENTOS RECIENTES -->
+    <section class="panel-card">
+      <div class="panel-card__header">
+        <h2 class="panel-card__title">Movimientos recientes</h2>
+        <span class="panel-card__meta">
+          Saldo disponible: S/ {{ saldoDisponible() | number : '1.2-2' }}
+        </span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="movements-table">
+          <thead>
+            <tr>
+              <th>FECHA</th>
+              <th>TIPO</th>
+              <th>DESCRIPCIÓN</th>
+              <th>MÉTODO DE PAGO</th>
+              <th>INGRESO</th>
+              <th>GASTO</th>
+              <th class="text-right">TOTAL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let mov of movimientosFiltrados()">
+              <td class="movements-table__date">{{ mov.fechaHora }}</td>
+              <td>
+                <span
+                  class="mov-badge"
+                  [class.mov-badge--income]="mov.esIngreso"
+                  [class.mov-badge--expense]="!mov.esIngreso"
+                >
+                  <span>{{ mov.esIngreso ? '↙' : '↗' }}</span>
+                  {{ etiquetaTipoMovimiento(mov.tipo) }}
+                </span>
+              </td>
+              <td class="movements-table__desc">{{ mov.descripcion }}</td>
+              <td>{{ mov.metodoPago }}</td>
+              <td class="movements-table__income">
+                {{ mov.ingreso !== null ? ('S/ ' + (mov.ingreso | number : '1.2-2')) : '—' }}
+              </td>
+              <td class="movements-table__expense">
+                {{ mov.gasto !== null ? ('S/ ' + (mov.gasto | number : '1.2-2')) : '—' }}
+              </td>
+              <td
+                class="text-right movements-table__total"
+                [class.movements-table__total--income]="mov.esIngreso"
+                [class.movements-table__total--expense]="!mov.esIngreso"
+              >
+                {{ mov.esIngreso ? ('S/ ' + (mov.total | number : '1.2-2')) : ('- S/ ' + (mov.gasto | number : '1.2-2')) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>

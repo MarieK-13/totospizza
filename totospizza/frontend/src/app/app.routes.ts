@@ -22,7 +22,8 @@ export const routes: Routes = [
       {
         path: 'zona-de-reparto',
         title: "Zona de reparto | Toto's Pizza",
-        loadComponent: () => import('./pages/zona-de-reparto/zona-de-reparto').then((m) => m.ZonaDeReparto),
+        loadComponent: () =>
+          import('./pages/zona-de-reparto/zona-de-reparto').then((m) => m.ZonaDeReparto),
       },
       {
         path: 'nosotros',
@@ -43,12 +44,15 @@ export const routes: Routes = [
         path: 'arma-tu-pizza',
         title: "Arma tu pizza | Toto's Pizza",
         loadComponent: () =>
-          import('./features/personalizacion/pages/pizza-builder-page/pizza-builder-page').then((m) => m.PizzaBuilderPage),
+          import('./features/personalizacion/pages/pizza-builder-page/pizza-builder-page').then(
+            (m) => m.PizzaBuilderPage
+          ),
       },
       {
         path: 'carrito',
         title: "Tu carrito | Toto's Pizza",
-        loadComponent: () => import('./features/carrito/pages/cart-page/cart-page').then((m) => m.CartPage),
+        loadComponent: () =>
+          import('./features/carrito/pages/cart-page/cart-page').then((m) => m.CartPage),
       },
       {
         path: 'terminos',
@@ -65,34 +69,43 @@ export const routes: Routes = [
         path: 'checkout',
         canActivate: [roleGuard('CLIENTE')],
         title: "Finaliza tu pedido | Toto's Pizza",
-        loadComponent: () => import('./features/checkout/pages/checkout-page/checkout-page').then((m) => m.CheckoutPage),
+        loadComponent: () =>
+          import('./features/checkout/pages/checkout-page/checkout-page').then(
+            (m) => m.CheckoutPage
+          ),
       },
       {
         path: 'pedido-confirmado/:numero',
         canActivate: [roleGuard('CLIENTE')],
         title: "¡Pedido recibido! | Toto's Pizza",
         loadComponent: () =>
-          import('./features/pedido/pages/order-confirmation-page/order-confirmation-page').then((m) => m.OrderConfirmationPage),
+          import('./features/pedido/pages/order-confirmation-page/order-confirmation-page').then(
+            (m) => m.OrderConfirmationPage
+          ),
       },
       // Mi cuenta: solo clientes con sesión
       {
         path: 'perfil',
         canActivate: [roleGuard('CLIENTE')],
         title: "Mi perfil | Toto's Pizza",
-        loadComponent: () => import('./features/perfil/pages/profile-page/profile-page').then((m) => m.ProfilePage),
+        loadComponent: () =>
+          import('./features/perfil/pages/profile-page/profile-page').then((m) => m.ProfilePage),
       },
       {
         path: 'mis-pedidos',
         canActivate: [roleGuard('CLIENTE')],
         title: "Mis pedidos | Toto's Pizza",
-        loadComponent: () => import('./features/perfil/pages/orders-page/orders-page').then((m) => m.OrdersPage),
+        loadComponent: () =>
+          import('./features/perfil/pages/orders-page/orders-page').then((m) => m.OrdersPage),
       },
       {
         path: 'mis-pedidos/:numero',
         canActivate: [roleGuard('CLIENTE')],
         title: "Seguimiento del pedido | Toto's Pizza",
         loadComponent: () =>
-          import('./features/pedido/pages/order-tracking-page/order-tracking-page').then((m) => m.OrderTrackingPage),
+          import('./features/pedido/pages/order-tracking-page/order-tracking-page').then(
+            (m) => m.OrderTrackingPage
+          ),
       },
     ],
   },
@@ -110,20 +123,105 @@ export const routes: Routes = [
     title: "Crear cuenta | Toto's Pizza",
     loadComponent: () => import('./features/auth/pages/registro/registro').then((m) => m.Registro),
   },
-
   {
     path: 'olvide-contrasena',
     canActivate: [guestGuard],
     title: "Recuperar contraseña | Toto's Pizza",
     loadComponent: () =>
-      import('./features/auth/pages/olvide-contrasena/olvide-contrasena').then((m) => m.OlvideContrasena),
+      import('./features/auth/pages/olvide-contrasena/olvide-contrasena').then(
+        (m) => m.OlvideContrasena
+      ),
   },
   {
     // Sin guestGuard: el enlace del correo debe funcionar aunque haya una sesión abierta
     path: 'restablecer-contrasena',
     title: "Nueva contraseña | Toto's Pizza",
     loadComponent: () =>
-      import('./features/auth/pages/restablecer-contrasena/restablecer-contrasena').then((m) => m.RestablecerContrasena),
+      import('./features/auth/pages/restablecer-contrasena/restablecer-contrasena').then(
+        (m) => m.RestablecerContrasena
+      ),
+  },
+
+  // Panel de Administración (Rol: ADMINISTRADOR)
+  {
+    path: 'admin',
+    children: [
+      {
+        path: 'resumen',
+        title: "Resumen | Administración - Toto's Pizza",
+        loadComponent: () =>
+          import('./features/admin/resumen/pages/admin-resumen.component').then(
+            (m) => m.AdminResumenComponent
+          ),
+      },
+      {
+        path: 'pedidos',
+        title: "Pedidos | Administración - Toto's Pizza",
+        loadComponent: () =>
+          import('./features/admin/pedidos/pages/admin-pedidos.component').then(
+            (m) => m.AdminPedidosComponent
+          ),
+      },
+      {
+        path: 'empleados',
+        title: "Empleados | Administración - Toto's Pizza",
+        loadComponent: () =>
+          import('./features/admin/empleados/pages/admin-empleados.component').then(
+            (m) => m.AdminEmpleadosComponent
+          ),
+      },
+      {
+        path: 'finanzas',
+        title: "Finanzas | Administración - Toto's Pizza",
+        loadComponent: () =>
+          import('./features/admin/finanzas/pages/admin-finanzas.component').then(
+            (m) => m.AdminFinanzasComponent
+          ),
+      },
+      {
+        path: 'configuracion',
+        title: "Configuración | Administración - Toto's Pizza",
+        loadComponent: () =>
+          import('./features/admin/configuracion/pages/admin-configuracion.component').then(
+            (m) => m.AdminConfiguracionComponent
+          ),
+      },
+      {
+        path: '',
+        redirectTo: 'resumen',
+        pathMatch: 'full',
+      },
+    ],
+  },
+
+  // Panel de Cocina (Rol: PIZZERO)
+  {
+    path: 'cocina',
+    title: "Panel de Cocina | Toto's Pizza",
+    loadComponent: () =>
+      import('./features/cocina/pages/cocina-panel.component').then(
+        (m) => m.CocinaPanelComponent
+      ),
+  },
+
+  // Panel de Mostrador (Rol: DESPACHADOR)
+  {
+    path: 'mostrador',
+    title: "Mostrador | Toto's Pizza",
+    loadComponent: () =>
+      import('./features/despacho/pages/mostrador-panel.component').then(
+        (m) => m.MostradorPanelComponent
+      ),
+  },
+
+  // Panel de Reparto (Rol: MOTORIZADO)
+  {
+    path: 'reparto',
+    title: "Mis Entregas | Toto's Pizza",
+    loadComponent: () =>
+      import('./features/reparto/pages/reparto-panel.component').then(
+        (m) => m.RepartoPanelComponent
+      ),
   },
 
   { path: '**', redirectTo: '' },

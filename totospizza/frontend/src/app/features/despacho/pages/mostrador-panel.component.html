@@ -1,0 +1,209 @@
+<div class="staff-shell">
+  <div *ngIf="toastMensaje() as msg" class="toast-banner">{{ msg }}</div>
+
+  <!-- TOPBAR -->
+  <header class="staff-topbar">
+    <div class="staff-topbar__left">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 2L2 19h20L12 2z" />
+          <circle cx="12" cy="13" r="1.4" />
+          <circle cx="9.5" cy="16" r="1" />
+          <circle cx="14.5" cy="16" r="1" />
+        </svg>
+        <div>
+          <strong>TOTO'S</strong>
+          <span>PIZZA</span>
+        </div>
+      </div>
+
+      <span class="staff-topbar__divider"></span>
+
+      <div class="staff-topbar__module">
+        <strong>MOSTRADOR</strong>
+        <span>{{ pedidos().length }} pedidos listos para entregar</span>
+      </div>
+    </div>
+
+    <div class="staff-topbar__right">
+      <span class="shift-live">
+        <span class="shift-live__dot"></span>
+        Turno activo
+      </span>
+
+      <div class="clock-block">
+        <strong>{{ horaReloj() }}</strong>
+        <span>{{ fechaActualTexto() }}</span>
+      </div>
+
+      <button type="button" class="btn-logout" (click)="cerrarSesion()">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <main class="staff-main">
+    <!-- CABECERA Y KPI DERECHOS -->
+    <section class="page-hero">
+      <div>
+        <span class="page-hero__eyebrow">DESPACHO Y RECOJO</span>
+        <h1 class="page-hero__title">Pedidos listos para entregar</h1>
+        <p class="page-hero__subtitle">
+          Verifica cada pedido antes de entregarlo al cliente o asignarlo a reparto.
+        </p>
+      </div>
+
+      <div class="kpi-mini-pair">
+        <div class="kpi-mini-box">
+          <strong>{{ totalDelivery() }}</strong>
+          <span>Delivery</span>
+        </div>
+        <div class="kpi-mini-box">
+          <strong>{{ totalRecojo() }}</strong>
+          <span>Recojo</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTROS Y LEYENDA DE ACCIONES -->
+    <section class="filter-bar">
+      <div class="filter-pills">
+        <button
+          type="button"
+          [class.active]="filtroTipo() === 'TODOS'"
+          (click)="filtroTipo.set('TODOS')"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          [class.active]="filtroTipo() === 'DELIVERY'"
+          (click)="filtroTipo.set('DELIVERY')"
+        >
+          Delivery
+        </button>
+        <button
+          type="button"
+          [class.active]="filtroTipo() === 'RECOJO'"
+          (click)="filtroTipo.set('RECOJO')"
+        >
+          Recojo
+        </button>
+      </div>
+
+      <div class="action-legend">
+        <span>✕ Cancelar pedido</span>
+        <span>✓ Confirmar entrega / despacho</span>
+      </div>
+    </section>
+
+    <!-- TABLA PRINCIPAL -->
+    <section class="table-card">
+      <div class="table-scroll">
+        <table class="dispatch-table">
+          <thead>
+            <tr>
+              <th>PEDIDO</th>
+              <th>TIPO DE ENTREGA</th>
+              <th>CLIENTE</th>
+              <th>DIRECCIÓN</th>
+              <th>PRODUCTOS</th>
+              <th class="text-right">ACCIÓN</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let p of pedidosFiltrados()">
+              <td>
+                <strong class="cell-primary">{{ p.codigo }}</strong>
+                <div class="cell-sub">Listo · {{ p.horaListo }}</div>
+              </td>
+
+              <td>
+                <span
+                  class="type-pill"
+                  [class.type-pill--delivery]="p.tipoEntrega === 'DELIVERY'"
+                  [class.type-pill--recojo]="p.tipoEntrega === 'RECOJO'"
+                >
+                  ● {{ p.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo' }}
+                </span>
+              </td>
+
+              <td>
+                <strong class="cell-primary">{{ p.clienteNombre }}</strong>
+                <div class="cell-sub">{{ p.clienteTelefono }}</div>
+              </td>
+
+              <td>
+                <strong class="cell-primary">{{ p.direccionPrincipal }}</strong>
+                <div class="cell-sub">{{ p.direccionReferencia }}</div>
+              </td>
+
+              <td>
+                <div *ngFor="let prod of p.productos; let i = index" [class.cell-primary]="i === 0" [class.cell-sub]="i > 0">
+                  {{ prod.cantidad }} × {{ prod.nombre }}
+                </div>
+              </td>
+
+              <td class="text-right">
+                <div class="row-actions">
+                  <button
+                    type="button"
+                    class="btn-icon-cancel"
+                    title="Cancelar pedido"
+                    (click)="abrirModalCancelar(p)"
+                  >
+                    ✕
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-icon-confirm"
+                    title="Confirmar entrega / despacho"
+                    (click)="confirmarEntrega(p)"
+                  >
+                    ✓
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-card__footer">
+        <span>{{ pedidos().length }} pedidos · Ordenados por hora de preparación</span>
+        <span>Mostrando {{ pedidosFiltrados().length }} de {{ pedidos().length }}</span>
+      </div>
+    </section>
+
+    <p class="staff-hint">
+      ⓘ Delivery: confirma el despacho al motorizado. Recojo: confirma la entrega al cliente.
+    </p>
+  </main>
+
+  <footer class="staff-footer">
+    <span>Mostrador · {{ pedidos().length }} pedidos por despachar</span>
+    <span>Toto's Pizza · Sede Miraflores</span>
+  </footer>
+
+  <!-- MODAL CANCELAR PEDIDO -->
+  <div class="modal-backdrop" *ngIf="pedidoACancelar() as ped" (click)="pedidoACancelar.set(null)">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h3>Cancelar pedido {{ ped.codigo }}</h3>
+      <p>Indica el motivo de la cancelación para registrarlo en el sistema.</p>
+      <input
+        type="text"
+        placeholder="Ej: Cliente solicitó anulación por teléfono"
+        [(ngModel)]="motivoCancelacion"
+      />
+      <div class="modal-box__btns">
+        <button type="button" class="btn-secondary" (click)="pedidoACancelar.set(null)">
+          Volver
+        </button>
+        <button type="button" class="btn-danger" (click)="confirmarCancelacion()">
+          Confirmar cancelación
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

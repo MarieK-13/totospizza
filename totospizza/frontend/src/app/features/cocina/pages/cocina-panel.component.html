@@ -1,0 +1,211 @@
+<div class="staff-shell">
+  <div *ngIf="toastMensaje() as msg" class="toast-banner">{{ msg }}</div>
+
+  <!-- HEADER SUPERIOR -->
+  <header class="staff-topbar">
+    <div class="staff-topbar__left">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 2L2 19h20L12 2z" />
+          <circle cx="12" cy="13" r="1.4" />
+          <circle cx="9.5" cy="16" r="1" />
+          <circle cx="14.5" cy="16" r="1" />
+        </svg>
+        <div>
+          <strong>TOTO'S</strong>
+          <span>PIZZA</span>
+        </div>
+      </div>
+
+      <span class="staff-topbar__divider"></span>
+
+      <div class="staff-topbar__module">
+        <strong>PANEL DE COCINA</strong>
+        <span>Estación de preparación</span>
+      </div>
+    </div>
+
+    <div class="staff-topbar__right">
+      <span class="shift-live">
+        <span class="shift-live__dot"></span>
+        Turno activo
+      </span>
+
+      <div class="clock-block">
+        <strong>{{ horaReloj() }}</strong>
+        <span>{{ fechaActualTexto() }}</span>
+      </div>
+
+      <button type="button" class="btn-logout" (click)="cerrarSesion()">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO DE PÁGINA -->
+  <main class="staff-main">
+    <section class="page-hero">
+      <div>
+        <span class="page-hero__eyebrow">OPERACIÓN EN VIVO</span>
+        <h1 class="page-hero__title">Cada pedido, en su punto.</h1>
+        <p class="page-hero__subtitle">
+          Organiza la preparación y avanza cada pedido a la siguiente etapa.
+        </p>
+      </div>
+
+      <div class="hero-counter">
+        <strong>{{ totalEnCocina() | number : '2.0-0' }}</strong>
+        <span>pedidos en cocina</span>
+      </div>
+    </section>
+
+    <!-- TABLERO KANBAN 3 COLUMNAS -->
+    <section class="kanban-grid">
+      <!-- COLUMNA 1: PENDIENTES -->
+      <div class="kanban-col">
+        <div class="kanban-col__head">
+          <div>
+            <h2>Pendientes</h2>
+            <span>Por orden de llegada</span>
+          </div>
+          <span class="col-count col-count--red">{{ pendientes().length }}</span>
+        </div>
+
+        <div class="kanban-col__cards">
+          <article class="ticket-card" *ngFor="let p of pendientes()">
+            <div class="ticket-card__top">
+              <strong class="ticket-card__code">{{ p.codigo }}</strong>
+              <span
+                class="delivery-tag"
+                [class.delivery-tag--delivery]="p.tipoEntrega === 'DELIVERY'"
+                [class.delivery-tag--recojo]="p.tipoEntrega === 'RECOJO'"
+              >
+                {{ p.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo' }}
+              </span>
+            </div>
+
+            <div class="ticket-card__meta">
+              <span>Ingreso {{ p.horaIngreso }}</span>
+              <span class="ticket-card__wait">Espera: {{ p.minutosEspera }} min</span>
+            </div>
+
+            <ul class="ticket-card__items">
+              <li *ngFor="let item of p.productos">
+                <span class="bullet-dot"></span>
+                <span>{{ item.cantidad }} × {{ item.nombre }}</span>
+              </li>
+            </ul>
+
+            <div class="ticket-card__note" *ngIf="p.notaEspecial">
+              {{ p.notaEspecial }}
+            </div>
+
+            <button type="button" class="btn-stage-red" (click)="meterAlHorno(p)">
+              🔥 Meter al horno
+            </button>
+          </article>
+        </div>
+      </div>
+
+      <!-- COLUMNA 2: EN EL HORNO -->
+      <div class="kanban-col">
+        <div class="kanban-col__head">
+          <div>
+            <h2>En el horno</h2>
+            <span>Tiempo objetivo · 10 min</span>
+          </div>
+          <span class="col-count">{{ enHorno().length }}</span>
+        </div>
+
+        <div class="kanban-col__cards">
+          <article class="ticket-card" *ngFor="let p of enHorno()">
+            <div class="ticket-card__top">
+              <strong class="ticket-card__code">{{ p.codigo }}</strong>
+              <span
+                class="delivery-tag"
+                [class.delivery-tag--delivery]="p.tipoEntrega === 'DELIVERY'"
+                [class.delivery-tag--recojo]="p.tipoEntrega === 'RECOJO'"
+              >
+                {{ p.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo' }}
+              </span>
+            </div>
+
+            <div class="ticket-card__meta">
+              <span>Ingreso {{ p.horaIngreso }}</span>
+              <span>{{ p.minutosEnHorno }} de {{ p.tiempoObjetivoMin }} min</span>
+            </div>
+
+            <ul class="ticket-card__items">
+              <li *ngFor="let item of p.productos">
+                <span class="bullet-dot"></span>
+                <span>{{ item.cantidad }} × {{ item.nombre }}</span>
+              </li>
+            </ul>
+
+            <div class="oven-progress">
+              <div
+                class="oven-progress__fill"
+                [style.width.%]="calcularProgresoHorno(p)"
+              ></div>
+            </div>
+
+            <button type="button" class="btn-stage-red" (click)="marcarComoListo(p)">
+              ✓ Listo
+            </button>
+          </article>
+        </div>
+      </div>
+
+      <!-- COLUMNA 3: LISTAS -->
+      <div class="kanban-col">
+        <div class="kanban-col__head">
+          <div>
+            <h2>Listas</h2>
+            <span>Preparadas para mostrador</span>
+          </div>
+          <span class="col-count">{{ listas().length }}</span>
+        </div>
+
+        <div class="kanban-col__cards">
+          <article class="ticket-card" *ngFor="let p of listas()">
+            <div class="ticket-card__top">
+              <strong class="ticket-card__code">{{ p.codigo }}</strong>
+              <span
+                class="delivery-tag"
+                [class.delivery-tag--delivery]="p.tipoEntrega === 'DELIVERY'"
+                [class.delivery-tag--recojo]="p.tipoEntrega === 'RECOJO'"
+              >
+                {{ p.tipoEntrega === 'DELIVERY' ? 'Delivery' : 'Recojo' }}
+              </span>
+            </div>
+
+            <div class="ticket-card__meta">
+              <span>Finalizado {{ p.horaFinalizado }}</span>
+              <span>hace {{ p.minutosDesdeListo ?? 0 }} min</span>
+            </div>
+
+            <ul class="ticket-card__items">
+              <li *ngFor="let item of p.productos">
+                <span class="bullet-dot"></span>
+                <span>{{ item.cantidad }} × {{ item.nombre }}</span>
+              </li>
+            </ul>
+
+            <div class="dispatch-waiting-pill">
+              📦 Esperando despacho
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <p class="staff-hint">
+      ⓘ Revisa las indicaciones especiales antes de preparar. Mostrador gestiona el despacho de los pedidos listos.
+    </p>
+  </main>
+
+  <footer class="staff-footer">
+    <span>Cocina · {{ totalEnCocina() }} pedidos en producción</span>
+    <span>Toto's Pizza · Sede Miraflores</span>
+  </footer>
+</div>

@@ -1,0 +1,179 @@
+<div class="staff-shell">
+  <div *ngIf="toastMensaje() as msg" class="toast-banner">{{ msg }}</div>
+
+  <!-- TOPBAR -->
+  <header class="staff-topbar">
+    <div class="staff-topbar__left">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 2L2 19h20L12 2z" />
+          <circle cx="12" cy="13" r="1.4" />
+          <circle cx="9.5" cy="16" r="1" />
+          <circle cx="14.5" cy="16" r="1" />
+        </svg>
+        <div>
+          <strong>TOTO'S</strong>
+          <span>PIZZA</span>
+        </div>
+      </div>
+
+      <span class="staff-topbar__divider"></span>
+
+      <div class="staff-topbar__module">
+        <strong>Mis Entregas</strong>
+        <span>{{ motorizadoNombre() }} · Moto · {{ totalAsignadas() }} entregas asignadas</span>
+      </div>
+    </div>
+
+    <div class="staff-topbar__right">
+      <span class="shift-live">
+        <span class="shift-live__dot"></span>
+        Turno activo
+      </span>
+
+      <div class="clock-block">
+        <strong>{{ horaReloj() }}</strong>
+        <span>{{ fechaActualTexto() }}</span>
+      </div>
+
+      <button type="button" class="btn-logout" (click)="cerrarSesion()">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <main class="staff-main">
+    <!-- HERO Y MÉTRICAS DERECHAS -->
+    <section class="page-hero">
+      <div>
+        <span class="page-hero__eyebrow">REPARTO · {{ motorizadoNombre() | uppercase }}</span>
+        <h1 class="page-hero__title">Entregas asignadas</h1>
+        <p class="page-hero__subtitle">
+          Revisa la dirección, contacta al cliente y actualiza el estado de cada entrega.
+        </p>
+      </div>
+
+      <div class="reparto-stats">
+        <div>
+          <strong>{{ totalAsignadas() }}</strong>
+          <span>Asignadas</span>
+        </div>
+        <div>
+          <strong>{{ totalEnCamino() }}</strong>
+          <span>En camino</span>
+        </div>
+        <div>
+          <strong>{{ totalPorSalir() }}</strong>
+          <span>Por salir</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BANNER DE AVISO DE RUTA ACTIVA -->
+    <div class="route-alert-bar" *ngIf="entregaActivaEnCamino() as activa">
+      <span>
+        🛵 Una entrega en camino. Completa el pedido <strong>{{ activa.codigoPedido }}</strong> antes de iniciar el siguiente reparto.
+      </span>
+      <strong>{{ zonaAsignada() }}</strong>
+    </div>
+
+    <!-- LISTA DE TARJETAS DE ENTREGA -->
+    <section class="deliveries-stack">
+      <article class="delivery-card" *ngFor="let e of entregas()">
+        <!-- Cabecera de orden -->
+        <div class="delivery-card__header">
+          <div class="delivery-card__title-group">
+            <span class="order-label">{{ e.ordenNumero }}</span>
+            <span class="order-sep">|</span>
+            <strong class="order-code">{{ e.codigoPedido }}</strong>
+            <span
+              class="status-pill"
+              [class.status-pill--camino]="e.estado === 'EN_CAMINO'"
+              [class.status-pill--pendiente]="e.estado === 'PENDIENTE_SALIDA'"
+            >
+              {{ e.estado === 'EN_CAMINO' ? 'En camino' : 'Pendiente de salida' }}
+            </span>
+          </div>
+
+          <span class="delivery-card__time">{{ e.horaInfoSuperior }}</span>
+        </div>
+
+        <!-- Cuerpo dividido: Info cliente izquierda + Mini mapa derecha -->
+        <div class="delivery-card__body">
+          <div class="delivery-info">
+            <div class="delivery-info__client-row">
+              <h3>{{ e.clienteNombre }}</h3>
+              <span class="client-phone">{{ e.clienteTelefono }}</span>
+            </div>
+
+            <p class="delivery-info__address">{{ e.direccion }}</p>
+            <p class="delivery-info__ref">{{ e.referencia }}</p>
+
+            <div class="delivery-info__products">
+              <span class="products-label">+ PRODUCTOS</span>
+              <div class="products-inline">
+                <span *ngFor="let prod of e.productos; let last = last">
+                  {{ prod.cantidad }} × {{ prod.nombre }}<ng-container *ngIf="!last"> · </ng-container>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mapa esquemático referencial -->
+          <div class="mini-map-card">
+            <div class="mini-map-canvas">
+              <div class="street-tag street-tag--top">{{ e.callePrincipalMapa }}</div>
+              <span class="map-pin">📍</span>
+              <div class="street-tag street-tag--bottom">{{ e.calleSecundariaMapa }}</div>
+            </div>
+            <div class="mini-map-footer">
+              <span>Ubicación del cliente</span>
+              <strong>{{ e.distanciaKm }} km desde tienda</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pie con método de pago y botones de acción -->
+        <div class="delivery-card__footer">
+          <span class="payment-info">💳 {{ e.metodoPagoTexto }}</span>
+
+          <div class="delivery-card__buttons">
+            <button type="button" class="btn-outline-red" (click)="cancelarEntrega(e)">
+              Cancelado
+            </button>
+            <button type="button" class="btn-outline-neutral" (click)="llamarCliente(e)">
+              📞 Llamar cliente
+            </button>
+
+            <button
+              *ngIf="e.estado === 'EN_CAMINO'"
+              type="button"
+              class="btn-solid-red"
+              (click)="marcarEntregado(e)"
+            >
+              ✓ Entregado
+            </button>
+
+            <button
+              *ngIf="e.estado === 'PENDIENTE_SALIDA'"
+              type="button"
+              class="btn-solid-red"
+              (click)="salirAReparto(e)"
+            >
+              🛵 Salir a reparto
+            </button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <p class="staff-hint">
+      ⓘ Mapas referenciales. Confirma la dirección y la referencia con el cliente si lo necesitas.
+    </p>
+  </main>
+
+  <footer class="staff-footer">
+    <span>Reparto · {{ totalAsignadas() }} entregas pendientes de completar</span>
+    <span>Toto's Pizza · Sede Miraflores</span>
+  </footer>
+</div>

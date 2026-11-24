@@ -1,0 +1,1021 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap');
+
+$bg-sidebar: #382b24;
+$bg-sidebar-card: #2c211b;
+$bg-canvas: #faf6ee;
+$bg-card: #ffffff;
+$bg-cream-pill: #f6efe2;
+$bg-bar-track: #f5efe3;
+
+$brand-red: #c82828;
+$brand-coral: #e47468;
+$text-primary: #241b16;
+$text-secondary: #7b6f66;
+$text-muted: #9e9289;
+$border-soft: #ede6d9;
+
+$green-text: #1f8a4c;
+$green-bg: #e7f6ed;
+$amber-text: #b7791f;
+$amber-bg: #fef3dc;
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: $bg-canvas;
+  color: $text-primary;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ==================== SIDEBAR ==================== */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background-color: $bg-sidebar;
+  color: #f4ede4;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 8px 28px;
+  }
+
+  &__logo-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff8ef;
+    border: 2px solid $brand-red;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  &__logo-top {
+    font-family: 'DM Serif Display', serif;
+    font-size: 9px;
+    font-weight: 700;
+    color: $brand-red;
+  }
+
+  &__logo-sub {
+    font-size: 7px;
+    font-weight: 700;
+    color: $text-primary;
+    letter-spacing: 0.05em;
+  }
+
+  &__brand-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    letter-spacing: 0.04em;
+    color: #ffffff;
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    color: #cbbeb3;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+    }
+
+    &--active {
+      background-color: #fbf7f0;
+      color: $brand-red;
+      font-weight: 600;
+
+      &:hover {
+        background-color: #fbf7f0;
+        color: $brand-red;
+      }
+    }
+  }
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  &__active-pill {
+    position: absolute;
+    right: 10px;
+    width: 3px;
+    height: 18px;
+    border-radius: 99px;
+    background-color: $brand-red;
+  }
+
+  &__shift-card {
+    margin-top: 28px;
+    background-color: $bg-sidebar-card;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  &__shift-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #55c47f;
+    margin-bottom: 8px;
+  }
+
+  &__shift-hours {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: #ffffff;
+    margin-bottom: 6px;
+  }
+
+  &__shift-location {
+    font-size: 11.5px;
+    color: #a99b90;
+  }
+
+  &__help-btn {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    color: #a99b90;
+    font-size: 13px;
+    cursor: pointer;
+
+    &:hover {
+      color: #ffffff;
+    }
+  }
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &--green {
+    background-color: #27ae60;
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.2);
+  }
+}
+
+/* ==================== MAIN CONTENT ==================== */
+.main-content {
+  flex: 1;
+  padding: 28px 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-x: hidden;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  &__title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    margin: 0;
+    color: $text-primary;
+  }
+
+  &__subtitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: $text-secondary;
+    margin-top: 2px;
+  }
+
+  &__branch-select {
+    border: none;
+    background: transparent;
+    color: $text-secondary;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    padding: 2px 4px;
+    border-radius: 6px;
+
+    &:hover {
+      background-color: $bg-cream-pill;
+      color: $text-primary;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__date-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: $bg-cream-pill;
+    border: 1px solid $border-soft;
+    border-radius: 12px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: $text-primary;
+
+    svg {
+      width: 15px;
+      height: 15px;
+      color: $brand-red;
+    }
+  }
+
+  &__bell-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: $bg-card;
+    border: 1px solid $border-soft;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: $text-primary;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &__bell-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: $brand-red;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: $bg-card;
+    border: 1px solid $border-soft;
+    border-radius: 99px;
+    padding: 5px 14px 5px 6px;
+  }
+
+  &__avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #f9e6e2;
+    color: $brand-red;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__user-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  &__user-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  &__user-role {
+    font-size: 11px;
+    color: $text-secondary;
+  }
+
+  &__chevron {
+    width: 14px;
+    height: 14px;
+    color: $text-secondary;
+  }
+}
+
+/* Notificaciones Popover */
+.notif-wrapper {
+  position: relative;
+}
+
+.notif-popover {
+  position: absolute;
+  right: 0;
+  top: 48px;
+  width: 300px;
+  background: $bg-card;
+  border: 1px solid $border-soft;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(36, 27, 22, 0.12);
+  z-index: 30;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: $bg-cream-pill;
+    font-size: 12.5px;
+  }
+
+  &__item {
+    padding: 12px 16px;
+    border-top: 1px solid $border-soft;
+    cursor: pointer;
+
+    &--unread {
+      background: #fffaf5;
+    }
+
+    &:hover {
+      background: $bg-canvas;
+    }
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  &__msg {
+    font-size: 12px;
+    color: $text-secondary;
+  }
+}
+
+/* ==================== WELCOME BANNER ==================== */
+.welcome-banner {
+  background: linear-gradient(90deg, #f7efe1 0%, #fbf6ec 100%);
+  border: 1px solid $border-soft;
+  border-radius: 16px;
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  &__title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+    margin: 0 0 4px;
+  }
+
+  &__text {
+    margin: 0;
+    font-size: 13px;
+    color: $text-secondary;
+  }
+
+  &__live {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: $green-text;
+  }
+}
+
+/* ==================== KPI GRID ==================== */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kpi-card {
+  background-color: $bg-card;
+  border: 1px solid $border-soft;
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  &__label {
+    font-size: 13px;
+    color: $text-secondary;
+    font-weight: 500;
+  }
+
+  &__icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    &--red {
+      background: #fdeceb;
+      color: $brand-red;
+    }
+    &--green {
+      background: #e8f5ee;
+      color: $green-text;
+    }
+    &--amber {
+      background: #fef3de;
+      color: #c77d1a;
+    }
+    &--blue {
+      background: #eaf1fb;
+      color: #3668b2;
+    }
+  }
+
+  &__middle {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  &__value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px;
+    font-weight: 400;
+    color: $text-primary;
+  }
+
+  &__subvalue {
+    font-size: 20px;
+    color: $text-secondary;
+  }
+
+  &__trend {
+    font-size: 12px;
+    font-weight: 600;
+
+    &--up {
+      color: $green-text;
+    }
+  }
+
+  &__footer {
+    font-size: 12px;
+    color: $text-muted;
+  }
+}
+
+/* ==================== ANALYTICS GRID ==================== */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1.75fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel-card {
+  background-color: $bg-card;
+  border: 1px solid $border-soft;
+  border-radius: 16px;
+  padding: 22px 24px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  &__header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  &__title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 19px;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  &__meta {
+    font-size: 12px;
+    color: $text-muted;
+  }
+}
+
+.chart-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  &__total {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    font-weight: 400;
+  }
+
+  &__label {
+    font-size: 13px;
+    color: $text-secondary;
+  }
+}
+
+.badge-pill--green {
+  background-color: $green-bg;
+  color: $green-text;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 99px;
+}
+
+/* Bar Chart */
+.bar-chart {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 18px;
+  align-items: end;
+  padding-top: 24px;
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  &__track {
+    position: relative;
+    width: 100%;
+    max-width: 34px;
+    height: 155px;
+    background-color: $bg-bar-track;
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  &__fill {
+    width: 100%;
+    background-color: $brand-coral;
+    border-radius: 10px;
+    transition: height 0.35s ease, background-color 0.2s ease;
+
+    &--active {
+      background-color: $brand-red;
+    }
+  }
+
+  &__tooltip {
+    position: absolute;
+    bottom: calc(100% - 28px);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #241b16;
+    color: #ffffff;
+    padding: 7px 11px;
+    border-radius: 8px;
+    white-space: nowrap;
+    text-align: center;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  &__tooltip-day {
+    font-size: 10.5px;
+    color: #cbbeb3;
+  }
+
+  &__tooltip-val {
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  &__label {
+    font-size: 12px;
+    color: $text-muted;
+
+    &--active {
+      color: $text-primary;
+      font-weight: 600;
+    }
+  }
+}
+
+/* Ranking List */
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &__rank {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background-color: $bg-cream-pill;
+    color: $text-secondary;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &--top {
+      background-color: $brand-red;
+      color: #ffffff;
+    }
+  }
+
+  &__body {
+    flex: 1;
+  }
+
+  &__row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+
+  &__name {
+    font-weight: 600;
+    color: $text-primary;
+    flex: 1;
+  }
+
+  &__amount {
+    font-weight: 700;
+    color: $green-text;
+    font-size: 12.5px;
+  }
+
+  &__count {
+    font-size: 11.5px;
+    color: $text-muted;
+  }
+
+  &__bar-bg {
+    width: 100%;
+    height: 5px;
+    background-color: $bg-bar-track;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    background-color: #dec9a8;
+    border-radius: 99px;
+    transition: width 0.4s ease;
+
+    &--top {
+      background-color: $brand-red;
+    }
+  }
+}
+
+/* ==================== TABLA PAGOS A MOTORIZADOS ==================== */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+
+  thead th {
+    background-color: $bg-cream-pill;
+    color: $text-secondary;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-align: left;
+    padding: 12px 16px;
+
+    &:first-child {
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+    &:last-child {
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+  }
+
+  tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid $border-soft;
+    color: $text-primary;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  &__money {
+    font-weight: 700;
+    color: $green-text !important;
+  }
+}
+
+.driver-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &__icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #fdeceb;
+    color: $brand-red;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+  }
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &--pending {
+    background-color: $amber-bg;
+    color: $amber-text;
+  }
+
+  &--paid {
+    background-color: $green-bg;
+    color: $green-text;
+  }
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.action-cell {
+  position: relative;
+}
+
+.action-dots-btn {
+  background: transparent;
+  border: none;
+  color: $text-secondary;
+  font-size: 14px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  &:hover {
+    background-color: $bg-cream-pill;
+    color: $text-primary;
+  }
+}
+
+.action-dropdown {
+  position: absolute;
+  right: 16px;
+  top: 40px;
+  background: $bg-card;
+  border: 1px solid $border-soft;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  min-width: 185px;
+  padding: 4px;
+
+  button {
+    width: 100%;
+    text-align: left;
+    padding: 9px 12px;
+    border: none;
+    background: transparent;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: $text-primary;
+    border-radius: 7px;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: $bg-cream-pill;
+    }
+
+    &:disabled {
+      color: $text-muted;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* Botones & Modal */
+.btn-outline-sm {
+  background: $bg-card;
+  border: 1px solid $border-soft;
+  color: $text-primary;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: $bg-cream-pill;
+  }
+}
+
+.btn-primary-sm {
+  background: $brand-red;
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toast-banner {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #241b16;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  z-index: 50;
+
+  &--error {
+    background: $brand-red;
+  }
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(36, 27, 22, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+.modal-card {
+  background: $bg-card;
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
+
+  h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin: 0 0 6px;
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: $text-secondary;
+    margin: 0 0 18px;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+
+  select,
+  input {
+    padding: 9px 12px;
+    border: 1px solid $border-soft;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+  }
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
