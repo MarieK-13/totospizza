@@ -1,0 +1,122 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+$marca: 2rem;
+
+.etapas {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include up(md) {
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+  }
+}
+
+.etapa {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding-bottom: $space-5;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  // Conector hacia la siguiente etapa
+  &:not(:last-child)::after {
+    position: absolute;
+    top: $marca;
+    bottom: 0;
+    left: calc(#{$marca} / 2 - 1px);
+    width: 2px;
+    background-color: $color-border-default;
+    content: '';
+  }
+
+  &.is-completa:not(.is-actual):not(:last-child)::after {
+    background-color: $color-marron-suave;
+  }
+
+  @include up(md) {
+    flex-direction: column;
+    align-items: center;
+    padding: 0 $space-2;
+    text-align: center;
+
+    &:not(:last-child)::after {
+      top: calc(#{$marca} / 2 - 1px);
+      right: calc(-50% + #{$marca} / 2 + #{$space-2});
+      bottom: auto;
+      left: calc(50% + #{$marca} / 2 + #{$space-2});
+      width: auto;
+      height: 2px;
+    }
+  }
+
+  &__marca {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: $marca;
+    height: $marca;
+    border: 2px solid $color-border-strong;
+    border-radius: 50%;
+    background-color: $color-background-raised;
+    color: $color-text-secondary;
+    font-family: $font-datos;
+    font-size: 0.875rem;
+    font-weight: $weight-semibold;
+    @include transition((background-color, border-color, color));
+  }
+
+  &.is-completa &__marca {
+    border-color: $color-marron-suave;
+    background-color: $color-marron-suave;
+    color: $color-crema-claro;
+  }
+
+  &.is-actual &__marca {
+    border-color: $color-marron-suave;
+    background-color: $color-background-raised;
+    color: $color-marron-suave;
+    box-shadow: 0 0 0 0.3125rem $tint-cafe-10;
+  }
+
+  &__texto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding-top: 0.25rem;
+
+    @include up(md) {
+      padding-top: 0;
+    }
+  }
+
+  &__nombre {
+    color: $color-text-secondary;
+    font-size: 0.9375rem;
+    font-weight: $weight-medium;
+  }
+
+  &.is-completa &__nombre,
+  &.is-actual &__nombre {
+    color: $color-text-primary;
+    font-weight: $weight-semibold;
+  }
+
+  &__hora {
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+  }
+}

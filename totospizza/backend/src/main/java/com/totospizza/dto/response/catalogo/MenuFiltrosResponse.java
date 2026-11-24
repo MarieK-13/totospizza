@@ -7,6 +7,8 @@ import java.util.List;
  */
 public record MenuFiltrosResponse(
         List<CategoriaResponse> categorias,
-        List<EtiquetaResponse> etiquetas
+        List<EtiquetaResponse> etiquetas,
+        /** Tamaños de pizza con diámetro y personas, para el filtro "para cuántas personas". */
+        List<TamanoPizzaResponse> tamanos
 ) {
 }

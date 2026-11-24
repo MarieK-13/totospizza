@@ -1,76 +1,72 @@
-<section id="arma-tu-pedido" class="band section-anchor" tabindex="-1" aria-labelledby="armar-titulo">
-  <div class="wrap">
-    <header class="section-head section-head--center">
-      <div>
-        <span class="kicker">Combos para probar algo nuevo</span>
-        <h2 id="armar-titulo" class="section-head__title">Elige tu Duo</h2>
-        <p class="section-head__lead">Elige un combo y completa con una sola opción. Tu próximo favorito puede estar ahí.</p>
-      </div>
-    </header>
-
-    <div class="tabs" role="tablist" aria-label="Combos disponibles">
-      @for (c of combos; track c.id; let i = $index) {
-        <button type="button" role="tab" class="chip" [class.is-active]="comboActual() === i" [attr.aria-selected]="comboActual() === i" (click)="elegirCombo(i)">
-          {{ c.nombre }}
-        </button>
-      }
-    </div>
-
-    <div class="builder">
-      <figure class="showcase">
-        @for (c of combos; track c.id; let i = $index) {
-          <img [src]="c.imagen" [alt]="c.nombre" class="showcase__img" [class.is-active]="comboActual() === i" loading="lazy" />
-        }
-        <figcaption class="showcase__caption">
-          <h3 class="showcase__title">{{ combo().nombre }}</h3>
-          <p class="showcase__text">{{ combo().resumen }}</p>
-          <p class="showcase__price"><small>Desde</small>S/ {{ combo().precioBase.toFixed(2) }}</p>
-        </figcaption>
-      </figure>
-
-      <div class="panel">
-        <div class="panel__head">
-          <span class="panel__step">Elige 1</span>
-          <h3 class="panel__title">{{ combo().pregunta }}</h3>
+@if (duo(); as d) {
+  <section id="arma-tu-pedido" class="band section-anchor" tabindex="-1" aria-labelledby="armar-titulo">
+    <div class="wrap">
+      <header class="section-head section-head--center">
+        <div>
+          <span class="kicker">Combos para probar algo nuevo</span>
+          <h2 id="armar-titulo" class="section-head__title">Elige tu Duo</h2>
+          <p class="section-head__lead">Elige un combo y complétalo con una sola opción. Tu próximo favorito puede estar ahí.</p>
         </div>
+      </header>
 
-        <div class="options" role="radiogroup" [attr.aria-label]="combo().pregunta">
-          @for (o of combo().opciones; track o.nombre; let i = $index) {
-            <button type="button" role="radio" class="option" [class.is-selected]="indiceElegido() === i" [attr.aria-checked]="indiceElegido() === i" (click)="elegirOpcion(i)">
-              @if (o.insignia) {
-                <span class="option__badge" [class.option__badge--new]="o.insignia === 'Nuevo'">
-                  @if (o.insignia === 'Nuevo') {
-                    <lucide-icon [img]="SparkIcon" [size]="11" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
-                  }
-                  {{ o.insignia }}
-                </span>
-              }
-              <span class="option__check" aria-hidden="true">
-                <lucide-icon [img]="CheckIcon" [size]="14" [strokeWidth]="2.5"></lucide-icon>
-              </span>
-              @if (o.imagen) {
-                <img [src]="o.imagen" alt="" class="option__img" loading="lazy" />
-              }
-              <span class="option__name">{{ o.nombre }}</span>
-              @if (o.detalle) {
-                <span class="option__detail">{{ o.detalle }}</span>
-              }
-              <span class="option__extra">{{ o.extra ? '+ S/ ' + o.extra.toFixed(2) : 'Incluido' }}</span>
-            </button>
-          }
-        </div>
-
-        <div class="panel__foot">
-          <p class="panel__total">
-            <small>Total</small>
-            <strong>S/ {{ total().toFixed(2) }}</strong>
-          </p>
-          <button type="button" class="btn btn--primary btn--lg" (click)="agregar()">
-            <lucide-icon [img]="PlusIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
-            Añadir combo
+      <div class="tabs" role="tablist" aria-label="Combos disponibles">
+        @for (c of duos(); track c.id; let i = $index) {
+          <button type="button" role="tab" class="chip" [class.is-active]="d.id === c.id" [attr.aria-selected]="d.id === c.id" (click)="elegirDuo(i)">
+            {{ c.nombre }}
           </button>
+        }
+      </div>
+
+      <div class="builder">
+        <figure class="showcase">
+          @for (c of duos(); track c.id) {
+            @if (c.imagen) {
+              <img [src]="c.imagen" [alt]="c.nombre" class="showcase__img" [class.is-active]="d.id === c.id" loading="lazy" />
+            }
+          }
+          <figcaption class="showcase__caption">
+            <h3 class="showcase__title">{{ d.nombre }}</h3>
+            <p class="showcase__text">{{ d.resumen }}</p>
+            <p class="showcase__price"><small>Desde</small>{{ soles(d.desde) }}</p>
+          </figcaption>
+        </figure>
+
+        <div class="panel">
+          <div class="panel__head">
+            <span class="panel__step">Elige 1</span>
+            <h3 class="panel__title">Complétalo con</h3>
+          </div>
+
+          <div class="options" role="radiogroup" aria-label="Opciones del combo">
+            @for (o of d.opciones; track o.promo.id; let i = $index) {
+              <button type="button" role="radio" class="option" [class.is-selected]="indiceElegido() === i" [attr.aria-checked]="indiceElegido() === i" (click)="elegirOpcion(i)">
+                <span class="option__check" aria-hidden="true">
+                  <lucide-icon [img]="CheckIcon" [size]="14" [strokeWidth]="2.5"></lucide-icon>
+                </span>
+                @if (o.imagen) {
+                  <img [src]="o.imagen" alt="" class="option__img" loading="lazy" />
+                }
+                <span class="option__name">{{ o.nombre }}</span>
+                @if (o.promo.precioAnterior && o.promo.precioAnterior > o.promo.precioPromocional) {
+                  <span class="option__detail">Ahorras {{ soles(o.promo.precioAnterior - o.promo.precioPromocional) }}</span>
+                }
+                <span class="option__extra">{{ soles(o.promo.precioPromocional) }}</span>
+              </button>
+            }
+          </div>
+
+          <div class="panel__foot">
+            <p class="panel__total">
+              <small>{{ opcionElegida() ? 'Total' : 'Desde' }}</small>
+              <strong>{{ soles(total()) }}</strong>
+            </p>
+            <button type="button" class="btn btn--primary btn--lg" [disabled]="agregando()" (click)="agregar()">
+              <lucide-icon [img]="agregado() ? CheckIcon : PlusIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+              {{ agregado() ? 'Combo agregado' : 'Añadir combo' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+}

@@ -26,6 +26,8 @@ export class ProductCard {
 
   readonly producto = input.required<ProductoResumenResponse>();
   readonly vista = input<'grilla' | 'lista'>('grilla');
+  /** Id del tamaño elegido en el filtro "¿Para cuántos?": el detalle se abre con ese tamaño. */
+  readonly tamanoSugerido = input<number | null>(null);
   /** Si hay quien escuche, la tarjeta muestra el botón "i" que pide la ficha de alérgenos. */
   readonly conInfo = input(false);
   readonly informacion = output<ProductoResumenResponse>();

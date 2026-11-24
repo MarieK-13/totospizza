@@ -1,0 +1,103 @@
+<app-account-shell titulo="Mi perfil" descripcion="Tus datos para entregarte cada pedido sin vueltas.">
+  @if (recurso.isLoading() && !perfil()) {
+    <div class="perfil" aria-busy="true" aria-label="Cargando tu perfil">
+      <div class="esqueleto esqueleto--alto"></div>
+      <div class="esqueleto"></div>
+    </div>
+  } @else if (recurso.error() && !perfil()) {
+    <div class="vacio" role="alert">
+      <h2>No pudimos cargar tu perfil</h2>
+      <p>Revisa tu conexión e intenta otra vez.</p>
+      <button type="button" class="btn btn--primary" (click)="recurso.reload()">Reintentar</button>
+    </div>
+  } @else if (perfil(); as datos) {
+    <div class="perfil">
+      <section class="panel" aria-labelledby="titulo-datos">
+        <header class="panel__cabecera">
+          <div>
+            <h2 id="titulo-datos" class="panel__titulo">Datos personales</h2>
+            <p class="panel__ayuda">Con estos datos emitimos tu comprobante y te contactamos.</p>
+          </div>
+        </header>
+        <app-profile-form [perfil]="datos" (guardado)="alGuardarPerfil($event)" />
+      </section>
+
+      <section class="panel" aria-labelledby="titulo-direcciones">
+        <header class="panel__cabecera">
+          <div>
+            <h2 id="titulo-direcciones" class="panel__titulo">Direcciones de entrega</h2>
+            <p class="panel__ayuda">La marcada con estrella se elige sola al pedir delivery.</p>
+          </div>
+          @if (direcciones().length > 0) {
+            <button type="button" class="btn btn--secondary btn--sm" (click)="enEdicion.set(null)">
+              <lucide-icon [img]="PlusIcon" [size]="16" [strokeWidth]="1.9" aria-hidden="true"></lucide-icon>
+              Agregar dirección
+            </button>
+          }
+        </header>
+
+        @if (direcciones().length === 0) {
+          <button type="button" class="nueva" (click)="enEdicion.set(null)">
+            <span class="nueva__icono" aria-hidden="true">
+              <lucide-icon [img]="PlusIcon" [size]="20" [strokeWidth]="1.9"></lucide-icon>
+            </span>
+            <span>
+              <span class="nueva__titulo">Agrega tu primera dirección</span>
+              <span class="nueva__texto">Guárdala una vez y pide en dos toques la próxima vez.</span>
+            </span>
+          </button>
+        } @else {
+          <ul class="direcciones">
+            @for (d of direcciones(); track d.id) {
+              <li class="dir" [class.is-favorita]="d.favorita" [class.is-ocupada]="ocupada() === d.id">
+                <span class="dir__icono" aria-hidden="true">
+                  <lucide-icon [img]="iconoDe(d.etiqueta)" [size]="20" [strokeWidth]="1.7"></lucide-icon>
+                </span>
+                <div class="dir__texto">
+                  <p class="dir__etiqueta">
+                    {{ d.etiqueta }}
+                    @if (d.favorita) {
+                      <span class="dir__favorita">Favorita</span>
+                    }
+                  </p>
+                  <p class="dir__linea">{{ d.direccion.direccion }}, {{ d.direccion.distrito }}</p>
+                  @if (d.direccion.referencia) {
+                    <p class="dir__referencia">{{ d.direccion.referencia }}</p>
+                  }
+                </div>
+                <div class="dir__acciones">
+                  @if (porEliminar() === d.id) {
+                    <span class="dir__confirmar">¿Eliminar?</span>
+                    <button type="button" class="btn btn--ghost btn--sm" (click)="porEliminar.set(null)">No</button>
+                    <button type="button" class="btn btn--sm dir__si" (click)="eliminar(d)" [disabled]="ocupada() === d.id">Sí, eliminar</button>
+                  } @else {
+                    <button type="button" class="dir__boton" [class.is-activa]="d.favorita" (click)="marcarFavorita(d)"
+                      [attr.aria-label]="d.favorita ? d.etiqueta + ' es tu favorita' : 'Marcar ' + d.etiqueta + ' como favorita'"
+                      [attr.aria-pressed]="d.favorita" [disabled]="ocupada() !== null">
+                      <lucide-icon [img]="StarIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                    </button>
+                    <button type="button" class="dir__boton" (click)="enEdicion.set(d)" [attr.aria-label]="'Editar ' + d.etiqueta">
+                      <lucide-icon [img]="EditIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                    </button>
+                    <button type="button" class="dir__boton dir__boton--peligro" (click)="eliminar(d)" [attr.aria-label]="'Eliminar ' + d.etiqueta"
+                      [disabled]="ocupada() !== null">
+                      <lucide-icon [img]="TrashIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                    </button>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="panel" aria-labelledby="titulo-seguridad">
+        <h2 id="titulo-seguridad" class="sr-only">Seguridad</h2>
+        <app-password-form />
+      </section>
+    </div>
+
+    <app-direccion-dialog [direccion]="enEdicion()" [esPrimera]="direcciones().length === 0"
+      (guardada)="alGuardarDireccion($event)" (cerrado)="enEdicion.set(undefined)" />
+  }
+</app-account-shell>

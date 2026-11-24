@@ -233,3 +233,31 @@
     transform: none;
   }
 }
+
+.card__title a {
+  color: inherit;
+  text-decoration: none;
+  @include focus-ring;
+
+  &:hover {
+    color: $color-brand-primary;
+  }
+}
+
+.card--esqueleto {
+  min-height: 26rem;
+  background: linear-gradient(100deg, $color-beige-horno 30%, rgba($color-blanco, 0.6) 50%, $color-beige-horno 70%) 0 0 / 200% 100%;
+  animation: preview-brillo 1.4s linear infinite;
+}
+
+@keyframes preview-brillo {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@include reduced-motion {
+  .card--esqueleto {
+    animation: none;
+  }
+}

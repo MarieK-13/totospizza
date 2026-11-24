@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, computed, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core';
 import { Bike, Clock, LoaderCircle, LocateFixed, LucideAngularModule, MapPin, MapPinned, Store, Wallet, X } from 'lucide-angular';
+import { Observable, delay, of } from 'rxjs';
+import { environment } from '../../../core/config/environment';
 import { peticionSilenciosa } from '../../../core/interceptors/http-context';
 import type { CoberturaResponse, SucursalResponse, TipoEntrega } from '../../../core/models/api';
 import { PublicoApi } from '../../../core/services/api/publico.api';
@@ -72,7 +74,11 @@ export class EntregaDialog {
     const c = this.consulta();
     return c.tipo === 'resultado' ? c.cobertura : null;
   });
-  protected readonly locales = this.localesService.locales;
+  /** Sin backend (modo prueba) todos los locales cuentan como abiertos para poder probar a cualquier hora. */
+  protected readonly modoPrueba = environment.entregaDatosDePrueba;
+  protected readonly locales = computed(() =>
+    this.modoPrueba ? this.localesService.locales().map((l) => ({ ...l, abiertoAhora: true })) : this.localesService.locales(),
+  );
 
   protected readonly errorDireccion = computed(() => (this.intentoConfirmar() && !this.direccion().trim() ? 'Escribe la calle y el número.' : ''));
   protected readonly errorDistrito = computed(() => (this.intentoConfirmar() && !this.distrito().trim() ? 'Indica tu distrito.' : ''));
@@ -214,9 +220,24 @@ export class EntregaDialog {
   }
 
   private consultarCobertura(latitud: number, longitud: number): void {
-    this.api.cobertura({ latitud, longitud }, { context: peticionSilenciosa() }).subscribe({
+    this.cobertura$(latitud, longitud).subscribe({
       next: (cobertura) => this.consulta.set({ tipo: 'resultado', cobertura, latitud, longitud }),
       error: (error: unknown) => this.consulta.set({ tipo: 'error', mensaje: mensajeDeError(error) }),
     });
+  }
+
+  /** POST /publico/cobertura, o una respuesta simulada con el primer local si no hay backend. */
+  private cobertura$(latitud: number, longitud: number): Observable<CoberturaResponse> {
+    if (!this.modoPrueba) return this.api.cobertura({ latitud, longitud }, { context: peticionSilenciosa() });
+    const local = this.locales()[0];
+    return of<CoberturaResponse>({
+      dentroCobertura: true,
+      distanciaKm: 1.8,
+      sucursalId: local?.id ?? 1,
+      sucursalNombre: local?.nombre ?? "Toto's Pizza",
+      costoEnvio: 5,
+      minutosEstimados: 33,
+      mensaje: 'Cobertura simulada (modo prueba sin backend).',
+    }).pipe(delay(500));
   }
 }

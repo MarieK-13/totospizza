@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, delay, of, throwError } from 'rxjs';
 import { environment } from '../config/environment';
-import { FILTROS_PRUEBA, MENU_PRUEBA, detallePrueba } from '../data/menu-prueba';
+import { INICIO_PRUEBA } from '../data/inicio-prueba';
+import { FILTROS_PRUEBA, MENU_PRUEBA, detallePrueba, tamanosDePrueba } from '../data/menu-prueba';
 import { ApiException } from '../utils/api-exception';
-import type { FiltroMenu, MenuFiltrosResponse, PageResponse, ProductoDetalleResponse, ProductoResumenResponse } from '../models/api';
+import type { FiltroMenu, HomeResponse, MenuFiltrosResponse, PageResponse, ProductoDetalleResponse, ProductoResumenResponse } from '../models/api';
 import { PublicoApi } from './api/publico.api';
 import type { OpcionesPeticion } from './api/api-client';
 
@@ -28,6 +29,7 @@ export class CatalogoService {
       (p) =>
         (!filtro.categoria || FILTROS_PRUEBA.categorias.some((c) => c.slug === filtro.categoria && c.nombre === p.categoria)) &&
         (!filtro.etiqueta || p.etiquetas.some((e) => e.slug === filtro.etiqueta)) &&
+        (!filtro.tamanoPizza || tamanosDePrueba(p).includes(filtro.tamanoPizza)) &&
         (!texto || `${p.nombre} ${p.descripcion}`.toLowerCase().includes(texto)),
     );
     const tamano = filtro.tamano ?? contenido.length;
@@ -40,6 +42,11 @@ export class CatalogoService {
       primera: true,
       ultima: true,
     }).pipe(delay(LATENCIA_SIMULADA_MS));
+  }
+
+  /** Inicio en una sola llamada: promociones vigentes, destacados, reseñas y datos del negocio. */
+  home(opciones?: OpcionesPeticion): Observable<HomeResponse> {
+    return this.demo ? of(INICIO_PRUEBA).pipe(delay(LATENCIA_SIMULADA_MS)) : this.api.home(opciones);
   }
 
   filtros(opciones?: OpcionesPeticion): Observable<MenuFiltrosResponse> {

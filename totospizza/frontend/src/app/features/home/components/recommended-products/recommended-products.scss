@@ -98,8 +98,10 @@
   }
 
   &__meta {
+    max-width: 12rem;
     color: $color-text-secondary;
     font-size: 0.8125rem;
+    @include line-clamp(2);
   }
 
   &__price {

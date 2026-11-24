@@ -1,27 +1,30 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ArrowRight, ChevronLeft, ChevronRight, LucideAngularModule } from 'lucide-angular';
+import { ArrowRight, Check, ChevronLeft, ChevronRight, LucideAngularModule, Plus } from 'lucide-angular';
+import { finalize } from 'rxjs';
+import type { PromocionResponse } from '../../../../core/models/api';
+import { AgregarRapidoService } from '../../../../core/services/agregar-rapido.service';
+import { formatearSoles } from '../../../../core/utils/money';
 
 /** Mismos tres colores de fondo que el backend (ColorPromocion). */
 type TemaPromo = 'rojo' | 'verde' | 'blanco';
 
 interface HeroSlide {
+  readonly promo: PromocionResponse;
   readonly tema: TemaPromo;
-  readonly etiqueta: string;
-  readonly titulo: string;
-  readonly descripcion: string;
-  readonly precioAnterior: string;
+  readonly precioAnterior: string | null;
   readonly precioActual: string;
-  readonly ctaTexto: string;
-  readonly ctaRuta: string;
-  readonly notaLegal: string;
   readonly imagen: string;
-  readonly imagenAlt: string;
 }
 
 const INTERVALO_MS = 6500;
+/** Si la promoción no tiene imagen en la base, se usa una foto genérica del local. */
+const IMAGEN_POR_DEFECTO = 'images/hero-combo.jpg';
 
-/** Carrusel de promociones: imagen de banner a todo el ancho y el contenido a la izquierda. */
+/**
+ * Carrusel de promociones vigentes (GET /publico/home, las que no son COMBO).
+ * "Pedir esta promo" la agrega al carrito con su precio promocional.
+ */
 @Component({
   selector: 'app-hero-carousel',
   imports: [RouterLink, LucideAngularModule],
@@ -29,76 +32,55 @@ const INTERVALO_MS = 6500;
   styleUrl: './hero-carousel.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeroCarousel implements OnInit, OnDestroy {
+export class HeroCarousel {
+  private readonly agregarRapido = inject(AgregarRapidoService);
+
+  readonly promociones = input<readonly PromocionResponse[]>([]);
+  readonly cargando = input(false);
+
   protected readonly ChevronLeftIcon = ChevronLeft;
   protected readonly ChevronRightIcon = ChevronRight;
   protected readonly ArrowRightIcon = ArrowRight;
+  protected readonly PlusIcon = Plus;
+  protected readonly CheckIcon = Check;
   protected readonly intervaloMs = INTERVALO_MS;
 
-  protected readonly slides: readonly HeroSlide[] = [
-    {
-      tema: 'rojo',
-      etiqueta: 'Promo familiar',
-      titulo: 'La noche sabe mejor en familia',
-      descripcion:
-        '2 pizzas grandes + palitos al ajo + gaseosa de 1.5 L. Masa artesanal, horno de piedra y mucho queso.',
-      precioAnterior: 'S/ 89.90',
-      precioActual: 'S/ 69.90',
-      ctaTexto: 'Pedir esta promo',
-      ctaRuta: '/menu',
-      notaLegal: '*Válido de lunes a jueves. Personaliza tus pizzas sin costo adicional.',
-      imagen: 'images/hero-promo-familiar.jpg',
-      imagenAlt: 'Familia compartiendo dos pizzas artesanales y palitos al ajo',
-    },
-    {
-      tema: 'blanco',
-      etiqueta: 'Combo',
-      titulo: 'Pizza + palitos + gaseosa',
-      descripcion: 'La cena rápida para dos con masa artesanal y sabor casero.',
-      precioAnterior: 'S/ 49.90',
-      precioActual: 'S/ 39.90',
-      ctaTexto: 'Ver combo',
-      ctaRuta: '/menu',
-      notaLegal: '*Válido de lunes a jueves. Personaliza tus pizzas sin costo adicional.',
-      imagen: 'images/hero-combo.jpg',
-      imagenAlt: 'Pizza artesanal recién salida del horno en caja',
-    },
-    {
-      tema: 'verde',
-      etiqueta: 'Oferta',
-      titulo: 'Pizza veggie + ensalada',
-      descripcion: 'Una opción fresca y artesanal para compartir con ingredientes de temporada.',
-      precioAnterior: 'S/ 59.90',
-      precioActual: 'S/ 49.90',
-      ctaTexto: 'Ver oferta',
-      ctaRuta: '/menu',
-      notaLegal: '*Válido de lunes a jueves. Personaliza tus pizzas sin costo adicional.',
-      imagen: 'images/hero-oferta-veggie.jpg',
-      imagenAlt: 'Pizza vegetariana artesanal sobre tabla de madera',
-    },
-  ];
+  protected readonly slides = computed<readonly HeroSlide[]>(() =>
+    this.promociones().map((promo) => ({
+      promo,
+      tema: promo.colorFondo.toLowerCase() as TemaPromo,
+      precioAnterior: promo.precioAnterior && promo.precioAnterior > promo.precioPromocional ? formatearSoles(promo.precioAnterior) : null,
+      precioActual: formatearSoles(promo.precioPromocional),
+      imagen: promo.imagenUrl ?? IMAGEN_POR_DEFECTO,
+    })),
+  );
 
   protected readonly actual = signal(0);
   /** Cambia en cada avance para reiniciar la barra de progreso. */
   protected readonly ciclo = signal(0);
   protected readonly pausado = signal(false);
+  protected readonly agregandoId = signal<number | null>(null);
+  protected readonly agregadoId = signal<number | null>(null);
 
   private timer?: ReturnType<typeof setInterval>;
 
-  ngOnInit(): void {
-    this.iniciar();
-  }
-
-  ngOnDestroy(): void {
-    clearInterval(this.timer);
+  constructor() {
+    // Arranca (o se reinicia) cuando llegan las promociones
+    effect(() => {
+      const total = this.slides().length;
+      if (this.actual() >= total) this.actual.set(0);
+      if (total > 1) this.iniciar();
+      else clearInterval(this.timer);
+    });
+    inject(DestroyRef).onDestroy(() => clearInterval(this.timer));
   }
 
   protected siguiente(): void {
-    this.ir((this.actual() + 1) % this.slides.length);
+    this.ir((this.actual() + 1) % this.slides().length);
   }
 
   protected anterior(): void {
-    this.ir((this.actual() - 1 + this.slides.length) % this.slides.length);
+    this.ir((this.actual() - 1 + this.slides().length) % this.slides().length);
   }
 
   protected ir(indice: number): void {
@@ -116,8 +98,24 @@ export class HeroCarousel implements OnInit, OnDestroy {
     }
   }
 
+  protected pedir(promo: PromocionResponse): void {
+    if (this.agregandoId() !== null) return;
+    this.agregandoId.set(promo.id);
+    this.agregarRapido
+      .agregarPromocion(promo)
+      .pipe(finalize(() => this.agregandoId.set(null)))
+      .subscribe({
+        next: (resultado) => {
+          if (resultado !== 'agregado') return;
+          this.agregadoId.set(promo.id);
+          setTimeout(() => this.agregadoId.set(null), 2000);
+        },
+        error: () => undefined,
+      });
+  }
+
   private iniciar(): void {
     clearInterval(this.timer);
-    this.timer = setInterval(() => this.siguiente(), INTERVALO_MS);
+    if (this.slides().length > 1 && !this.pausado()) this.timer = setInterval(() => this.siguiente(), INTERVALO_MS);
   }
 }

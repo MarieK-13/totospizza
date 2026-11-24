@@ -1,7 +1,7 @@
-<app-hero-carousel />
+<app-hero-carousel [promociones]="promocionesCarrusel()" [cargando]="cargandoInicio()" />
 <app-benefits-strip />
-<app-menu-preview />
-<app-order-now />
-<app-recommended-products />
+<app-menu-preview [productos]="destacados()" [cargando]="cargandoInicio()" />
+<app-order-now [combos]="combos()" [productos]="productos()" />
+<app-recommended-products [productos]="antojitos()" />
 <app-cta-banner />
-<app-snack-categories />
+<app-snack-categories [productos]="productos()" [cargando]="cargandoMenu()" />

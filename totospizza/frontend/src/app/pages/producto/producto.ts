@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal, untracked } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -18,6 +19,8 @@ import { EntregaDialog, type AccionEntrega } from '../../shared/components/entre
 import { ProductInfoDialog, type FichaProducto } from '../../shared/components/product-info-dialog/product-info-dialog';
 
 const CANTIDAD_MAXIMA = 20;
+/** El backend guarda la masa como ingrediente para el stock web; no es un extra que se elija. */
+const ES_MASA_DE_STOCK = /^masa(\s+de\s+pizza)?$/i;
 const EXTRA_MAXIMO = 5;
 /** El backend acepta hasta 10 adicionales distintos por ítem. */
 const EXTRAS_DISTINTOS_MAXIMOS = 10;
@@ -51,7 +54,17 @@ export class Producto {
     params: () => this.slug(),
     stream: ({ params }) => this.api.producto(params, { context: peticionSilenciosa() }).pipe(timeout(15_000)),
   });
-  protected readonly producto = computed(() => (this.recurso.error() ? undefined : this.recurso.value()));
+  /**
+   * Producto con los precios sin repetir (un tamaño una sola vez) y sin la "Masa de pizza"
+   * del stock web entre los adicionales. Protege la vista aunque el backend mande datos duplicados.
+   */
+  protected readonly producto = computed(() => {
+    const p = this.recurso.error() ? undefined : this.recurso.value();
+    if (!p) return undefined;
+    const precios = p.precios.filter((x, i, todos) => todos.findIndex((y) => y.tamanoId === x.tamanoId) === i);
+    const adicionales = p.adicionales.filter((a) => !ES_MASA_DE_STOCK.test(a.nombre.trim()));
+    return { ...p, precios, adicionales };
+  });
   protected readonly noEncontrado = computed(() => {
     const error = this.recurso.error();
     return esApiException(error) && error.estado === 404;
@@ -145,11 +158,18 @@ export class Producto {
   protected readonly PinIcon = MapPin;
 
   constructor() {
+    // En escritorio la ventana queda quieta y solo se desliza el panel de opciones (ver .vista-fija)
+    const body = inject(DOCUMENT).body;
+    body.classList.add('vista-fija');
+    this.destroyRef.onDestroy(() => body.classList.remove('vista-fija'));
+
     // Al cargar otro producto se reinicia la selección con valores razonables (primer tamaño y primera masa)
     effect(() => {
       const p = this.producto();
       untracked(() => {
-        this.tamanoId.set(p?.requiereTamano ? (p.precios[0]?.tamanoId ?? null) : null);
+        const sugerido = Number(this.route.snapshot.queryParamMap.get('tamano'));
+        const tamanoInicial = p?.precios.find((x) => x.tamanoId === sugerido) ?? p?.precios[0];
+        this.tamanoId.set(p?.requiereTamano ? (tamanoInicial?.tamanoId ?? null) : null);
         this.tipoMasaId.set(p?.requiereTamano ? (p.tiposMasa[0]?.id ?? null) : null);
         this.extras.set({});
         this.cantidad.set(1);
@@ -243,7 +263,7 @@ export class Producto {
         cantidad: this.cantidad(),
         notas: this.notas().trim() || null,
         adicionales,
-      }, { nombre: p.nombre, precioUnitario: unitario, imagenUrl: this.imagen(), detalle: this.detalleSeleccion() })
+      }, { nombre: p.nombre, slug: p.slug, precioUnitario: unitario, imagenUrl: this.imagen(), detalle: this.detalleSeleccion() })
       .pipe(finalize(() => this.enviando.set(false)))
       .subscribe({
         next: () => {

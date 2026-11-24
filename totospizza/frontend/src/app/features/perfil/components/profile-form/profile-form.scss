@@ -1,0 +1,73 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+@use '../../../../shared/components/account-shell/panel' as cuenta;
+
+.datos {
+  &__alerta {
+    @include cuenta.alerta;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  &__rejilla {
+    display: grid;
+    gap: $space-4;
+
+    @include up(md) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: $space-4 $space-5;
+    }
+  }
+
+  &__nota {
+    margin: $space-2 0 0;
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+  }
+
+  &__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: $space-3;
+    margin-top: $space-5;
+  }
+
+  &__guardar {
+    @include cuenta.boton-marron;
+  }
+}
+
+.fijos {
+  display: grid;
+  gap: $space-3;
+  margin: $space-5 0 0;
+  padding: $space-4;
+  border-radius: $radius-md;
+  background-color: $color-background-alt;
+
+  @include up(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  &__item {
+    min-width: 0;
+  }
+
+  dt {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    color: $color-text-secondary;
+    font-size: 0.8125rem;
+  }
+
+  dd {
+    margin: $space-1 0 0;
+    overflow: hidden;
+    font-weight: $weight-medium;
+    text-overflow: ellipsis;
+  }
+}

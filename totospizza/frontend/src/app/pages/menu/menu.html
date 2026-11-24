@@ -60,6 +60,23 @@
     </div>
   </div>
 
+  @if (tamanos().length > 0) {
+    <div class="porciones" role="group" aria-labelledby="porciones-titulo">
+      <span id="porciones-titulo" class="porciones__titulo">¿Para cuántos?</span>
+      <div class="porciones__opciones">
+        @for (t of tamanos(); track t.id) {
+          <button type="button" class="porcion" [class.is-activa]="tamanoPizza() === t.id" [attr.aria-pressed]="tamanoPizza() === t.id" (click)="alternarTamano(t.id)">
+            <lucide-icon class="porcion__icono" [img]="t.personasMax > 1 ? GroupIcon : PersonIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+            <span class="porcion__texto">
+              <strong>{{ personas(t.personasMin, t.personasMax) }}</strong>
+              <small>{{ t.nombre }}, {{ t.diametroCm }} cm</small>
+            </span>
+          </button>
+        }
+      </div>
+    </div>
+  }
+
   @if ((filtros.value()?.etiquetas?.length ?? 0) > 0) {
     <div class="filtros" role="group" aria-label="Filtrar por">
       @for (e of filtros.value()?.etiquetas ?? []; track e.id) {
@@ -97,7 +114,7 @@
     } @else {
       <ul class="grilla" [class.es-lista]="vista() === 'lista'" [class.is-cargando]="cargando()">
         @for (producto of productos(); track producto.id) {
-          <li><app-product-card [producto]="producto" [vista]="vista()" [conInfo]="true" (informacion)="infoProducto.set($event)" /></li>
+          <li><app-product-card [producto]="producto" [vista]="vista()" [conInfo]="true" [tamanoSugerido]="tamanoPizza()" (informacion)="infoProducto.set($event)" /></li>
         }
       </ul>
       @if (incompleto()) {

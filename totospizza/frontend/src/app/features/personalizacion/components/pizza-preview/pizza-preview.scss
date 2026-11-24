@@ -1,0 +1,243 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.lienzo {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  cursor: grab;
+  // Arrastre horizontal gira la pizza; vertical sigue desplazando la página en el celular
+  touch-action: pan-y;
+  user-select: none;
+  @include focus-ring($color-brand-primary, 4px);
+
+  &:focus-visible {
+    border-radius: 50%;
+  }
+
+  &.is-girando {
+    cursor: grabbing;
+  }
+}
+
+// Anillo que aparece al arrastrar un ingrediente encima
+.destino {
+  fill: none;
+  stroke: $color-brand-primary;
+  stroke-width: 3;
+  stroke-dasharray: 10 8;
+  opacity: 0;
+  transition: opacity $duration-base $ease-out;
+}
+
+:host(.is-recibiendo) .destino {
+  opacity: 1;
+  animation: girar-anillo 6s linear infinite;
+}
+
+// Crece y se encoge desde el centro con un pequeño rebote
+.pizza {
+  transform: scale(var(--escala, 0.8));
+  transform-origin: 0 0;
+  transition: transform 0.6s $ease-elastic;
+
+  &__sombra {
+    fill: rgba(60, 28, 8, 0.4);
+  }
+
+  &__giro {
+    transform-origin: 0 0;
+
+    &.is-libre {
+      transition: transform 0.35s $ease-out;
+    }
+  }
+}
+
+:host(.is-recibiendo) .pizza {
+  transform: scale(calc(var(--escala, 0.8) * 1.03));
+}
+
+// La salsa se esparce en espiral desde el centro, como con el cucharón
+.salsa {
+  transform-origin: 0 0;
+  animation: esparcir 0.75s $ease-out both;
+}
+
+.oregano {
+  opacity: 0.75;
+  animation: aparecer 0.6s 0.5s $ease-out both;
+}
+
+// El queso cae rallado y luego se funde
+.queso__derretido {
+  opacity: 0.96;
+  animation: fundir 0.5s 0.55s $ease-out both;
+}
+
+.hebra {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: caer-hebra 0.95s $ease-out both;
+  animation-delay: calc(var(--orden, 0) * 14ms);
+}
+
+// Cada trozo cae sobre la pizza, uno tras otro
+.pieza {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: caer 0.5s $ease-elastic both;
+  animation-delay: calc(var(--orden, 0) * 35ms);
+}
+
+// Horneado: aparece de a poco
+.horno {
+  opacity: 0;
+  transition: opacity 1.8s $ease-out;
+}
+
+:host(.is-horneada) .horno {
+  opacity: 1;
+}
+
+.vapor {
+  display: none;
+
+  &__hilo {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 7;
+    stroke-linecap: round;
+    opacity: 0;
+    animation: vapor 2.8s $ease-out 3 both;
+
+    &:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 1s;
+    }
+  }
+}
+
+:host(.is-horneada) .vapor {
+  display: inline;
+}
+
+.regla {
+  animation: aparecer 0.4s $ease-out both;
+
+  line {
+    stroke: $color-cafe-tostado;
+    stroke-width: 1.6;
+    transition:
+      x1 0.6s $ease-elastic,
+      x2 0.6s $ease-elastic;
+  }
+
+  &__fondo {
+    fill: $color-cafe-tostado;
+  }
+
+  &__texto {
+    fill: $color-text-inverse;
+    font-family: $font-datos;
+    font-size: 11px;
+    font-weight: $weight-bold;
+  }
+}
+
+@keyframes esparcir {
+  from {
+    opacity: 0.5;
+    transform: scale(0.12) rotate(-140deg);
+  }
+}
+
+@keyframes fundir {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes caer-hebra {
+  0% {
+    opacity: 0;
+    transform: translateY(-70px);
+  }
+  20% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes caer {
+  from {
+    opacity: 0;
+    transform: translateY(-34px) scale(1.5);
+  }
+}
+
+@keyframes vapor {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  30% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+}
+
+@keyframes girar-anillo {
+  to {
+    stroke-dashoffset: -180;
+  }
+}
+
+@include reduced-motion {
+  .pizza,
+  .pizza__giro.is-libre,
+  .horno,
+  .regla line {
+    transition: none;
+  }
+
+  .salsa,
+  .oregano,
+  .queso__derretido,
+  .hebra,
+  .pieza,
+  .regla,
+  .vapor__hilo,
+  :host(.is-recibiendo) .destino {
+    animation: none;
+  }
+
+  // Sin animación el rallado no desaparece solo: se oculta y queda el queso derretido
+  .queso__rallado {
+    display: none;
+  }
+}

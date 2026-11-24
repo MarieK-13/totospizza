@@ -1,60 +1,70 @@
-<section class="band band--white" aria-labelledby="recomendado-titulo">
-  <div class="wrap">
-    <header class="section-head">
-      <div>
-        <span class="kicker">Los favoritos de la casa</span>
-        <h2 id="recomendado-titulo" class="section-head__title">Recomendado para ti</h2>
-        <p class="section-head__lead">Recetas que ya conquistaron Ica. Desliza y elige la tuya.</p>
-      </div>
+@if (tarjetas().length > 0 || cargando()) {
+  <section class="band band--white" aria-labelledby="recomendado-titulo">
+    <div class="wrap">
+      <header class="section-head">
+        <div>
+          <span class="kicker">Los favoritos de la casa</span>
+          <h2 id="recomendado-titulo" class="section-head__title">Recomendado para ti</h2>
+          <p class="section-head__lead">Recetas que ya conquistaron Ica. Desliza y elige la tuya.</p>
+        </div>
 
-      <div class="controls">
-        <button type="button" class="arrow" (click)="mover(-1)" [disabled]="!canPrev()" aria-label="Pizzas anteriores">
-          <lucide-icon [img]="PrevIcon" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
-        </button>
-        <button type="button" class="arrow" (click)="mover(1)" [disabled]="!canNext()" aria-label="Pizzas siguientes">
-          <lucide-icon [img]="NextIcon" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
-        </button>
-        <a routerLink="/menu" class="btn btn--secondary">
-          Ver todas
-          <lucide-icon [img]="ArrowRightIcon" [size]="16" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
-        </a>
-      </div>
-    </header>
+        <div class="controls">
+          <button type="button" class="arrow" (click)="mover(-1)" [disabled]="!canPrev()" aria-label="Pizzas anteriores">
+            <lucide-icon [img]="PrevIcon" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+          </button>
+          <button type="button" class="arrow" (click)="mover(1)" [disabled]="!canNext()" aria-label="Pizzas siguientes">
+            <lucide-icon [img]="NextIcon" [size]="20" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+          </button>
+          <a routerLink="/menu" class="btn btn--secondary">
+            Ver todas
+            <lucide-icon [img]="ArrowRightIcon" [size]="16" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+          </a>
+        </div>
+      </header>
 
-    <div #track class="track" (scroll)="onScroll()" tabindex="0" role="region" aria-label="Pizzas recomendadas">
-      @for (p of pizzas; track p.nombre) {
-        <article class="card">
-          <div class="card__media">
-            <img [src]="p.imagen" [alt]="p.nombre" loading="lazy" />
-            <span class="card__badge">{{ p.etiqueta }}</span>
-          </div>
-
-          <div class="card__body">
-            <div class="card__meta">
-              <p class="card__category">{{ p.categoria }}</p>
-              <p class="card__rating" [attr.aria-label]="'Valoración ' + p.rating.toFixed(1) + ' de 5'">
-                <span class="card__star" aria-hidden="true">★</span>{{ p.rating.toFixed(1) }}
-              </p>
-            </div>
-            <h3 class="card__title">{{ p.nombre }}</h3>
-            <p class="card__desc">{{ p.detalle }}</p>
-
-            <ul class="card__tags" aria-label="Alérgenos y dieta">
-              @for (t of p.tags; track t.label) {
-                <li [class]="'tag tag--' + t.tipo">{{ t.label }}</li>
+      <div #track class="track" (scroll)="onScroll()" tabindex="0" role="region" aria-label="Productos recomendados">
+        @for (t of tarjetas(); track t.producto.id) {
+          <article class="card">
+            <a class="card__media" [routerLink]="['/menu', t.producto.slug]" tabindex="-1" aria-hidden="true">
+              @if (t.imagen) {
+                <img [src]="t.imagen" [alt]="t.producto.nombre" loading="lazy" />
               }
-            </ul>
+              <span class="card__badge">{{ t.insignia }}</span>
+            </a>
 
-            <div class="card__foot">
-              <p class="card__price"><small>Desde</small>S/ {{ p.precio.toFixed(2) }}</p>
-              <button type="button" class="btn btn--primary btn--sm" (click)="agregar(p)" [attr.aria-label]="'Agregar ' + p.nombre + ' al pedido'">
-                <lucide-icon [img]="PlusIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
-                Añadir
-              </button>
+            <div class="card__body">
+              <div class="card__meta">
+                <p class="card__category">{{ t.producto.categoria }}</p>
+                @if (t.valoracion; as v) {
+                  <p class="card__rating" [attr.aria-label]="'Valoración ' + v + ' de 5'">
+                    <span class="card__star" aria-hidden="true">★</span>{{ v }}
+                  </p>
+                }
+              </div>
+              <h3 class="card__title"><a [routerLink]="['/menu', t.producto.slug]">{{ t.producto.nombre }}</a></h3>
+              <p class="card__desc">{{ t.producto.descripcion }}</p>
+
+              <ul class="card__tags" aria-label="Alérgenos y dieta">
+                @for (tag of t.tags; track tag.label) {
+                  <li [class]="'tag tag--' + tag.tipo">{{ tag.label }}</li>
+                }
+              </ul>
+
+              <div class="card__foot">
+                <p class="card__price"><small>Desde</small>S/ {{ t.producto.precioDesde.toFixed(2) }}</p>
+                <button type="button" class="btn btn--primary btn--sm" [appAgregarProducto]="t.producto" #agregar="agregar" [attr.aria-label]="'Agregar ' + t.producto.nombre">
+                  <lucide-icon [img]="agregar.agregado() ? CheckIcon : PlusIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+                  {{ agregar.agregado() ? 'Agregado' : 'Añadir' }}
+                </button>
+              </div>
             </div>
-          </div>
-        </article>
-      }
+          </article>
+        } @empty {
+          @for (i of [1, 2, 3, 4]; track i) {
+            <div class="card card--esqueleto" aria-hidden="true"></div>
+          }
+        }
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+}

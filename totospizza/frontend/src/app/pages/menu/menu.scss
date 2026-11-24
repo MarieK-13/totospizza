@@ -234,6 +234,83 @@
   }
 }
 
+// ── ¿Para cuántos? ──────────────────────────────────────────────────────────
+.porciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-4;
+
+  &__titulo {
+    font-size: 0.9375rem;
+    font-weight: $weight-bold;
+  }
+
+  &__opciones {
+    display: flex;
+    gap: $space-2;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+.porcion {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4 $space-2 $space-3;
+  border: $border-width solid transparent;
+  border-radius: $radius-pill;
+  background-color: $color-crema-claro;
+  color: $color-text-primary;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  @include transition((background-color, border-color, color));
+  @include focus-ring;
+
+  &:hover {
+    border-color: $color-arena;
+  }
+
+  &__icono {
+    color: $color-marron-suave;
+  }
+
+  &__texto {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+
+    strong {
+      font-size: 0.875rem;
+      font-weight: $weight-semibold;
+    }
+
+    small {
+      color: $color-text-secondary;
+      font-size: 0.75rem;
+    }
+  }
+
+  &.is-activa {
+    border-color: $color-marron-suave;
+    background-color: $color-marron-suave;
+    color: $color-text-inverse;
+
+    .porcion__icono,
+    small {
+      color: rgba($color-blanco, 0.85);
+    }
+  }
+}
+
 .filtros {
   display: flex;
   flex-wrap: wrap;

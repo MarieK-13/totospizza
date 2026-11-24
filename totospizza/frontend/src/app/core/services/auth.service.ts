@@ -90,6 +90,15 @@ export class AuthService {
     this.renovacion$ = null;
   }
 
+  /** Refleja en la sesión los datos que el cliente cambió en su perfil (el header muestra el nombre). */
+  actualizarUsuario(cambios: Partial<Pick<UsuarioResponse, 'nombres' | 'apellidos' | 'telefono' | 'avatarUrl'>>): void {
+    const actual = this.sesion();
+    if (!actual) return;
+    const sesion: Sesion = { ...actual, usuario: { ...actual.usuario, ...cambios } };
+    this.storage.guardar(sesion);
+    this.sesion.set(sesion);
+  }
+
   tieneRol(...roles: readonly Rol[]): boolean {
     const rol = this.rol();
     return rol !== null && roles.includes(rol);

@@ -1,3 +1,4 @@
+@if (categorias().length > 0) {
 <section class="explore-menu-section" aria-label="Explora nuestro menú">
   <div class="explore-menu-section__container">
     <!-- Cabecera centrada -->
@@ -10,12 +11,12 @@
       <h2 class="explore-header__title">Explora nuestro menú</h2>
 
       <p class="explore-header__subtitle">
-        Del clasicismo italiano a sabores que solo podían nacer en Ica. Todas disponibles en masa clásica o integral.
+        Del clasicismo italiano a sabores que solo podían nacer en Ica. Elige una categoría y súmalo a tu pedido.
       </p>
 
       <!-- Pestañas de Categoría Interactivas -->
       <div class="category-tabs" role="tablist" aria-label="Categorías del menú">
-        @for (cat of categorias; track cat) {
+        @for (cat of categorias(); track cat) {
           <button
             type="button"
             role="tab"
@@ -34,30 +35,32 @@
     <div class="menu-cards-grid" role="tabpanel">
       @for (item of itemsFiltrados(); track item.id) {
         <article class="menu-item-card">
-          <div class="menu-item-card__media">
-            <img [src]="item.imagen" [alt]="item.nombre" class="menu-item-card__img" />
-          </div>
+          <a class="menu-item-card__media" [routerLink]="['/menu', item.slug]" tabindex="-1" aria-hidden="true">
+            @if (imagen(item); as src) {
+              <img [src]="src" [alt]="item.nombre" class="menu-item-card__img" loading="lazy" />
+            }
+          </a>
 
           <div class="menu-item-card__body">
-            @if (item.etiqueta) {
-              <span class="menu-item-card__tag">{{ item.etiqueta }}</span>
+            @if (insignia(item); as etiqueta) {
+              <span class="menu-item-card__tag">{{ etiqueta }}</span>
             }
 
-            <h3 class="menu-item-card__title">{{ item.nombre }}</h3>
+            <h3 class="menu-item-card__title"><a [routerLink]="['/menu', item.slug]">{{ item.nombre }}</a></h3>
 
-            <p class="menu-item-card__desc">{{ item.detalle }}</p>
+            <p class="menu-item-card__desc">{{ item.descripcion }}</p>
 
             <div class="menu-item-card__footer">
-              <strong class="menu-item-card__price">S/ {{ item.precio.toFixed(2) }}</strong>
+              <strong class="menu-item-card__price">{{ item.categoria === 'Pizzas' ? 'Desde ' : '' }}S/ {{ item.precioDesde.toFixed(2) }}</strong>
 
               <button
                 type="button"
                 class="btn-agregar-inline"
-                [class.is-added]="agregadoId() === item.id"
-                (click)="agregarProducto(item)"
+                [appAgregarProducto]="item"
+                #agregar="agregar"
                 [attr.aria-label]="'Agregar ' + item.nombre"
               >
-                @if (agregadoId() === item.id) {
+                @if (agregar.agregado()) {
                   <span>Agregado</span>
                   <lucide-icon [img]="CheckCircleIcon" [size]="16" [strokeWidth]="2"></lucide-icon>
                 } @else {
@@ -80,3 +83,4 @@
     </div>
   </div>
 </section>
+}

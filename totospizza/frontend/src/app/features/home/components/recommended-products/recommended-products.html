@@ -1,25 +1,35 @@
-<section class="band band--white" aria-labelledby="antojitos-titulo">
-  <div class="wrap">
-    <header class="section-head section-head--center">
-      <span class="kicker">Para acompañar</span>
-      <h2 id="antojitos-titulo" class="section-head__title">Antojitos</h2>
-      <p class="section-head__lead">Toca el que se te antoje y súmalo a tu pizza.</p>
-    </header>
+@if (productos().length > 0) {
+  <section class="band band--white" aria-labelledby="antojitos-titulo">
+    <div class="wrap">
+      <header class="section-head section-head--center">
+        <span class="kicker">Para acompañar</span>
+        <h2 id="antojitos-titulo" class="section-head__title">Antojitos</h2>
+        <p class="section-head__lead">Toca el que se te antoje y súmalo a tu pizza.</p>
+      </header>
 
-    <ul class="row">
-      @for (a of antojitos; track a.id) {
-        <li class="row__item">
-          <button type="button" class="item" (click)="agregar(a)" [attr.aria-label]="'Agregar ' + a.nombre + ', S/ ' + a.precio.toFixed(2)">
-            <span class="item__disc">
-              <img [src]="a.imagen" [alt]="" loading="lazy" />
-              <span class="item__plus" aria-hidden="true">+</span>
-            </span>
-            <span class="item__name">{{ a.nombre }}</span>
-            <span class="item__meta">{{ a.porcion }}</span>
-            <span class="item__price">S/ {{ a.precio.toFixed(2) }}</span>
-          </button>
-        </li>
-      }
-    </ul>
-  </div>
-</section>
+      <ul class="row">
+        @for (a of productos(); track a.id) {
+          <li class="row__item">
+            <button
+              type="button"
+              class="item"
+              [appAgregarProducto]="a"
+              #agregar="agregar"
+              [attr.aria-label]="'Agregar ' + a.nombre + ', S/ ' + a.precioDesde.toFixed(2)"
+            >
+              <span class="item__disc">
+                @if (imagen(a); as src) {
+                  <img [src]="src" alt="" loading="lazy" />
+                }
+                <span class="item__plus" aria-hidden="true">{{ agregar.agregado() ? '✓' : '+' }}</span>
+              </span>
+              <span class="item__name">{{ a.nombre }}</span>
+              <span class="item__meta">{{ a.descripcion }}</span>
+              <span class="item__price">S/ {{ a.precioDesde.toFixed(2) }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+}

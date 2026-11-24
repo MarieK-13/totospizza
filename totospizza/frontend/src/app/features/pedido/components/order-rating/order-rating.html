@@ -1,0 +1,36 @@
+<dialog #dialogo class="opinion" aria-labelledby="opinion-titulo" (click)="alPulsar($event)" (cancel)="alCancelar($event)">
+  <button type="button" class="opinion__cerrar" (click)="cerrar()" aria-label="Cerrar">
+    <lucide-icon [img]="CloseIcon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+  </button>
+
+  <h2 id="opinion-titulo" class="opinion__titulo">¿Qué tal estuvo?</h2>
+  <p class="opinion__texto">Tu opinión le llega directo a la cocina y nos ayuda a decidir el menú.</p>
+
+  <div class="estrellas" role="radiogroup" aria-label="Calificación" (mouseleave)="sobre.set(0)" (keydown)="teclado($event)">
+    @for (n of estrellas; track n) {
+      <button type="button" role="radio" class="estrellas__item" [class.is-llena]="(sobre() || calificacion()) >= n"
+        [attr.aria-checked]="calificacion() === n" [attr.aria-label]="n + (n === 1 ? ' estrella' : ' estrellas')"
+        [attr.tabindex]="calificacion() === n || (calificacion() === 0 && n === 1) ? 0 : -1"
+        (click)="calificacion.set(n)" (mouseenter)="sobre.set(n)">
+        <lucide-icon [img]="StarIcon" [size]="34" [strokeWidth]="1.5" aria-hidden="true"></lucide-icon>
+      </button>
+    }
+  </div>
+  <p class="opinion__nota" aria-live="polite">{{ textos[sobre() || calificacion()] || 'Toca una estrella' }}</p>
+
+  <label class="opinion__etiqueta" for="opinion-comentario">Cuéntanos más <span>(opcional)</span></label>
+  <textarea id="opinion-comentario" class="opinion__comentario" rows="3" [attr.maxlength]="maxComentario"
+    placeholder="La masa, el tiempo de entrega, el motorizado…" [value]="comentario()" (input)="escribir($event)"></textarea>
+  <p class="opinion__conteo">{{ comentario().length }}/{{ maxComentario }}</p>
+
+  @if (error(); as mensaje) {
+    <p class="opinion__error" role="alert">
+      <lucide-icon [img]="AlertIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      {{ mensaje }}
+    </p>
+  }
+
+  <button type="button" class="btn btn--primary btn--block opinion__enviar" (click)="enviar()" [disabled]="enviando()">
+    {{ enviando() ? 'Enviando…' : 'Enviar opinión' }}
+  </button>
+</dialog>

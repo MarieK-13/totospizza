@@ -33,6 +33,13 @@
     font-size: 0.9375rem;
   }
 
+  &__principal {
+    display: flex;
+    flex-direction: column;
+    gap: $space-8;
+    min-width: 0;
+  }
+
   &__cuerpo {
     display: grid;
     gap: $space-6;
@@ -103,8 +110,20 @@
 
   &__nombre {
     margin: 0;
+    color: inherit;
     font-size: 1rem;
     font-weight: $weight-bold;
+    text-decoration: none;
+
+    &--enlace {
+      @include focus-ring;
+
+      &:hover {
+        color: $color-brand-primary;
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+    }
   }
 
   &__detalle,
@@ -189,6 +208,45 @@
     font-family: $font-datos;
     font-weight: $weight-semibold;
     text-align: center;
+  }
+}
+
+// ── Para acompañar: fila deslizable con las mismas tarjetas del menú ────────
+.acompanar {
+  &__cabecera {
+    margin-bottom: $space-4;
+  }
+
+  &__titulo {
+    margin: 0;
+    font-family: $font-titulos;
+    font-size: 1.625rem;
+    font-weight: 400;
+  }
+
+  &__texto {
+    margin: $space-1 0 0;
+    color: $color-text-secondary;
+    font-size: 0.9375rem;
+  }
+
+  &__fila {
+    display: grid;
+    grid-auto-columns: minmax(11rem, 13rem);
+    grid-auto-flow: column;
+    gap: $space-3;
+    margin: 0;
+    padding: 0 0 $space-3;
+    overflow-x: auto;
+    list-style: none;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-color: $color-arena transparent;
+    scrollbar-width: thin;
+  }
+
+  &__item {
+    scroll-snap-align: start;
   }
 }
 

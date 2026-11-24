@@ -15,6 +15,8 @@ import type {
  */
 
 const CATEGORIA: CategoriaResponse = { id: 1, nombre: 'Pizzas', slug: 'pizzas' };
+const BEBIDAS: CategoriaResponse = { id: 2, nombre: 'Bebidas', slug: 'bebidas' };
+const SALSAS: CategoriaResponse = { id: 3, nombre: 'Salsas', slug: 'salsas' };
 
 const etiqueta = (id: number, nombre: string, slug: string, esFiltro = true): EtiquetaResponse => ({ id, nombre, slug, esFiltro });
 
@@ -122,6 +124,26 @@ const SEMILLAS: readonly Semilla[] = [
   },
 ];
 
+/** Productos sin tamaño ni masa: se agregan directo al carrito. */
+interface Simple {
+  readonly id: number;
+  readonly nombre: string;
+  readonly slug: string;
+  readonly descripcion: string;
+  readonly categoria: CategoriaResponse;
+  readonly precio: number;
+  readonly imagenUrl: string | null;
+  readonly etiquetas: readonly EtiquetaResponse[];
+}
+
+const SIMPLES: readonly Simple[] = [
+  { id: 101, nombre: 'Coca-Cola 500 ml', slug: 'coca-cola-500', descripcion: 'Bien helada, para acompañar tu pizza.', categoria: BEBIDAS, precio: 5, imagenUrl: 'images/cocacola.jpg', etiquetas: [] },
+  { id: 102, nombre: 'Inca Kola 500 ml', slug: 'inca-kola-500', descripcion: 'La de sabor nacional, bien helada.', categoria: BEBIDAS, precio: 5, imagenUrl: 'images/InkaK.jpg', etiquetas: [] },
+  { id: 103, nombre: 'Agua sin gas 625 ml', slug: 'agua-sin-gas', descripcion: 'Agua de mesa sin gas.', categoria: BEBIDAS, precio: 3, imagenUrl: null, etiquetas: [] },
+  { id: 104, nombre: 'Salsa de ajo', slug: 'salsa-ajo', descripcion: 'Cremosa, para los bordes.', categoria: SALSAS, precio: 2, imagenUrl: null, etiquetas: [LACTEOS] },
+  { id: 105, nombre: 'Salsa picante', slug: 'salsa-picante', descripcion: 'Rocoto y ají, pica de verdad.', categoria: SALSAS, precio: 2, imagenUrl: null, etiquetas: [PICANTE] },
+];
+
 const IMAGEN_POR_SLUG: Readonly<Record<string, string>> = {
   pepperoni: 'images/pepperoni.jpg',
   margherita: 'images/margherita.jpg',
@@ -131,11 +153,21 @@ const IMAGEN_POR_SLUG: Readonly<Record<string, string>> = {
 };
 
 export const FILTROS_PRUEBA: MenuFiltrosResponse = {
-  categorias: [CATEGORIA],
+  categorias: [CATEGORIA, BEBIDAS, SALSAS],
   etiquetas: [SIN_LACTEOS, VEGETARIANA, PICANTE],
+  tamanos: [
+    { id: 1, nombre: 'Personal', diametroCm: 22, personasMin: 1, personasMax: 1, precioBase: 18 },
+    { id: 2, nombre: 'Mediana', diametroCm: 30, personasMin: 2, personasMax: 3, precioBase: 32 },
+    { id: 3, nombre: 'Familiar', diametroCm: 40, personasMin: 4, personasMax: 5, precioBase: 48 },
+  ],
 };
 
-export const MENU_PRUEBA: readonly ProductoResumenResponse[] = SEMILLAS.map((s) => ({
+/** Ids de tamaño en que se vende cada producto de prueba (las pizzas, en todos; bebidas y salsas, en ninguno). */
+export function tamanosDePrueba(producto: ProductoResumenResponse): readonly number[] {
+  return producto.categoria === CATEGORIA.nombre ? PRECIOS.map((p) => p.tamanoId) : [];
+}
+
+export const MENU_PRUEBA: readonly ProductoResumenResponse[] = SEMILLAS.map((s): ProductoResumenResponse => ({
   id: s.id,
   nombre: s.nombre,
   slug: s.slug,
@@ -149,9 +181,47 @@ export const MENU_PRUEBA: readonly ProductoResumenResponse[] = SEMILLAS.map((s) 
   totalResenas: s.resenas,
   ingredientes: s.ingredientes,
   etiquetas: s.etiquetas,
-}));
+})).concat(
+  SIMPLES.map((s): ProductoResumenResponse => ({
+    id: s.id,
+    nombre: s.nombre,
+    slug: s.slug,
+    descripcion: s.descripcion,
+    imagenUrl: s.imagenUrl,
+    precioDesde: s.precio,
+    categoria: s.categoria.nombre,
+    disponible: true,
+    destacado: false,
+    calificacionPromedio: 0,
+    totalResenas: 0,
+    ingredientes: null,
+    etiquetas: s.etiquetas,
+  })),
+);
 
 export function detallePrueba(slug: string): ProductoDetalleResponse | undefined {
+  const simple = SIMPLES.find((s) => s.slug === slug);
+  if (simple) {
+    return {
+      id: simple.id,
+      categoria: simple.categoria,
+      nombre: simple.nombre,
+      slug: simple.slug,
+      descripcion: simple.descripcion,
+      imagenUrl: simple.imagenUrl,
+      precioBase: simple.precio,
+      requiereTamano: false,
+      disponible: true,
+      destacado: false,
+      calificacionPromedio: 0,
+      totalResenas: 0,
+      ingredientes: null,
+      etiquetas: simple.etiquetas,
+      precios: [],
+      tiposMasa: [],
+      adicionales: [],
+    };
+  }
   const semilla = SEMILLAS.find((s) => s.slug === slug);
   if (!semilla) return undefined;
   return {

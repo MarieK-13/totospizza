@@ -34,9 +34,10 @@ public class MenuPublicoController {
     public PageResponse<ProductoResumenResponse> menu(@RequestParam(required = false) String categoria,
                                                       @RequestParam(required = false) String etiqueta,
                                                       @RequestParam(name = "q", required = false) String texto,
+                                                      @RequestParam(required = false) Long tamanoPizza,
                                                       @RequestParam(defaultValue = "0") int pagina,
                                                       @RequestParam(defaultValue = "20") int tamano) {
-        return menuService.buscar(categoria, etiqueta, texto, Paginas.de(pagina, tamano, Sort.by("nombre")));
+        return menuService.buscar(categoria, etiqueta, texto, tamanoPizza, Paginas.de(pagina, tamano, Sort.by("nombre")));
     }
 
     @GetMapping("/menu/filtros")

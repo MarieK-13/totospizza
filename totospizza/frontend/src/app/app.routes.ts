@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { guestGuard } from './core/guards/auth.guards';
+import { guestGuard, roleGuard } from './core/guards/auth.guards';
 
 export const routes: Routes = [
   // Sitio público: aviso + header + contenido + footer
@@ -40,6 +40,12 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/producto/producto').then((m) => m.Producto),
       },
       {
+        path: 'arma-tu-pizza',
+        title: "Arma tu pizza | Toto's Pizza",
+        loadComponent: () =>
+          import('./features/personalizacion/pages/pizza-builder-page/pizza-builder-page').then((m) => m.PizzaBuilderPage),
+      },
+      {
         path: 'carrito',
         title: "Tu carrito | Toto's Pizza",
         loadComponent: () => import('./features/carrito/pages/cart-page/cart-page').then((m) => m.CartPage),
@@ -54,7 +60,26 @@ export const routes: Routes = [
         title: "Política de privacidad | Toto's Pizza",
         loadComponent: () => import('./pages/privacidad/privacidad').then((m) => m.Privacidad),
       },
-      // Las demás rutas (menú, arma-tu-pizza, carrito...) se agregan cuando existan sus páginas.
+      // Mi cuenta: solo clientes con sesión
+      {
+        path: 'perfil',
+        canActivate: [roleGuard('CLIENTE')],
+        title: "Mi perfil | Toto's Pizza",
+        loadComponent: () => import('./features/perfil/pages/profile-page/profile-page').then((m) => m.ProfilePage),
+      },
+      {
+        path: 'mis-pedidos',
+        canActivate: [roleGuard('CLIENTE')],
+        title: "Mis pedidos | Toto's Pizza",
+        loadComponent: () => import('./features/perfil/pages/orders-page/orders-page').then((m) => m.OrdersPage),
+      },
+      {
+        path: 'mis-pedidos/:numero',
+        canActivate: [roleGuard('CLIENTE')],
+        title: "Seguimiento del pedido | Toto's Pizza",
+        loadComponent: () =>
+          import('./features/pedido/pages/order-tracking-page/order-tracking-page').then((m) => m.OrderTrackingPage),
+      },
     ],
   },
 

@@ -1,0 +1,97 @@
+<dialog #dialogo class="direccion" aria-labelledby="direccion-titulo" (click)="alPulsar($event)" (cancel)="alCancelar($event)">
+  <header class="direccion__cabecera">
+    <h2 id="direccion-titulo" class="direccion__titulo">{{ editando() ? 'Editar dirección' : 'Nueva dirección' }}</h2>
+    <button type="button" class="direccion__cerrar" (click)="cerrar()" aria-label="Cerrar">
+      <lucide-icon [img]="CloseIcon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+    </button>
+  </header>
+
+  <form class="direccion__cuerpo" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    @if (error(); as mensaje) {
+      <div class="direccion__alerta" role="alert">
+        <lucide-icon [img]="AlertIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        <p>{{ mensaje }}</p>
+      </div>
+    }
+
+    <!-- Ubicación: el dato que define si llega el delivery -->
+    <section class="gps" [class.is-error]="faltaUbicacion()" aria-live="polite">
+      @switch (ubicacion().tipo) {
+        @case ('lista') {
+          @let lista = $any(ubicacion());
+          <span class="gps__icono gps__icono--ok" aria-hidden="true">
+            <lucide-icon [img]="lista.cobertura && !lista.cobertura.dentroCobertura ? WarnIcon : OkIcon" [size]="20" [strokeWidth]="1.8"></lucide-icon>
+          </span>
+          <div class="gps__texto">
+            @if (lista.cobertura; as cobertura) {
+              <p class="gps__titulo">{{ cobertura.dentroCobertura ? 'Llegamos a esta ubicación' : 'Fuera de la zona de reparto' }}</p>
+              <p class="gps__detalle">
+                @if (cobertura.dentroCobertura) {
+                  Desde {{ cobertura.sucursalNombre }}@if (cobertura.distanciaKm !== null) {, a {{ cobertura.distanciaKm }} km}.
+                } @else {
+                  {{ cobertura.mensaje }} Puedes guardarla y recoger en tienda.
+                }
+              </p>
+            } @else {
+              <p class="gps__titulo">Ubicación guardada</p>
+              <p class="gps__detalle">Si te mudaste, vuelve a detectarla.</p>
+            }
+          </div>
+          <button type="button" class="btn btn--ghost btn--sm" (click)="ubicar()">Volver a detectar</button>
+        }
+        @case ('buscando') {
+          <span class="gps__icono gps__icono--pulso" aria-hidden="true">
+            <lucide-icon [img]="GpsIcon" [size]="20" [strokeWidth]="1.8"></lucide-icon>
+          </span>
+          <p class="gps__titulo">Detectando tu ubicación…</p>
+        }
+        @default {
+          <span class="gps__icono" aria-hidden="true">
+            <lucide-icon [img]="PinIcon" [size]="20" [strokeWidth]="1.8"></lucide-icon>
+          </span>
+          <div class="gps__texto">
+            <p class="gps__titulo">¿Dónde está esta dirección?</p>
+            <p class="gps__detalle">
+              @if (ubicacion().tipo === 'error') {
+                {{ $any(ubicacion()).mensaje }}
+              } @else if (faltaUbicacion()) {
+                Detecta la ubicación para saber si llega el delivery.
+              } @else {
+                Hazlo estando en el lugar: así el motorizado llega directo.
+              }
+            </p>
+          </div>
+          <button type="button" class="btn btn--primary btn--sm gps__boton" (click)="ubicar()">
+            <lucide-icon [img]="GpsIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+            Usar mi ubicación
+          </button>
+        }
+      }
+    </section>
+
+    <div class="direccion__etiqueta">
+      <app-text-field formControlName="etiqueta" label="Nombre de la dirección" placeholder="Ej. Casa de mamá" [maxlength]="40" [required]="true" />
+      <div class="chips" role="group" aria-label="Nombres sugeridos">
+        @for (etiqueta of etiquetasRapidas; track etiqueta) {
+          <button type="button" class="chips__item" [class.is-active]="form.controls.etiqueta.value === etiqueta"
+            [attr.aria-pressed]="form.controls.etiqueta.value === etiqueta" (click)="elegirEtiqueta(etiqueta)">{{ etiqueta }}</button>
+        }
+      </div>
+    </div>
+
+    <app-text-field formControlName="direccion" label="Dirección" placeholder="Av. San Martín 1437, dpto. 302" autocomplete="street-address" [maxlength]="200" [required]="true" />
+    <div class="direccion__fila">
+      <app-text-field formControlName="distrito" label="Distrito" autocomplete="address-level2" [maxlength]="80" [required]="true" />
+      <app-text-field formControlName="referencia" label="Referencia" placeholder="Frente al parque, portón verde" [maxlength]="200" />
+    </div>
+
+    <app-checkbox-field formControlName="favorita">Usarla por defecto en mis pedidos</app-checkbox-field>
+
+    <footer class="direccion__pie">
+      <button type="button" class="btn btn--ghost" (click)="cerrar()" [disabled]="enviando()">Cancelar</button>
+      <button type="submit" class="btn btn--primary direccion__guardar" [disabled]="enviando() || ubicacion().tipo === 'buscando'">
+        {{ enviando() ? 'Guardando…' : editando() ? 'Guardar cambios' : 'Guardar dirección' }}
+      </button>
+    </footer>
+  </form>
+</dialog>

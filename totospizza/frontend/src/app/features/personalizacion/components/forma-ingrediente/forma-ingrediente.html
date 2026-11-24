@@ -1,0 +1,66 @@
+@switch (forma()) {
+  @case ('pepperoni') {
+    <svg:circle r="13" fill="#B3301F" />
+    <svg:circle r="12.4" fill="none" stroke="#7E1B10" stroke-width="1" opacity="0.55" />
+    <svg:circle cx="-4" cy="-3" r="1.9" fill="#D9654A" opacity="0.8" />
+    <svg:circle cx="4.5" cy="2" r="1.5" fill="#D9654A" opacity="0.75" />
+    <svg:circle cx="-1" cy="5.5" r="1.2" fill="#8A2114" opacity="0.6" />
+    <svg:circle cx="5" cy="-5" r="1" fill="#8A2114" opacity="0.6" />
+  }
+  @case ('jamon') {
+    <svg:path d="M-12 -8 q6 -2 12 0 q7 -1 12 1 q1.5 8 -1 15 q-12 2.5 -23 -1 q-2 -8 0 -15z" fill="#EAA3A9" stroke="#C47480" stroke-width="1" />
+    <svg:path d="M-8 -1 q6 3.5 14 -1" fill="none" stroke="#F8D6D9" stroke-width="1.8" stroke-linecap="round" />
+  }
+  @case ('tocino') {
+    <svg:path d="M-16 -4 q8 -6 16 0 t16 0 v8 q-8 6 -16 0 t-16 0z" fill="#A53A27" />
+    <svg:path d="M-16 0 q8 -6 16 0 t16 0" fill="none" stroke="#F4C7AE" stroke-width="2.2" />
+    <svg:path d="M-16 -4 q8 -6 16 0 t16 0" fill="none" stroke="#6E1F12" stroke-width="1" opacity="0.6" />
+  }
+  @case ('carne') {
+    <svg:circle cx="-4.5" cy="-2" r="5.6" fill="#6A3820" />
+    <svg:circle cx="4" cy="-1" r="5" fill="#7B4529" />
+    <svg:circle cx="0" cy="5" r="4.4" fill="#5A2E18" />
+    <svg:circle cx="-5.5" cy="-3.5" r="1.4" fill="#A0674A" />
+    <svg:circle cx="3" cy="-2.6" r="1.1" fill="#A0674A" />
+  }
+  @case ('pollo') {
+    <svg:rect x="-11" y="-7.5" width="22" height="15" rx="6" fill="#ECCB9B" stroke="#C99A62" stroke-width="1" />
+    <svg:path d="M-5 -7 l-3 14 M1 -7 l-3 14 M7 -6 l-3 13" stroke="#8B5A2D" stroke-width="1.6" opacity="0.65" />
+  }
+  @case ('champinon') {
+    <svg:path d="M-12 0 C-12 -10 12 -10 12 0 C12 3 6 3 4 3 L4 9 C4 11.5 -4 11.5 -4 9 L-4 3 C-6 3 -12 3 -12 0Z" fill="#DCC6A6" stroke="#A88762" stroke-width="1.1" />
+    <svg:path d="M-9 0 C-9 -6 9 -6 9 0" fill="none" stroke="#B89A73" stroke-width="1" opacity="0.7" />
+  }
+  @case ('aceituna') {
+    <svg:circle r="7.5" fill="none" stroke="#231B16" stroke-width="5" />
+    <svg:path d="M-4.5 -5.2 a7.5 7.5 0 0 1 6.5 -1.6" fill="none" stroke="#7A6A60" stroke-width="1.4" stroke-linecap="round" />
+  }
+  @case ('pimiento') {
+    <svg:path d="M-12 5 q12 -17 24 0" fill="none" stroke="#2C7A2E" stroke-width="5.5" stroke-linecap="round" />
+    <svg:path d="M-10 3.6 q10 -13.5 20 0" fill="none" stroke="#66B552" stroke-width="1.6" stroke-linecap="round" />
+  }
+  @case ('cebolla') {
+    <svg:path d="M-12 5 q12 -16 24 0" fill="none" stroke="#A86EB9" stroke-width="2.8" stroke-linecap="round" />
+    <svg:path d="M-8.5 6 q8.5 -11 17 0" fill="none" stroke="#E6D2EE" stroke-width="2" stroke-linecap="round" />
+  }
+  @case ('pina') {
+    <svg:path d="M-9 7 L-6 -8 Q0 -11 6 -8 L9 7 Q0 9.5 -9 7Z" fill="#F6CA3E" stroke="#D6A11A" stroke-width="1.1" stroke-linejoin="round" />
+    <svg:path d="M-4 -6 L-5 6 M2 -7 L2 7" stroke="#FBE48C" stroke-width="1.2" opacity="0.8" />
+  }
+  @case ('jalapeno') {
+    <svg:circle r="8.5" fill="#4C9A3C" />
+    <svg:circle r="5.8" fill="#D2E8A4" />
+    <svg:circle cx="-2" cy="-1" r="1.1" fill="#F6F2D2" />
+    <svg:circle cx="2" cy="1.5" r="1.1" fill="#F6F2D2" />
+  }
+  @case ('tomate') {
+    <svg:circle r="11.5" fill="#D6402A" />
+    <svg:circle r="8.5" fill="#EF6C4F" />
+    <svg:ellipse cx="-3.5" cy="-2" rx="2" ry="1.2" fill="#F9CBA3" />
+    <svg:ellipse cx="3.5" cy="-2" rx="2" ry="1.2" fill="#F9CBA3" />
+    <svg:ellipse cx="0" cy="3.5" rx="2" ry="1.2" fill="#F9CBA3" />
+  }
+  @default {
+    <svg:circle r="6" fill="#7FA35A" />
+  }
+}

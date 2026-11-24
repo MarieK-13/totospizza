@@ -116,6 +116,9 @@
   </div>
 
   <footer class="entrega__pie">
+    @if (modoPrueba) {
+      <p class="entrega__prueba">Modo prueba: locales abiertos y cobertura simulada, sin backend.</p>
+    }
     <button type="button" class="confirmar" [disabled]="!puedeConfirmar()" (click)="confirmar()">{{ textoBoton() }}</button>
   </footer>
 </dialog>

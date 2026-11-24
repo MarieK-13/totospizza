@@ -1,0 +1,193 @@
+<app-account-shell [titulo]="pedido() ? 'Pedido ' + pedido()!.numero : 'Tu pedido'"
+  [descripcion]="pedido() ? 'Hecho el ' + fechaHora(pedido()!.creadoEn) + ' en ' + pedido()!.sucursalNombre : undefined">
+  <a acciones routerLink="/mis-pedidos" class="volver">
+    <lucide-icon [img]="BackIcon" [size]="16" [strokeWidth]="1.9" aria-hidden="true"></lucide-icon>
+    Mis pedidos
+  </a>
+
+  @if (recurso.isLoading() && !pedido()) {
+    <div class="detalle" aria-busy="true" aria-label="Cargando el pedido">
+      <div class="esqueleto esqueleto--alto"></div>
+      <div class="esqueleto"></div>
+    </div>
+  } @else if (recurso.error() && !pedido()) {
+    <div class="vacio" role="alert">
+      <h2>No encontramos este pedido</h2>
+      <p>Puede que el número no sea correcto o que pertenezca a otra cuenta.</p>
+      <a routerLink="/mis-pedidos" class="btn btn--primary">Ver mis pedidos</a>
+    </div>
+  } @else if (pedido(); as p) {
+    <div class="detalle">
+      <div class="detalle__principal">
+        <!-- Estado actual -->
+        <section class="panel estado" [class.is-curso]="enCurso()" aria-labelledby="titulo-estado">
+          <div class="estado__texto">
+            @if (estado(); as e) {
+              <span class="chip" [class]="'chip chip--' + e.tono">{{ e.etiqueta }}</span>
+            }
+            <h2 id="titulo-estado" class="estado__titulo">{{ mensaje() }}</h2>
+
+            @if (garantia()) {
+              <p class="garantia">
+                <lucide-icon [img]="ShieldIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+                Llegó tarde: se aplicó la Garantía TOTO a este pedido.
+              </p>
+            }
+
+            @if (enCurso() && delivery()) {
+              <app-delivery-code [codigo]="seguimiento.value()?.codigoEntrega ?? null" [motorizado]="seguimiento.value()?.nombreMotorizado ?? null" />
+            } @else if (enCurso()) {
+              <p class="estado__ayuda">Recógelo en <strong>{{ p.sucursalNombre }}</strong> con el número de pedido.
+                @if (p.vencimientoRecojo) {
+                  Te lo guardamos hasta las {{ fechaHora(p.vencimientoRecojo) }}.
+                }
+              </p>
+            }
+
+            @if (calificable()) {
+              <button type="button" class="btn btn--primary estado__calificar" (click)="calificando.set(true)">
+                <lucide-icon [img]="StarIcon" [size]="16" [strokeWidth]="1.9" aria-hidden="true"></lucide-icon>
+                Calificar pedido
+              </button>
+            } @else if (calificado()) {
+              <p class="estado__gracias">Gracias por calificar este pedido.</p>
+            }
+          </div>
+
+          @if (enCurso() && seguimiento.value()?.entregaEstimada; as entrega) {
+            <app-eta-countdown class="estado__reloj" [entregaEstimada]="entrega" [minutosTotales]="p.minutosEstimados"
+              [etiqueta]="delivery() ? 'Llega en' : 'Listo en'" />
+          }
+        </section>
+
+        @if (p.estado !== 'CANCELADO' && p.estado !== 'NO_RECOGIDO') {
+          <section class="panel" aria-labelledby="titulo-etapas">
+            <h2 id="titulo-etapas" class="panel__titulo panel__titulo--separado">Seguimiento</h2>
+            <app-tracking-timeline [etapas]="etapas()" />
+          </section>
+        } @else if (p.historial.length > 0) {
+          <section class="panel" aria-labelledby="titulo-historial">
+            <h2 id="titulo-historial" class="panel__titulo panel__titulo--separado">Historial</h2>
+            <ol class="historial">
+              @for (h of p.historial; track $index) {
+                <li>
+                  <span class="historial__fecha">{{ fechaHora(h.fecha) }}</span>
+                  <span>{{ h.comentario || h.estado }}</span>
+                </li>
+              }
+            </ol>
+          </section>
+        }
+
+        <!-- Productos -->
+        <section class="panel" aria-labelledby="titulo-productos">
+          <h2 id="titulo-productos" class="panel__titulo panel__titulo--separado">Tu pedido</h2>
+          <ul class="productos">
+            @for (d of p.detalles; track d.id) {
+              <li class="producto">
+                <span class="producto__cantidad">{{ d.cantidad }}×</span>
+                <span class="producto__texto">
+                  <span class="producto__nombre">{{ d.nombre }}</span>
+                  @if (d.descripcion) {
+                    <span class="producto__detalle">{{ d.descripcion }}</span>
+                  }
+                  @if (d.adicionales.length > 0) {
+                    <span class="producto__detalle">
+                      Con
+                      @for (a of d.adicionales; track a.ingredienteId; let ultimo = $last) {
+                        {{ a.nombre }}@if (a.cantidad > 1) { ×{{ a.cantidad }}}@if (!ultimo) {, }
+                      }
+                    </span>
+                  }
+                  @if (d.notas) {
+                    <span class="producto__nota">“{{ d.notas }}”</span>
+                  }
+                </span>
+                <span class="producto__precio">{{ soles(d.subtotal) }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+      </div>
+
+      <aside class="detalle__lado" aria-label="Resumen del pedido">
+        <section class="panel resumen">
+          <h2 class="panel__titulo panel__titulo--separado">Resumen</h2>
+          <dl class="montos">
+            <div><dt>Subtotal</dt><dd>{{ soles(p.montos.subtotal) }}</dd></div>
+            @if (p.montos.descuento > 0) {
+              <div class="montos__descuento"><dt>Descuento</dt><dd>−{{ soles(p.montos.descuento) }}</dd></div>
+            }
+            @if (delivery()) {
+              <div><dt>Delivery</dt><dd>{{ p.montos.costoDelivery > 0 ? soles(p.montos.costoDelivery) : 'Gratis' }}</dd></div>
+            }
+            <div class="montos__total"><dt>Total</dt><dd>{{ soles(p.montos.total) }}</dd></div>
+          </dl>
+
+          <div class="dato">
+            <lucide-icon [img]="delivery() ? PinIcon : StoreIcon" [size]="18" [strokeWidth]="1.7" aria-hidden="true"></lucide-icon>
+            <div>
+              <p class="dato__titulo">{{ delivery() ? 'Entrega a domicilio' : 'Recojo en tienda' }}</p>
+              @if (delivery() && p.direccionEntrega; as dir) {
+                <p class="dato__texto">{{ dir.direccion }}, {{ dir.distrito }}</p>
+                @if (dir.referencia) {
+                  <p class="dato__texto">{{ dir.referencia }}</p>
+                }
+              } @else {
+                <p class="dato__texto">{{ p.sucursalNombre }}</p>
+              }
+              @if (p.instrucciones) {
+                <p class="dato__texto dato__texto--nota">“{{ p.instrucciones }}”</p>
+              }
+            </div>
+          </div>
+
+          @if (p.pago; as pago) {
+            <div class="dato">
+              <lucide-icon [img]="CardIcon" [size]="18" [strokeWidth]="1.7" aria-hidden="true"></lucide-icon>
+              <div>
+                <p class="dato__titulo">
+                  {{ metodos[pago.metodo] }}
+                  @if (pago.ultimosDigitos) {
+                    terminada en {{ pago.ultimosDigitos }}
+                  }
+                </p>
+                <p class="dato__texto">
+                  @switch (pago.estado) {
+                    @case ('APROBADO') { Pagado {{ pago.pagadoEn ? 'el ' + fechaHora(pago.pagadoEn) : '' }} }
+                    @case ('REEMBOLSADO') { Reembolsado {{ soles(pago.montoReembolsado ?? pago.monto) }} }
+                    @case ('RECHAZADO') { Pago rechazado }
+                    @default { Pago pendiente }
+                  }
+                </p>
+              </div>
+            </div>
+          }
+        </section>
+
+        @if (cancelable()) {
+          <div class="cancelar">
+            <p>¿Te equivocaste? Puedes cancelarlo mientras no entre a cocina. El reembolso es automático.</p>
+            <button type="button" class="btn btn--secondary btn--sm cancelar__boton" (click)="abrirCancelar()">Cancelar pedido</button>
+          </div>
+        }
+      </aside>
+    </div>
+
+    <dialog #cancelar class="confirmar" aria-labelledby="cancelar-titulo" (cancel)="$event.preventDefault(); cerrarCancelar()">
+      <h2 id="cancelar-titulo" class="confirmar__titulo">¿Cancelar el pedido {{ p.numero }}?</h2>
+      <p class="confirmar__texto">Devolvemos {{ soles(p.montos.total) }} al mismo medio de pago. Esta acción no se puede deshacer.</p>
+      <label class="confirmar__etiqueta" for="cancelar-motivo">Motivo <span>(opcional)</span></label>
+      <textarea id="cancelar-motivo" class="confirmar__motivo" rows="2" [attr.maxlength]="maxMotivo"
+        placeholder="Ej. me equivoqué de dirección" [value]="motivo()" (input)="escribirMotivo($event)"></textarea>
+      <div class="confirmar__acciones">
+        <button type="button" class="btn btn--ghost" (click)="cerrarCancelar()" [disabled]="cancelando()">Mantener pedido</button>
+        <button type="button" class="btn confirmar__si" (click)="confirmarCancelacion()" [disabled]="cancelando()">
+          {{ cancelando() ? 'Cancelando…' : 'Sí, cancelar' }}
+        </button>
+      </div>
+    </dialog>
+
+    <app-order-rating [pedidoId]="p.id" [abierto]="calificando()" (calificado)="alCalificar()" (cerrado)="calificando.set(false)" />
+  }
+</app-account-shell>

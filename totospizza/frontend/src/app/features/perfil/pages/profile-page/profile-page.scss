@@ -1,0 +1,228 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+@use '../../../../shared/components/account-shell/panel' as cuenta;
+
+:host {
+  display: block;
+}
+
+.perfil {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+}
+
+.panel {
+  @include cuenta.panel;
+
+  &__cabecera {
+    @include cuenta.panel-cabecera;
+  }
+
+  &__titulo {
+    @include cuenta.panel-titulo;
+  }
+
+  &__ayuda {
+    @include cuenta.panel-ayuda;
+  }
+}
+
+.vacio {
+  @include cuenta.vacio;
+}
+
+.esqueleto {
+  height: 9rem;
+  @include cuenta.esqueleto;
+
+  &--alto {
+    height: 22rem;
+  }
+}
+
+// ── Direcciones ─────────────────────────────────────────────────────────────
+.direcciones {
+  display: grid;
+  gap: $space-3;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dir {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: $space-3 $space-4;
+  align-items: start;
+  padding: $space-4;
+  border: $border-width solid $color-border-default;
+  border-radius: $radius-md;
+  @include transition((border-color, background-color, opacity));
+
+  @include up(md) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  &.is-favorita {
+    border-color: rgba($color-marron-suave, 0.45);
+    background-color: rgba($color-crema-claro, 0.6);
+  }
+
+  &.is-ocupada {
+    opacity: 0.6;
+  }
+
+  &__icono {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: $radius-md;
+    background-color: $tint-cafe-10;
+    color: $color-marron-suave;
+  }
+
+  &__texto {
+    min-width: 0;
+  }
+
+  &__etiqueta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2;
+    margin: 0;
+    font-weight: $weight-semibold;
+  }
+
+  &__favorita {
+    padding: 0.0625rem 0.5rem;
+    border-radius: $radius-pill;
+    background-color: $color-marron-suave;
+    color: $color-crema-claro;
+    font-size: 0.6875rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__linea,
+  &__referencia {
+    margin: $space-1 0 0;
+    color: $color-text-secondary;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  &__referencia {
+    font-size: 0.8125rem;
+    font-style: italic;
+  }
+
+  &__acciones {
+    display: flex;
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $space-1;
+
+    @include up(md) {
+      grid-column: auto;
+    }
+  }
+
+  &__boton {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: $color-text-secondary;
+    cursor: pointer;
+    @include transition((color, background-color));
+    @include focus-ring;
+
+    &:hover:not(:disabled) {
+      background-color: $tint-cafe-10;
+      color: $color-text-primary;
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+
+    &.is-activa {
+      color: $color-amarillo-queso;
+
+      ::ng-deep svg {
+        fill: currentColor;
+      }
+    }
+
+    &--peligro:hover:not(:disabled) {
+      background-color: $tint-rojo-8;
+      color: $color-brand-primary;
+    }
+  }
+
+  &__confirmar {
+    margin-right: $space-1;
+    color: $color-brand-primary;
+    font-size: 0.875rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__si {
+    border-color: $color-brand-primary;
+    background-color: $color-brand-primary;
+    color: $color-blanco;
+  }
+}
+
+.nueva {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  width: 100%;
+  padding: $space-5;
+  border: $border-width dashed $color-border-strong;
+  border-radius: $radius-md;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  @include transition((border-color, background-color));
+  @include focus-ring;
+
+  &:hover {
+    border-color: $color-marron-suave;
+    background-color: rgba($color-crema-claro, 0.6);
+  }
+
+  &__icono {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background-color: $color-marron-suave;
+    color: $color-crema-claro;
+  }
+
+  &__titulo {
+    display: block;
+    font-weight: $weight-semibold;
+  }
+
+  &__texto {
+    display: block;
+    margin-top: $space-1;
+    color: $color-text-secondary;
+    font-size: 0.875rem;
+  }
+}

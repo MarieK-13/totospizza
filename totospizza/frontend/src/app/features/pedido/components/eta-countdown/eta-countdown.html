@@ -1,0 +1,12 @@
+<div class="eta" [class.is-vencido]="vencido()" role="timer" [attr.aria-label]="textoAccesible()">
+  <svg class="eta__anillo" viewBox="0 0 120 120" aria-hidden="true">
+    <circle class="eta__pista" cx="60" cy="60" [attr.r]="radio" />
+    <circle class="eta__progreso" cx="60" cy="60" [attr.r]="radio"
+      [attr.stroke-dasharray]="circunferencia" [attr.stroke-dashoffset]="desfase()" />
+  </svg>
+  <div class="eta__centro" aria-hidden="true">
+    <span class="eta__etiqueta">{{ etiqueta() }}</span>
+    <span class="eta__reloj">{{ vencido() ? 'Llegando' : reloj() }}</span>
+    <span class="eta__hora">aprox. {{ horaEstimada() }}</span>
+  </div>
+</div>

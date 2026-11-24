@@ -264,3 +264,15 @@
     }
   }
 }
+.menu-item-card__title a {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: $color-brand-primary;
+  }
+}
+
+a.menu-item-card__media {
+  display: block;
+}

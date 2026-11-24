@@ -1,5 +1,5 @@
 <article class="card">
-  <a class="card__media" [routerLink]="['/menu', producto().slug]" tabindex="-1" aria-hidden="true">
+  <a class="card__media" [routerLink]="['/menu', producto().slug]" [queryParams]="tamanoSugerido() ? { tamano: tamanoSugerido() } : null" tabindex="-1" aria-hidden="true">
     @if (imagen(); as src) {
       <img [src]="src" alt="" loading="lazy" />
     } @else {
@@ -18,7 +18,7 @@
 
   <div class="card__body">
     <h3 class="card__title">
-      <a [routerLink]="['/menu', producto().slug]" class="card__link">{{ producto().nombre }}</a>
+      <a [routerLink]="['/menu', producto().slug]" [queryParams]="tamanoSugerido() ? { tamano: tamanoSugerido() } : null" class="card__link">{{ producto().nombre }}</a>
     </h3>
     <p class="card__desc">{{ producto().descripcion }}</p>
 

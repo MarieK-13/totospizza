@@ -323,3 +323,21 @@
     transform: scaleX(1);
   }
 }
+
+// Mientras llegan las promociones: mismo alto, sin saltos al cargar
+.hero__frame--cargando {
+  background: linear-gradient(100deg, $color-beige-horno 30%, rgba($color-blanco, 0.6) 50%, $color-beige-horno 70%) 0 0 / 200% 100%;
+  animation: hero-brillo 1.4s linear infinite;
+}
+
+@keyframes hero-brillo {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@include reduced-motion {
+  .hero__frame--cargando {
+    animation: none;
+  }
+}

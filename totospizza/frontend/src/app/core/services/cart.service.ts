@@ -1,7 +1,7 @@
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { EMPTY, Observable, catchError, concatMap, from, map, of, switchMap, tap, toArray } from 'rxjs';
 import { peticionSilenciosa } from '../interceptors/http-context';
-import type { ActualizarItemCarritoRequest, AgregarProductoRequest, CarritoResponse, ItemCarritoResponse } from '../models/api';
+import type { ActualizarItemCarritoRequest, AgregarProductoRequest, CarritoResponse, ItemCarritoResponse, PizzaPersonalizadaRequest } from '../models/api';
 import { ClienteApi } from './api/cliente.api';
 import { AuthService } from './auth.service';
 import { ToastService } from './toast.service';
@@ -11,6 +11,8 @@ const CLAVE_INVITADO = 'toto.carrito.invitado';
 /** Datos que el carrito del invitado necesita para mostrarse sin consultar al servidor. */
 export interface ReferenciaItem {
   readonly nombre: string;
+  /** Para volver al detalle desde el carrito. */
+  readonly slug: string | null;
   readonly precioUnitario: number;
   readonly imagenUrl: string | null;
   /** Opciones elegidas en texto: "Personal, Clásica, Queso extra". */
@@ -25,6 +27,8 @@ export interface LineaCarrito {
   /** posición en el carrito del invitado; null si es del backend. */
   readonly indice: number | null;
   readonly nombre: string;
+  /** El backend no devuelve el slug del ítem: el carrito lo resuelve por nombre con el menú. */
+  readonly slug: string | null;
   readonly detalle: string;
   readonly imagenUrl: string | null;
   readonly cantidad: number;
@@ -38,6 +42,11 @@ export const CANTIDAD_MAXIMA_ITEM = 20;
 /** Ítem guardado en el navegador mientras no hay sesión; se envía al backend al iniciar sesión. */
 export interface ItemInvitado extends ReferenciaItem {
   readonly solicitud: AgregarProductoRequest;
+  /**
+   * Pizza armada por el cliente. Guardarla (POST /cliente/pizzas-personalizadas) exige sesión,
+   * así que el invitado la lleva aquí y se crea al iniciar sesión.
+   */
+  readonly pizza?: PizzaPersonalizadaRequest;
 }
 
 /**
@@ -80,6 +89,7 @@ export class CartService {
           itemId: null,
           indice,
           nombre: item.nombre,
+          slug: item.slug ?? null,
           detalle: item.detalle ?? '',
           imagenUrl: item.imagenUrl ?? null,
           cantidad: item.solicitud.cantidad,
@@ -120,6 +130,23 @@ export class CartService {
       return EMPTY;
     }
     return this.api.agregarAlCarrito(cuerpo).pipe(
+      tap((c) => this._carrito.set(c)),
+      map(() => undefined),
+    );
+  }
+
+  /** Pizza de "Arma tu pizza": con sesión se guarda y se agrega por su id; sin sesión queda en el navegador. */
+  agregarPizzaPersonalizada(pizza: PizzaPersonalizadaRequest, cantidad: number, referencia: ReferenciaItem): Observable<void> {
+    if (this.esInvitado()) {
+      this.guardarInvitado([...this._invitado(), { ...referencia, solicitud: { cantidad }, pizza }]);
+      return of(undefined);
+    }
+    if (!this.auth.esCliente()) {
+      this.toast.info('Solo clientes', 'Las cuentas del personal no hacen pedidos.');
+      return EMPTY;
+    }
+    return this.api.guardarPizzaPersonalizada(pizza).pipe(
+      switchMap((guardada) => this.api.agregarAlCarrito({ pizzaPersonalizadaId: guardada.id, cantidad })),
       tap((c) => this._carrito.set(c)),
       map(() => undefined),
     );
@@ -175,7 +202,7 @@ export class CartService {
         ? this.refrescar()
         : from(pendientes).pipe(
             concatMap((item) =>
-              this.api.agregarAlCarrito(item.solicitud, { context: peticionSilenciosa() }).pipe(
+              this.subirItemInvitado(item).pipe(
                 map(() => true),
                 catchError(() => of(false)),
               ),
@@ -194,6 +221,14 @@ export class CartService {
             }),
           );
     subida$.subscribe({ error: () => undefined });
+  }
+
+  private subirItemInvitado(item: ItemInvitado): Observable<CarritoResponse> {
+    const silenciosa = { context: peticionSilenciosa() };
+    if (!item.pizza) return this.api.agregarAlCarrito(item.solicitud, silenciosa);
+    return this.api
+      .guardarPizzaPersonalizada(item.pizza, silenciosa)
+      .pipe(switchMap((guardada) => this.api.agregarAlCarrito({ pizzaPersonalizadaId: guardada.id, cantidad: item.solicitud.cantidad }, silenciosa)));
   }
 
   private guardarInvitado(items: readonly ItemInvitado[]): void {
@@ -224,6 +259,7 @@ function lineaDelBackend(item: ItemCarritoResponse): LineaCarrito {
     itemId: item.id,
     indice: null,
     nombre: item.nombre,
+    slug: null,
     detalle: [item.tamano, item.tipoMasa, ...extras].filter(Boolean).join(', '),
     imagenUrl: item.imagenUrl,
     cantidad: item.cantidad,

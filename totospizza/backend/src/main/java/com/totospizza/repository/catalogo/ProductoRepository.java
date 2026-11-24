@@ -22,7 +22,8 @@ import com.totospizza.model.entity.catalogo.Producto;
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     /**
-     * Productos disponibles del menú. Los filtros nulos se ignoran
+     * Productos disponibles del menú. Los filtros nulos se ignoran.
+     * Con {@code tamanoId} solo quedan los que tienen precio para ese tamaño.
      */
     @EntityGraph(attributePaths = {"categoria"})
     @Query(value = """
@@ -30,6 +31,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
             where p.disponible = true
               and (:categoriaSlug is null or p.categoria.slug = :categoriaSlug)
               and (:etiquetaSlug is null or exists (select 1 from p.etiquetas e where e.slug = :etiquetaSlug))
+              and (:tamanoId is null or exists (select 1 from p.precios pt where pt.tamano.id = :tamanoId))
               and lower(p.nombre) like :patron
             """,
             countQuery = """
@@ -37,12 +39,19 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
             where p.disponible = true
               and (:categoriaSlug is null or p.categoria.slug = :categoriaSlug)
               and (:etiquetaSlug is null or exists (select 1 from p.etiquetas e where e.slug = :etiquetaSlug))
+              and (:tamanoId is null or exists (select 1 from p.precios pt where pt.tamano.id = :tamanoId))
               and lower(p.nombre) like :patron
             """)
-    Page<Producto> buscarEnMenu(@Param("categoriaSlug") String categoriaSlug, @Param("etiquetaSlug") String etiquetaSlug, @Param("patron") String patron, Pageable pageable);
+    Page<Producto> buscarEnMenu(@Param("categoriaSlug") String categoriaSlug, @Param("etiquetaSlug") String etiquetaSlug,
+                                @Param("tamanoId") Long tamanoId, @Param("patron") String patron, Pageable pageable);
 
-    /** Detalle de un producto con su categoría, etiquetas y precios por tamaño. */
-    @EntityGraph(attributePaths = {"categoria", "etiquetas", "precios", "precios.tamano"})
+    /**
+     * Detalle de un producto con su categoría y precios por tamaño.
+     * Las etiquetas NO van en el mismo EntityGraph: traer dos colecciones en un solo join
+     * repite los precios una vez por cada etiqueta (producto cartesiano). Se cargan aparte,
+     * dentro de la transacción del servicio.
+     */
+    @EntityGraph(attributePaths = {"categoria", "precios", "precios.tamano"})
     Optional<Producto> findBySlugAndDisponibleTrue(String slug);
 
     /** Productos destacados para "Recomendado para ti". Usa Pageable solo para limitar la cantidad. */

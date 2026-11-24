@@ -1,0 +1,323 @@
+<div class="wrap armador">
+  <header class="armador__cabecera">
+    <h1 class="armador__titulo">Arma tu pizza</h1>
+    <p class="armador__bajada">Cinco pasos y la ves crecer mientras eliges. El precio se actualiza al instante.</p>
+  </header>
+
+  <!-- Progreso: los pasos ya completos se pueden volver a abrir -->
+  <nav class="progreso" aria-label="Pasos">
+    <ol class="progreso__lista">
+      @for (p of PASOS; track p.numero) {
+        <li class="progreso__paso" [class]="'is-' + estadoPaso(p.numero)">
+          <button
+            type="button"
+            class="progreso__boton"
+            [disabled]="p.numero > pasoAlcanzable()"
+            [attr.aria-current]="p.numero === paso() ? 'step' : null"
+            (click)="irA(p.numero)"
+          >
+            <span class="progreso__circulo">
+              @if (estadoPaso(p.numero) === 'hecho') {
+                <lucide-icon [img]="CheckIcon" [size]="18" [strokeWidth]="2.6" aria-hidden="true"></lucide-icon>
+              } @else {
+                {{ p.numero }}
+              }
+            </span>
+            <span class="progreso__titulo">{{ p.titulo }}</span>
+          </button>
+        </li>
+      }
+    </ol>
+  </nav>
+
+  @if (opciones.value()) {
+    <section class="tarjeta" [attr.aria-label]="'Paso ' + paso() + ' de 5: ' + tituloPaso()">
+      <!-- Vista previa: siempre a la vista -->
+      <aside class="vista" [class.is-horneando]="horneando()" (dragover)="sobreLaPizza($event)" (dragleave)="recibiendo.set(false)" (drop)="soltarEnLaPizza($event)">
+        <div class="vista__pizza">
+          <app-pizza-preview
+            [tamano]="tamano()"
+            [tamanos]="tamanos()"
+            [masa]="masa()"
+            [quesos]="quesos()"
+            [salsas]="salsas()"
+            [ingredientes]="ingredientes()"
+            [mostrarMedida]="paso() === 1"
+            [recibiendo]="recibiendo()"
+            [horneada]="horneada()"
+          />
+          @if (ultimoAgregado(); as u) {
+            @for (x of [u]; track x.clave) {
+              <span class="vista__agregado" aria-hidden="true">{{ x.texto }}</span>
+            }
+          }
+          @if (horneando()) {
+            <span class="vista__horno" role="status">Al horno…</span>
+          }
+        </div>
+        <p class="vista__pista">
+          @if (paso() >= 2 && paso() <= 4) {
+            Arrastra los ingredientes hasta la pizza o tócalos.
+          } @else if (paso() === 5) {
+            Recién salida del horno. Gírala para verla por todos lados.
+          } @else {
+            Gírala con el dedo o el mouse. Cambia el tamaño y mira cómo crece.
+          }
+        </p>
+        <p class="vista__medida">
+          @if (tamano(); as t) {
+            <strong>{{ t.nombre }}</strong> {{ t.diametroCm }} cm, {{ personas(t.personasMin, t.personasMax) }}
+          } @else {
+            Elige un tamaño
+          }
+        </p>
+        <p class="vista__detalle">{{ detalle() || 'Tu pizza aparecerá aquí' }}</p>
+        <p class="vista__precio" aria-live="polite">{{ cotizacion() ? soles(cotizacion()!.total) : '—' }}</p>
+      </aside>
+
+      <div class="contenido">
+        <p class="contenido__paso">Paso {{ paso() }} de 5</p>
+        <h2 class="contenido__titulo">{{ tituloPaso() }}</h2>
+
+        @switch (paso()) {
+          <!-- 1. Tamaño y masa -->
+          @case (1) {
+            <div class="grupo" role="radiogroup" aria-label="Tamaño">
+              <div class="tamanos">
+                @for (t of tamanos(); track t.id) {
+                  <label class="tamano" [class.is-activo]="tamanoId() === t.id">
+                    <input type="radio" name="tamano" class="sr-only" [checked]="tamanoId() === t.id" (change)="tamanoId.set(t.id)" />
+                    <span class="tamano__circulo" [style.--relativo]="t.diametroCm / diametroMaximo()" aria-hidden="true">{{ t.diametroCm }}</span>
+                    <span class="tamano__nombre">{{ t.nombre }}</span>
+                    <span class="tamano__dato">{{ t.diametroCm }} cm, {{ personas(t.personasMin, t.personasMax) }}</span>
+                    <span class="tamano__precio">{{ soles(t.precioBase) }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+
+            <div class="grupo" role="radiogroup" aria-labelledby="masa-titulo">
+              <h3 id="masa-titulo" class="grupo__titulo">Masa</h3>
+              <div class="masas">
+                @for (m of masas(); track m.id) {
+                  <label class="masa" [class.is-activa]="masaId() === m.id">
+                    <input type="radio" name="masa" class="masa__radio" [checked]="masaId() === m.id" (change)="masaId.set(m.id)" />
+                    <span class="masa__texto">
+                      <span class="masa__nombre">{{ m.nombre }}</span>
+                      @if (descripcionMasa(m.nombre); as d) {
+                        <span class="masa__descripcion">{{ d }}</span>
+                      }
+                    </span>
+                    <span class="masa__precio">{{ m.recargo > 0 ? '+ ' + soles(m.recargo) : 'Incluida' }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- 2. Queso -->
+          @case (2) {
+            @if (pasoQueso(); as q) {
+              <div class="grupo">
+                <div class="grupo__cabecera">
+                  <p class="grupo__ayuda">Elige hasta {{ q.maxSelecciones }}. Al menos uno es obligatorio.</p>
+                  <span class="contador-sel">{{ quesoIds().length }}/{{ q.maxSelecciones }}</span>
+                </div>
+                <div class="opciones">
+                  @for (o of q.opciones; track o.id) {
+                    <label class="opcion" [class.is-activa]="quesoIds().includes(o.id)" [class.is-bloqueada]="bloqueada(quesoIds(), o.id, q.maxSelecciones)" [attr.draggable]="!bloqueada(quesoIds(), o.id, q.maxSelecciones)" (dragstart)="empezarArrastre($event, 'quesoIds', o, q.maxSelecciones)" (dragend)="terminarArrastre()">
+                      <input type="checkbox" class="opcion__check" [checked]="quesoIds().includes(o.id)" [disabled]="bloqueada(quesoIds(), o.id, q.maxSelecciones)" (change)="alternar('quesoIds', o, q.maxSelecciones)" />
+                      <svg class="opcion__icono" viewBox="-17 -17 34 34" aria-hidden="true">
+                        @if (o.tipo === 'QUESO' || o.tipo === 'SALSA') {
+                          <circle r="13" [attr.fill]="colorDe(o)" stroke="rgba(60,28,8,0.25)" stroke-width="1" />
+                          @if (o.tipo === 'QUESO') {
+                            <path d="M-7 -3 l3 6 M-1 -6 l2 7 M5 -4 l-2 7 M-4 4 l4 3" stroke="rgba(120,80,20,0.45)" stroke-width="1.6" stroke-linecap="round" />
+                          }
+                        } @else {
+                          <g appFormaIngrediente [forma]="formaDe(o)" />
+                        }
+                      </svg>
+                      <span class="opcion__texto">
+                        <span class="opcion__nombre">{{ o.nombre }}</span>
+                        <span class="opcion__precio">{{ o.precioExtra > 0 ? '+ ' + soles(o.precioExtra) : 'Incluido' }}</span>
+                      </span>
+                    </label>
+                  }
+                </div>
+              </div>
+            }
+          }
+
+          <!-- 3. Salsa -->
+          @case (3) {
+            @if (pasoSalsa(); as s) {
+              <div class="grupo">
+                <div class="grupo__cabecera">
+                  <p class="grupo__ayuda">Hasta {{ s.maxSelecciones }}. Con dos, van mitad y mitad. Puedes dejarla sin salsa.</p>
+                  <span class="contador-sel">{{ salsaIds().length }}/{{ s.maxSelecciones }}</span>
+                </div>
+                <div class="opciones">
+                  @for (o of s.opciones; track o.id) {
+                    <label class="opcion" [class.is-activa]="salsaIds().includes(o.id)" [class.is-bloqueada]="bloqueada(salsaIds(), o.id, s.maxSelecciones)" [attr.draggable]="!bloqueada(salsaIds(), o.id, s.maxSelecciones)" (dragstart)="empezarArrastre($event, 'salsaIds', o, s.maxSelecciones)" (dragend)="terminarArrastre()">
+                      <input type="checkbox" class="opcion__check" [checked]="salsaIds().includes(o.id)" [disabled]="bloqueada(salsaIds(), o.id, s.maxSelecciones)" (change)="alternar('salsaIds', o, s.maxSelecciones)" />
+                      <svg class="opcion__icono" viewBox="-17 -17 34 34" aria-hidden="true">
+                        @if (o.tipo === 'QUESO' || o.tipo === 'SALSA') {
+                          <circle r="13" [attr.fill]="colorDe(o)" stroke="rgba(60,28,8,0.25)" stroke-width="1" />
+                          @if (o.tipo === 'QUESO') {
+                            <path d="M-7 -3 l3 6 M-1 -6 l2 7 M5 -4 l-2 7 M-4 4 l4 3" stroke="rgba(120,80,20,0.45)" stroke-width="1.6" stroke-linecap="round" />
+                          }
+                        } @else {
+                          <g appFormaIngrediente [forma]="formaDe(o)" />
+                        }
+                      </svg>
+                      <span class="opcion__texto">
+                        <span class="opcion__nombre">{{ o.nombre }}</span>
+                        <span class="opcion__precio">{{ o.precioExtra > 0 ? '+ ' + soles(o.precioExtra) : 'Incluida' }}</span>
+                      </span>
+                    </label>
+                  }
+                </div>
+              </div>
+            }
+          }
+
+          <!-- 4. Ingredientes: carnes y otros comparten el mismo límite -->
+          @case (4) {
+            @if (pasoIngredientes(); as ing) {
+              <div class="grupo__cabecera">
+                <p class="grupo__ayuda">Elige hasta {{ ing.maxSelecciones }} entre carnes y otros ingredientes.</p>
+                <span class="contador-sel">{{ ingredienteIds().length }}/{{ ing.maxSelecciones }}</span>
+              </div>
+              @for (bloque of [{ titulo: 'Carnes', items: carnes() }, { titulo: 'Otros ingredientes', items: otros() }]; track bloque.titulo) {
+                @if (bloque.items.length > 0) {
+                  <div class="grupo">
+                    <h3 class="grupo__titulo">{{ bloque.titulo }}</h3>
+                    <div class="opciones">
+                      @for (o of bloque.items; track o.id) {
+                        <label class="opcion" [class.is-activa]="ingredienteIds().includes(o.id)" [class.is-bloqueada]="bloqueada(ingredienteIds(), o.id, ing.maxSelecciones)" [attr.draggable]="!bloqueada(ingredienteIds(), o.id, ing.maxSelecciones)" (dragstart)="empezarArrastre($event, 'ingredienteIds', o, ing.maxSelecciones)" (dragend)="terminarArrastre()">
+                          <input type="checkbox" class="opcion__check" [checked]="ingredienteIds().includes(o.id)" [disabled]="bloqueada(ingredienteIds(), o.id, ing.maxSelecciones)" (change)="alternar('ingredienteIds', o, ing.maxSelecciones)" />
+                          <svg class="opcion__icono" viewBox="-17 -17 34 34" aria-hidden="true">
+                        @if (o.tipo === 'QUESO' || o.tipo === 'SALSA') {
+                          <circle r="13" [attr.fill]="colorDe(o)" stroke="rgba(60,28,8,0.25)" stroke-width="1" />
+                          @if (o.tipo === 'QUESO') {
+                            <path d="M-7 -3 l3 6 M-1 -6 l2 7 M5 -4 l-2 7 M-4 4 l4 3" stroke="rgba(120,80,20,0.45)" stroke-width="1.6" stroke-linecap="round" />
+                          }
+                        } @else {
+                          <g appFormaIngrediente [forma]="formaDe(o)" />
+                        }
+                      </svg>
+                      <span class="opcion__texto">
+                            <span class="opcion__nombre">{{ o.nombre }}</span>
+                            <span class="opcion__precio">{{ o.precioExtra > 0 ? '+ ' + soles(o.precioExtra) : 'Incluido' }}</span>
+                          </span>
+                        </label>
+                      }
+                    </div>
+                  </div>
+                }
+              }
+            }
+          }
+
+          <!-- 5. Mi pizza -->
+          @case (5) {
+            <label class="nombre">
+              <span class="sr-only">Nombre de tu pizza (opcional)</span>
+              <lucide-icon class="nombre__icono" [img]="PencilIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+              <input class="nombre__campo" type="text" placeholder="Ponle nombre a tu pizza (opcional)" [attr.maxlength]="NOMBRE_MAXIMO" [value]="nombre()" (input)="escribirNombre($event)" />
+            </label>
+
+            <dl class="resumen">
+              <div class="resumen__fila">
+                <dt>Tamaño y masa</dt>
+                <dd>{{ tamano()?.nombre }}, {{ masa()?.nombre }}</dd>
+                <button type="button" class="resumen__editar" (click)="irA(1)">Cambiar</button>
+              </div>
+              <div class="resumen__fila">
+                <dt>Queso</dt>
+                <dd>{{ lista(quesos(), 'Sin queso') }}</dd>
+                <button type="button" class="resumen__editar" (click)="irA(2)">Cambiar</button>
+              </div>
+              <div class="resumen__fila">
+                <dt>Salsa</dt>
+                <dd>{{ lista(salsas(), 'Sin salsa') }}</dd>
+                <button type="button" class="resumen__editar" (click)="irA(3)">Cambiar</button>
+              </div>
+              <div class="resumen__fila">
+                <dt>Ingredientes</dt>
+                <dd>{{ lista(ingredientes(), 'Sin ingredientes extra') }}</dd>
+                <button type="button" class="resumen__editar" (click)="irA(4)">Cambiar</button>
+              </div>
+            </dl>
+
+            <div class="compra">
+              <div class="cantidad" role="group" aria-label="Cantidad">
+                <button type="button" class="cantidad__boton" [disabled]="cantidad() <= 1" (click)="cambiarCantidad(-1)" aria-label="Una menos">
+                  <lucide-icon [img]="MinusIcon" [size]="16" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
+                </button>
+                <output class="cantidad__valor">{{ cantidad() }}</output>
+                <button type="button" class="cantidad__boton" [disabled]="cantidad() >= CANTIDAD_MAXIMA" (click)="cambiarCantidad(1)" aria-label="Una más">
+                  <lucide-icon [img]="PlusIcon" [size]="16" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
+                </button>
+              </div>
+              <p class="compra__total" aria-live="polite">{{ total() !== null ? soles(total()) : '—' }}</p>
+            </div>
+
+            <div class="acciones">
+              <button type="button" class="btn btn--secondary btn--lg" [disabled]="enviando()" (click)="continuar('agregar')">
+                @if (agregado()) {
+                  <lucide-icon [img]="CheckIcon" [size]="18" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
+                  Agregada
+                } @else {
+                  Agregar al carrito
+                }
+              </button>
+              <button type="button" class="btn btn--primary btn--lg" [disabled]="enviando()" (click)="continuar('comprar')">Comprar ahora</button>
+            </div>
+          }
+        }
+
+        <footer class="navegacion">
+          <button type="button" class="navegacion__boton navegacion__boton--atras" [disabled]="paso() === 1" (click)="anterior()">
+            <lucide-icon [img]="BackIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+            Anterior
+          </button>
+          <span class="navegacion__cuenta">{{ paso() }} / 5</span>
+          @if (paso() < 5) {
+            <div class="navegacion__fin">
+              @if (bloqueoActual()) {
+                <span class="navegacion__aviso">{{ bloqueoActual() }}</span>
+              }
+              <button type="button" class="navegacion__boton navegacion__boton--sigue" [disabled]="!!bloqueoActual()" (click)="siguiente()">
+                Siguiente
+                <lucide-icon [img]="NextIcon" [size]="18" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
+              </button>
+            </div>
+          } @else {
+            <span class="navegacion__aviso navegacion__aviso--neutro">Último paso</span>
+          }
+        </footer>
+      </div>
+    </section>
+  } @else if (opciones.error()) {
+    <div class="estado" role="alert">
+      <p class="estado__titulo">No pudimos cargar las opciones</p>
+      <p class="estado__texto">Revisa tu conexión e intenta de nuevo.</p>
+      <button type="button" class="btn btn--primary" (click)="opciones.reload()">
+        <lucide-icon [img]="RetryIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+        Reintentar
+      </button>
+      <a routerLink="/menu" class="estado__enlace">Ver el menú</a>
+    </div>
+  } @else {
+    <div class="tarjeta tarjeta--cargando" aria-busy="true">
+      <div class="vista"><div class="esqueleto esqueleto--circulo"></div></div>
+      <div class="contenido">
+        <div class="esqueleto esqueleto--linea"></div>
+        <div class="esqueleto esqueleto--bloque"></div>
+      </div>
+    </div>
+  }
+</div>
+
+<app-entrega-dialog [accion]="accionEntrega()" (confirmado)="alConfirmarEntrega()" (cerrado)="accionEntrega.set(null)" />

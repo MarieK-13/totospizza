@@ -1,0 +1,57 @@
+<app-account-shell titulo="Mis pedidos" [descripcion]="total() > 0 ? total() + (total() === 1 ? ' pedido hecho en Toto\'s' : ' pedidos hechos en Toto\'s') : 'Aquí verás cada pedido y podrás seguirlo en vivo.'">
+  @if (primeraCarga()) {
+    <div class="lista" aria-busy="true" aria-label="Cargando tus pedidos">
+      @for (n of [1, 2, 3, 4]; track n) {
+        <div class="esqueleto"></div>
+      }
+    </div>
+  } @else if (vacio()) {
+    <div class="vacio">
+      <h2>Todavía no has pedido</h2>
+      <p>Cuando hagas tu primer pedido podrás seguirlo minuto a minuto desde aquí.</p>
+      <a routerLink="/menu" class="btn btn--primary">Ver el menú</a>
+    </div>
+  } @else {
+    @if (enCurso().length > 0) {
+      <section class="grupo" aria-labelledby="titulo-curso">
+        <h2 id="titulo-curso" class="grupo__titulo">
+          <span class="grupo__punto" aria-hidden="true"></span>
+          En curso
+        </h2>
+        <ul class="lista">
+          @for (p of enCurso(); track p.id) {
+            <li><app-order-history-item [pedido]="p" /></li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (anteriores().length > 0) {
+      <section class="grupo" aria-labelledby="titulo-anteriores">
+        @if (enCurso().length > 0) {
+          <h2 id="titulo-anteriores" class="grupo__titulo">Anteriores</h2>
+        } @else {
+          <h2 id="titulo-anteriores" class="sr-only">Historial</h2>
+        }
+        <ul class="lista">
+          @for (p of anteriores(); track p.id) {
+            <li><app-order-history-item [pedido]="p" /></li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (error(); as mensaje) {
+      <div class="aviso" role="alert">
+        <p>{{ mensaje }}</p>
+        <button type="button" class="btn btn--secondary btn--sm" (click)="reintentar()">Reintentar</button>
+      </div>
+    } @else if (hayMas()) {
+      <div class="mas">
+        <button type="button" class="btn btn--secondary" (click)="verMas()" [disabled]="cargando()">
+          {{ cargando() ? 'Cargando…' : 'Ver pedidos anteriores' }}
+        </button>
+      </div>
+    }
+  }
+</app-account-shell>

@@ -12,8 +12,9 @@
 
 // Distancia desde arriba para lo que se queda fijo al hacer scroll
 $tope-fijo: calc(#{$header-height} + #{$space-4});
-// Alto de la barra inferior (cantidad, Agregar, Comprar ahora) más su margen
-$alto-barra: 5rem;
+// Escritorio: aviso + header + migas arriba y la barra de compra abajo ocupan ~16rem;
+// el panel de opciones toma el resto de la ventana para que la página no tenga que bajar.
+$alto-fuera-del-panel: 16rem;
 
 .migas {
   display: flex;
@@ -93,7 +94,7 @@ $alto-barra: 5rem;
     @include up(xl) {
       position: sticky;
       top: $tope-fijo;
-      max-height: calc(100dvh - #{$header-height} - #{$space-4} - #{$alto-barra});
+      max-height: calc(100dvh - #{$alto-fuera-del-panel});
       padding-right: $space-2;
       padding-bottom: $space-4;
       overflow-y: auto;
@@ -117,6 +118,11 @@ $alto-barra: 5rem;
 
   @include up(md) {
     aspect-ratio: 1;
+  }
+
+  // Que foto + botón de ingredientes quepan en la ventana sin bajar
+  @include up(xl) {
+    max-width: min(34rem, calc(100dvh - 20rem));
   }
 
   &__foto {

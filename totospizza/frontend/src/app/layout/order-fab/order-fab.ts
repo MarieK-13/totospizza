@@ -3,9 +3,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 import { LucideAngularModule, Pizza } from 'lucide-angular';
-import { NavegacionService } from '../../core/services/navegacion.service';
 
-/** Botón flotante que lleva a la sección "Arma tu pedido" del inicio. */
+/** Botón flotante "Arma tu pedido": lleva al armador de pizzas (/arma-tu-pizza). */
 @Component({
   selector: 'app-order-fab',
   imports: [LucideAngularModule],
@@ -14,10 +13,9 @@ import { NavegacionService } from '../../core/services/navegacion.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderFab {
-  private readonly navegacion = inject(NavegacionService);
   private readonly router = inject(Router);
 
-  /** En el menú y el detalle se oculta: taparía los botones de agregar al carrito. */
+  /** Se oculta en el menú, el detalle y el propio armador: taparía los botones de agregar al carrito. */
   protected readonly visible = toSignal(
     this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd),
@@ -29,11 +27,11 @@ export class OrderFab {
 
   protected readonly PizzaIcon = Pizza;
 
-  protected irAArmarPedido(): Promise<void> {
-    return this.navegacion.irAArmarPedido();
+  protected irAArmarPedido(): Promise<boolean> {
+    return this.router.navigate(['/arma-tu-pizza']);
   }
 
   private esVisible(url: string): boolean {
-    return !/^\/menu(?:[/?#]|$)/.test(url);
+    return !/^\/(?:menu|arma-tu-pizza)(?:[/?#]|$)/.test(url);
   }
 }

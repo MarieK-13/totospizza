@@ -1,0 +1,28 @@
+@if (codigo()) {
+  <div class="pin">
+    <p class="pin__titulo">
+      <lucide-icon [img]="KeyIcon" [size]="16" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      Código de entrega
+    </p>
+    <p class="pin__digitos" [attr.aria-label]="'Código ' + digitos().join(' ')">
+      @for (d of digitos(); track $index) {
+        <span class="pin__digito" aria-hidden="true">{{ d }}</span>
+      }
+    </p>
+    <p class="pin__ayuda">Díselo al motorizado cuando llegue. No lo compartas antes.</p>
+  </div>
+}
+
+<div class="moto">
+  <span class="moto__avatar" aria-hidden="true">
+    @if (motorizado()) {
+      {{ iniciales() }}
+    } @else {
+      <lucide-icon [img]="BikeIcon" [size]="20" [strokeWidth]="1.7"></lucide-icon>
+    }
+  </span>
+  <span class="moto__texto">
+    <span class="moto__rol">Tu motorizado</span>
+    <span class="moto__nombre">{{ motorizado() ?? 'Lo asignamos cuando la pizza salga del horno' }}</span>
+  </span>
+</div>

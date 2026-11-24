@@ -75,8 +75,8 @@ export class PublicoApi {
     return this.api.get('/publico/metodos-pago');
   }
 
-  opcionesPersonalizacion(): Observable<OpcionesPersonalizacionResponse> {
-    return this.api.get('/publico/personalizacion/opciones');
+  opcionesPersonalizacion(opciones?: OpcionesPeticion): Observable<OpcionesPersonalizacionResponse> {
+    return this.api.get('/publico/personalizacion/opciones', opciones);
   }
 
   cotizarPizza(cuerpo: PizzaPersonalizadaRequest): Observable<CotizacionPizzaResponse> {

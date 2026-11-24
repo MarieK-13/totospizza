@@ -23,46 +23,83 @@
     </div>
   } @else {
     <div class="carrito__cuerpo">
-      <ul class="lineas" aria-label="Productos en tu carrito">
-        @for (linea of lineas(); track linea.clave) {
-          <li class="linea" [class.is-ocupada]="ocupado() === linea.clave">
-            <span class="linea__foto">
-              @if (linea.imagenUrl) {
-                <img [src]="linea.imagenUrl" alt="" loading="lazy" />
+      <div class="carrito__principal">
+        <ul class="lineas" aria-label="Productos en tu carrito">
+          @for (linea of lineas(); track linea.clave) {
+            <li class="linea" [class.is-ocupada]="ocupado() === linea.clave">
+              <ng-template #foto>
+                @if (linea.imagenUrl) {
+                  <img [src]="linea.imagenUrl" alt="" loading="lazy" />
+                } @else {
+                  <lucide-icon [img]="PizzaIcon" [size]="28" [strokeWidth]="1.2" aria-hidden="true"></lucide-icon>
+                }
+              </ng-template>
+              @if (linea.slug) {
+                <a class="linea__foto" [routerLink]="['/menu', linea.slug]" tabindex="-1" aria-hidden="true"><ng-container [ngTemplateOutlet]="foto" /></a>
               } @else {
-                <lucide-icon [img]="PizzaIcon" [size]="28" [strokeWidth]="1.2" aria-hidden="true"></lucide-icon>
+                <span class="linea__foto"><ng-container [ngTemplateOutlet]="foto" /></span>
               }
-            </span>
 
-            <div class="linea__texto">
-              <p class="linea__nombre">{{ linea.nombre }}</p>
-              @if (linea.detalle) {
-                <p class="linea__detalle">{{ linea.detalle }}</p>
-              }
-              @if (linea.notas) {
-                <p class="linea__notas">Nota: {{ linea.notas }}</p>
-              }
-              <p class="linea__unitario">{{ soles(linea.precioUnitario) }} c/u</p>
-            </div>
+              <div class="linea__texto">
+                @if (linea.slug) {
+                  <a class="linea__nombre linea__nombre--enlace" [routerLink]="['/menu', linea.slug]">{{ linea.nombre }}</a>
+                } @else {
+                  <p class="linea__nombre">{{ linea.nombre }}</p>
+                }
+                @if (linea.detalle) {
+                  <p class="linea__detalle">{{ linea.detalle }}</p>
+                }
+                @if (linea.notas) {
+                  <p class="linea__notas">Nota: {{ linea.notas }}</p>
+                }
+                <p class="linea__unitario">{{ soles(linea.precioUnitario) }} c/u</p>
+              </div>
 
-            <div class="contador" role="group" [attr.aria-label]="'Cantidad de ' + linea.nombre">
-              <button type="button" class="contador__boton" [disabled]="linea.cantidad <= 1 || ocupado() !== null" (click)="cambiarCantidad(linea, -1)" aria-label="Una menos">
-                <lucide-icon [img]="MinusIcon" [size]="14" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
+              <div class="contador" role="group" [attr.aria-label]="'Cantidad de ' + linea.nombre">
+                <button
+                  type="button"
+                  class="contador__boton"
+                  [disabled]="linea.cantidad <= 1 || ocupado() !== null"
+                  (click)="cambiarCantidad(linea, -1)"
+                  aria-label="Una menos"
+                >
+                  <lucide-icon [img]="MinusIcon" [size]="14" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
+                </button>
+                <output class="contador__valor">{{ linea.cantidad }}</output>
+                <button
+                  type="button"
+                  class="contador__boton"
+                  [disabled]="linea.cantidad >= CANTIDAD_MAXIMA || ocupado() !== null"
+                  (click)="cambiarCantidad(linea, 1)"
+                  aria-label="Una más"
+                >
+                  <lucide-icon [img]="PlusIcon" [size]="14" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
+                </button>
+              </div>
+
+              <p class="linea__subtotal">{{ soles(linea.subtotal) }}</p>
+
+              <button type="button" class="linea__quitar" [disabled]="ocupado() !== null" (click)="quitar(linea)" [attr.aria-label]="'Quitar ' + linea.nombre">
+                <lucide-icon [img]="RemoveIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
               </button>
-              <output class="contador__valor">{{ linea.cantidad }}</output>
-              <button type="button" class="contador__boton" [disabled]="linea.cantidad >= CANTIDAD_MAXIMA || ocupado() !== null" (click)="cambiarCantidad(linea, 1)" aria-label="Una más">
-                <lucide-icon [img]="PlusIcon" [size]="14" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon>
-              </button>
+            </li>
+          }
+        </ul>
+
+        @if (acompanantes().length > 0) {
+          <section class="acompanar" aria-labelledby="acompanar-titulo">
+            <div class="acompanar__cabecera">
+              <h2 id="acompanar-titulo" class="acompanar__titulo">¿Algo para acompañar?</h2>
+              <p class="acompanar__texto">Bebidas y salsas para completar tu pedido. Pulsa + y se suman al carrito.</p>
             </div>
-
-            <p class="linea__subtotal">{{ soles(linea.subtotal) }}</p>
-
-            <button type="button" class="linea__quitar" [disabled]="ocupado() !== null" (click)="quitar(linea)" [attr.aria-label]="'Quitar ' + linea.nombre">
-              <lucide-icon [img]="RemoveIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
-            </button>
-          </li>
+            <ul class="acompanar__fila">
+              @for (p of acompanantes(); track p.id) {
+                <li class="acompanar__item"><app-product-card [producto]="p" /></li>
+              }
+            </ul>
+          </section>
         }
-      </ul>
+      </div>
 
       <aside class="resumen" aria-labelledby="resumen-titulo">
         <div class="resumen__cabecera">
@@ -97,7 +134,14 @@
                 <strong>Tu envío es gratis</strong>
               }
             </p>
-            <div class="gratis__barra" role="progressbar" aria-label="Avance al envío gratis" [attr.aria-valuenow]="avanceEnvioGratis()" aria-valuemin="0" aria-valuemax="100">
+            <div
+              class="gratis__barra"
+              role="progressbar"
+              aria-label="Avance al envío gratis"
+              [attr.aria-valuenow]="avanceEnvioGratis()"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
               <span class="gratis__relleno" [style.width.%]="avanceEnvioGratis()"></span>
             </div>
           </div>
@@ -126,7 +170,9 @@
           <a routerLink="/login" [queryParams]="{ returnUrl: '/carrito' }" class="btn btn--primary btn--lg btn--block">Iniciar sesión</a>
           <p class="resumen__registro">¿Primera vez? <a routerLink="/registro" [queryParams]="{ returnUrl: '/carrito' }">Crea tu cuenta</a></p>
         } @else {
-          <a routerLink="/checkout" class="btn btn--primary btn--lg btn--block" [class.is-bloqueado]="!entrega()" [attr.aria-disabled]="!entrega()">Continuar al pago</a>
+          <a routerLink="/checkout" class="btn btn--primary btn--lg btn--block" [class.is-bloqueado]="!entrega()" [attr.aria-disabled]="!entrega()"
+            >Continuar al pago</a
+          >
         }
 
         <a routerLink="/menu" class="resumen__seguir">Seguir comprando</a>

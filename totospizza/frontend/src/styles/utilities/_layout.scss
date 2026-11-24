@@ -39,3 +39,13 @@
 .hidden {
   display: none !important;
 }
+
+// Vista fija (detalle de producto en escritorio): la ventana no se desplaza;
+// cada página que la usa pone su propio panel con scroll. Solo si la pantalla es lo bastante alta.
+@include up(xl) {
+  @media (min-height: 700px) {
+    body.vista-fija {
+      overflow: hidden;
+    }
+  }
+}

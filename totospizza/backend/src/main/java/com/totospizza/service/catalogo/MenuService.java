@@ -14,7 +14,11 @@ public interface MenuService {
     /** Promociones vigentes, destacados, reseñas y datos del negocio en una sola llamada. */
     HomeResponse home();
 
-    PageResponse<ProductoResumenResponse> buscar(String categoriaSlug, String etiquetaSlug, String texto, Pageable pageable);
+    /**
+     * Productos disponibles del menú. Los filtros nulos o vacíos se ignoran.
+     * {@code tamanoPizzaId} deja solo los productos que se venden en ese tamaño (filtro "para cuántas personas").
+     */
+    PageResponse<ProductoResumenResponse> buscar(String categoriaSlug, String etiquetaSlug, String texto, Long tamanoPizzaId, Pageable pageable);
 
     ProductoDetalleResponse detalle(String slug);
 

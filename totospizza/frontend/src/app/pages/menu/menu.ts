@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArrowDownUp, ChevronDown, LayoutGrid, LucideAngularModule, RefreshCw, Rows3, Search, SearchX, X } from 'lucide-angular';
+import { ArrowDownUp, ChevronDown, LayoutGrid, LucideAngularModule, RefreshCw, Rows3, Search, SearchX, User, Users, X } from 'lucide-angular';
 import { debounceTime, distinctUntilChanged, timeout } from 'rxjs';
 import { peticionSilenciosa } from '../../core/interceptors/http-context';
 import type { FiltroMenu, ProductoResumenResponse } from '../../core/models/api';
@@ -39,11 +39,16 @@ export class Menu {
   protected readonly categoria = computed(() => this.params().get('categoria') ?? '');
   protected readonly etiqueta = computed(() => this.params().get('etiqueta') ?? '');
   protected readonly busqueda = computed(() => this.params().get('q') ?? '');
+  /** Tamaño elegido en "¿Para cuántos?" (?tamano=id). */
+  protected readonly tamanoPizza = computed(() => {
+    const valor = Number(this.params().get('tamano'));
+    return Number.isInteger(valor) && valor > 0 ? valor : null;
+  });
   protected readonly orden = computed<OrdenMenu>(() => {
     const valor = this.params().get('orden');
     return esOrdenMenu(valor) ? valor : 'recomendado';
   });
-  protected readonly hayFiltros = computed(() => !!(this.categoria() || this.etiqueta() || this.busqueda()));
+  protected readonly hayFiltros = computed(() => !!(this.categoria() || this.etiqueta() || this.busqueda() || this.tamanoPizza()));
 
   protected readonly texto = signal(this.route.snapshot.queryParamMap.get('q') ?? '');
   protected readonly vista = signal<Vista>(leerVista());
@@ -60,12 +65,14 @@ export class Menu {
         categoria: this.categoria() || undefined,
         etiqueta: this.etiqueta() || undefined,
         q: this.busqueda() || undefined,
+        tamanoPizza: this.tamanoPizza() ?? undefined,
         tamano: TAMANO_PAGINA,
       }) satisfies FiltroMenu,
     stream: ({ params }) => this.api.menu(params, { context: peticionSilenciosa() }).pipe(timeout(ESPERA_MAXIMA_MS)),
   });
 
   protected readonly respuesta = computed(() => this.resultados.value());
+  protected readonly tamanos = computed(() => this.filtros.value()?.tamanos ?? []);
   protected readonly productos = computed(() => ordenarMenu(this.respuesta()?.contenido ?? [], this.orden()));
   protected readonly cargando = this.resultados.isLoading;
   protected readonly incompleto = computed(() => {
@@ -84,6 +91,8 @@ export class Menu {
   protected readonly ChevronIcon = ChevronDown;
   protected readonly GridIcon = LayoutGrid;
   protected readonly ListIcon = Rows3;
+  protected readonly PersonIcon = User;
+  protected readonly GroupIcon = Users;
 
   constructor() {
     // El texto escrito se vuelca a la URL sin llenar el historial
@@ -121,6 +130,15 @@ export class Menu {
     this.navegar({ categoria: slug || null });
   }
 
+  protected alternarTamano(id: number): void {
+    this.navegar({ tamano: this.tamanoPizza() === id ? null : String(id) });
+  }
+
+  protected personas(min: number, max: number): string {
+    if (min === max) return min === 1 ? '1 persona' : `${min} personas`;
+    return `${min} a ${max} personas`;
+  }
+
   protected alternarEtiqueta(slug: string): void {
     this.navegar({ etiqueta: this.etiqueta() === slug ? null : slug });
   }
@@ -142,7 +160,7 @@ export class Menu {
   protected limpiar(): void {
     this.texto.set('');
     this.buscando.set(false);
-    this.navegar({ categoria: null, etiqueta: null, q: null });
+    this.navegar({ categoria: null, etiqueta: null, q: null, tamano: null });
   }
 
   protected reintentar(): void {

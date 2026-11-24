@@ -1,0 +1,43 @@
+<form class="datos" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+  @if (error(); as mensaje) {
+    <div class="datos__alerta" role="alert">
+      <lucide-icon [img]="AlertIcon" [size]="18" [strokeWidth]="1.8" aria-hidden="true"></lucide-icon>
+      <p>{{ mensaje }}</p>
+    </div>
+  }
+
+  <div class="datos__rejilla">
+    <app-text-field formControlName="nombres" label="Nombres" [icon]="UserIcon" autocomplete="given-name" [maxlength]="80" [required]="true" />
+    <app-text-field formControlName="apellidos" label="Apellidos" autocomplete="family-name" [maxlength]="80" [required]="true" />
+    <app-text-field formControlName="telefono" label="Celular" type="tel" inputmode="tel" [icon]="PhoneIcon" autocomplete="tel-national"
+      hint="Te llamamos solo si hay un problema con tu pedido" [maxlength]="11" [required]="true" />
+    <app-text-field formControlName="fechaNacimiento" label="Fecha de nacimiento" type="date" [icon]="CalendarIcon" [max]="maxFecha" [required]="true" />
+  </div>
+
+  <dl class="fijos">
+    <div class="fijos__item">
+      <dt>
+        <lucide-icon [img]="MailIcon" [size]="16" [strokeWidth]="1.7" aria-hidden="true"></lucide-icon>
+        Correo
+      </dt>
+      <dd>{{ perfil().correo }}</dd>
+    </div>
+    <div class="fijos__item">
+      <dt>
+        <lucide-icon [img]="IdIcon" [size]="16" [strokeWidth]="1.7" aria-hidden="true"></lucide-icon>
+        {{ perfil().tipoDocumento }}
+      </dt>
+      <dd>{{ perfil().numeroDocumento }}</dd>
+    </div>
+  </dl>
+  <p class="datos__nota">El correo y el documento identifican tu cuenta y no se pueden cambiar desde aquí.</p>
+
+  <div class="datos__acciones">
+    @if (form.dirty) {
+      <button type="button" class="btn btn--ghost" (click)="descartar()" [disabled]="enviando()">Descartar</button>
+    }
+    <button type="submit" class="btn btn--primary datos__guardar" [disabled]="enviando() || form.pristine">
+      {{ enviando() ? 'Guardando…' : 'Guardar cambios' }}
+    </button>
+  </div>
+</form>

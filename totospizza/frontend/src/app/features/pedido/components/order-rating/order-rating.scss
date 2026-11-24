@@ -1,0 +1,169 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+@use '../../../../shared/components/account-shell/panel' as cuenta;
+
+.opinion {
+  position: relative;
+  width: min(100% - #{$space-6}, 28rem);
+  margin: auto;
+  padding: $space-8 $space-6 $space-6;
+  border: 0;
+  border-radius: $radius-xl;
+  background-color: $color-background-raised;
+  color: $color-text-primary;
+  text-align: center;
+  box-shadow: $shadow-xl;
+
+  &::backdrop {
+    background-color: rgba($color-cafe-tostado, 0.55);
+    backdrop-filter: blur(2px);
+  }
+
+  &[open] {
+    animation: aparecer 0.22s $ease-out;
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+
+  &__cerrar {
+    position: absolute;
+    top: $space-3;
+    right: $space-3;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: $color-text-secondary;
+    cursor: pointer;
+    @include focus-ring;
+
+    &:hover {
+      background-color: $tint-cafe-10;
+    }
+  }
+
+  &__titulo {
+    margin: 0;
+    font-family: $font-titulos;
+    font-size: 2rem;
+    font-weight: 400;
+  }
+
+  &__texto {
+    margin: $space-2 auto 0;
+    max-width: 22rem;
+    color: $color-text-secondary;
+    font-size: 0.9375rem;
+  }
+
+  &__nota {
+    min-height: 1.5rem;
+    margin: $space-1 0 $space-5;
+    color: $color-marron-suave;
+    font-weight: $weight-semibold;
+  }
+
+  &__etiqueta {
+    display: block;
+    margin-bottom: $space-2;
+    font-size: 0.875rem;
+    font-weight: $weight-medium;
+    text-align: left;
+
+    span {
+      color: $color-text-secondary;
+      font-weight: $weight-regular;
+    }
+  }
+
+  &__comentario {
+    width: 100%;
+    padding: $space-3;
+    border: $border-width solid $color-border-default;
+    border-radius: $radius-md;
+    background-color: $color-background-raised;
+    color: inherit;
+    font: inherit;
+    font-size: 0.9375rem;
+    resize: vertical;
+    @include transition((border-color, box-shadow));
+
+    &:focus {
+      border-color: $color-marron-suave;
+      outline: none;
+      box-shadow: 0 0 0 3px $tint-cafe-10;
+    }
+  }
+
+  &__conteo {
+    margin: $space-1 0 0;
+    color: $color-text-secondary;
+    font-size: 0.75rem;
+    text-align: right;
+  }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $space-2;
+    margin: $space-3 0 0;
+    color: $color-error;
+    font-size: 0.875rem;
+  }
+
+  &__enviar {
+    margin-top: $space-5;
+    @include cuenta.boton-marron;
+  }
+}
+
+.estrellas {
+  display: flex;
+  justify-content: center;
+  gap: $space-1;
+  margin-top: $space-5;
+
+  &__item {
+    display: grid;
+    place-items: center;
+    padding: $space-1;
+    border: 0;
+    border-radius: $radius-md;
+    background: none;
+    color: rgba($color-marron-suave, 0.4);
+    cursor: pointer;
+    @include transition((color, transform));
+    @include focus-ring;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &.is-llena {
+      color: $color-amarillo-queso;
+
+      ::ng-deep svg {
+        fill: currentColor;
+      }
+    }
+
+    @include reduced-motion {
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.98);
+  }
+}

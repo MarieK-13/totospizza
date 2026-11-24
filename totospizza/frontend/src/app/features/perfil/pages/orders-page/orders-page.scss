@@ -1,0 +1,88 @@
+@use '../../../../../styles/tokens/variables' as *;
+@use '../../../../../styles/mixins' as *;
+@use '../../../../shared/components/account-shell/panel' as cuenta;
+
+:host {
+  display: block;
+}
+
+.grupo {
+  & + & {
+    margin-top: $space-7;
+  }
+
+  &__titulo {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    margin: 0 0 $space-3;
+    color: $color-text-secondary;
+    font-family: $font-cuerpo;
+    font-size: 0.9375rem;
+    font-weight: $weight-semibold;
+  }
+
+  &__punto {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: $color-verde-albahaca;
+    box-shadow: 0 0 0 0 rgba($color-verde-albahaca, 0.5);
+    animation: latido 1.8s $ease-out infinite;
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.esqueleto {
+  height: 5rem;
+  @include cuenta.esqueleto;
+}
+
+.vacio {
+  @include cuenta.vacio;
+}
+
+.aviso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  margin-top: $space-5;
+  padding: $space-3 $space-4;
+  border-radius: $radius-md;
+  background-color: $tint-rojo-8;
+  color: $color-brand-primary;
+
+  p {
+    margin: 0;
+  }
+}
+
+.mas {
+  display: flex;
+  justify-content: center;
+  margin-top: $space-6;
+}
+
+@keyframes latido {
+  70% {
+    box-shadow: 0 0 0 0.5rem rgba($color-verde-albahaca, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba($color-verde-albahaca, 0);
+  }
+}

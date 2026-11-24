@@ -1,19 +1,24 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Bike, LucideAngularModule, MapPin, Minus, Pizza, Plus, ShoppingBag, Store, Trash2, X } from 'lucide-angular';
 import { catchError, finalize, of } from 'rxjs';
 import { peticionSilenciosa } from '../../../../core/interceptors/http-context';
 import { PublicoApi } from '../../../../core/services/api/publico.api';
 import { AuthService } from '../../../../core/services/auth.service';
+import { CatalogoService } from '../../../../core/services/catalogo.service';
 import { CANTIDAD_MAXIMA_ITEM, CartService, type LineaCarrito } from '../../../../core/services/cart.service';
 import { EntregaService } from '../../../../core/services/entrega.service';
 import { formatearSoles } from '../../../../core/utils/money';
 import { EntregaDialog, type AccionEntrega } from '../../../../shared/components/entrega-dialog/entrega-dialog';
+import { ProductCard } from '../../../../shared/components/product-card/product-card';
 
 /** Respaldo si /publico/configuracion no responde (mismos valores por defecto del backend). */
 const ENVIO_GRATIS_DESDE = 49;
 const COSTO_DELIVERY_BASE = 5;
+/** Cuántas sugerencias para acompañar se muestran. */
+const MAX_ACOMPANANTES = 8;
 
 /**
  * Carrito. Funciona con y sin sesión:
@@ -23,13 +28,14 @@ const COSTO_DELIVERY_BASE = 5;
  */
 @Component({
   selector: 'app-cart-page',
-  imports: [RouterLink, LucideAngularModule, EntregaDialog],
+  imports: [NgTemplateOutlet, RouterLink, LucideAngularModule, EntregaDialog, ProductCard],
   templateUrl: './cart-page.html',
   styleUrl: './cart-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CartPage {
   private readonly api = inject(PublicoApi);
+  private readonly catalogo = inject(CatalogoService);
   protected readonly cart = inject(CartService);
   protected readonly auth = inject(AuthService);
   private readonly entregaService = inject(EntregaService);
@@ -38,7 +44,26 @@ export class CartPage {
     stream: () => this.api.configuracion({ context: peticionSilenciosa() }).pipe(catchError(() => of(null))),
   });
 
-  protected readonly lineas = this.cart.lineas;
+  /** Menú completo: da los slugs de los ítems del backend y las sugerencias para acompañar. */
+  private readonly menu = rxResource({
+    stream: () => this.catalogo.menu({ tamano: 100 }, { context: peticionSilenciosa() }).pipe(catchError(() => of(null))),
+  });
+  private readonly slugPorNombre = computed(
+    () => new Map((this.menu.value()?.contenido ?? []).map((p) => [p.nombre.toLowerCase(), p.slug] as const)),
+  );
+
+  /** Líneas con su enlace al detalle (si el producto sigue en el menú). */
+  protected readonly lineas = computed(() =>
+    this.cart.lineas().map((l) => ({ ...l, slug: l.slug ?? this.slugPorNombre().get(l.nombre.toLowerCase()) ?? null })),
+  );
+
+  /** Bebidas y salsas que aún no están en el carrito, para sumar a último momento. */
+  protected readonly acompanantes = computed(() => {
+    const enCarrito = new Set(this.cart.lineas().map((l) => l.nombre.toLowerCase()));
+    return (this.menu.value()?.contenido ?? [])
+      .filter((p) => p.disponible && !/pizza/i.test(p.categoria) && !enCarrito.has(p.nombre.toLowerCase()))
+      .slice(0, MAX_ACOMPANANTES);
+  });
   protected readonly entrega = this.entregaService.actual;
   protected readonly ocupado = signal<string | null>(null);
   protected readonly accionEntrega = signal<AccionEntrega | null>(null);

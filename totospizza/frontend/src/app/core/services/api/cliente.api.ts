@@ -104,8 +104,8 @@ export class ClienteApi {
     return this.api.get(`/cliente/pizzas-personalizadas/${id}`);
   }
 
-  guardarPizzaPersonalizada(cuerpo: PizzaPersonalizadaRequest): Observable<PizzaPersonalizadaResponse> {
-    return this.api.post('/cliente/pizzas-personalizadas', cuerpo);
+  guardarPizzaPersonalizada(cuerpo: PizzaPersonalizadaRequest, opciones?: OpcionesPeticion): Observable<PizzaPersonalizadaResponse> {
+    return this.api.post('/cliente/pizzas-personalizadas', cuerpo, opciones);
   }
 
   // ---- Reseñas ----

@@ -18,6 +18,8 @@ import com.totospizza.exception.RecursoNoEncontradoException;
 import com.totospizza.mapper.catalogo.CategoriaMapper;
 import com.totospizza.mapper.catalogo.EtiquetaMapper;
 import com.totospizza.mapper.catalogo.ProductoMapper;
+import com.totospizza.mapper.catalogo.TamanoPizzaMapper;
+import com.totospizza.repository.catalogo.TamanoPizzaRepository;
 import com.totospizza.repository.catalogo.CategoriaRepository;
 import com.totospizza.repository.catalogo.EtiquetaRepository;
 import com.totospizza.repository.catalogo.ProductoRepository;
@@ -37,9 +39,11 @@ public class MenuServiceImpl implements MenuService {
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
     private final EtiquetaRepository etiquetaRepository;
+    private final TamanoPizzaRepository tamanoPizzaRepository;
     private final ProductoMapper productoMapper;
     private final CategoriaMapper categoriaMapper;
     private final EtiquetaMapper etiquetaMapper;
+    private final TamanoPizzaMapper tamanoPizzaMapper;
     private final CatalogoDetalleAssembler detalleAssembler;
     private final PromocionService promocionService;
     private final ResenaService resenaService;
@@ -56,10 +60,11 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public PageResponse<ProductoResumenResponse> buscar(String categoriaSlug, String etiquetaSlug, String texto, Pageable pageable) {
+    public PageResponse<ProductoResumenResponse> buscar(String categoriaSlug, String etiquetaSlug, String texto,
+                                                        Long tamanoPizzaId, Pageable pageable) {
         String patron = "%" + (texto == null ? "" : texto.trim().toLowerCase(Locale.ROOT)) + "%";
         return PageResponse.of(productoRepository
-                .buscarEnMenu(vacioANulo(categoriaSlug), vacioANulo(etiquetaSlug), patron, pageable)
+                .buscarEnMenu(vacioANulo(categoriaSlug), vacioANulo(etiquetaSlug), tamanoPizzaId, patron, pageable)
                 .map(productoMapper::toResumen));
     }
 
@@ -73,7 +78,8 @@ public class MenuServiceImpl implements MenuService {
     public MenuFiltrosResponse filtros() {
         return new MenuFiltrosResponse(
                 categoriaMapper.toResponses(categoriaRepository.findByActivaTrueOrderByOrdenAsc()),
-                etiquetaMapper.toResponses(etiquetaRepository.findByEsFiltroTrueOrderByNombreAsc()));
+                etiquetaMapper.toResponses(etiquetaRepository.findByEsFiltroTrueOrderByNombreAsc()),
+                tamanoPizzaMapper.toResponses(tamanoPizzaRepository.findAllByOrderByOrdenAsc()));
     }
 
     private static String vacioANulo(String valor) {

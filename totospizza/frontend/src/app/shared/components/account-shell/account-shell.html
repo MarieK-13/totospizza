@@ -1,0 +1,42 @@
+<div class="wrap cuenta">
+  <aside class="cuenta__lado" aria-label="Mi cuenta">
+    @if (auth.usuario(); as usuario) {
+      <div class="cliente">
+        @if (usuario.avatarUrl) {
+          <img class="cliente__avatar" [src]="usuario.avatarUrl" alt="" width="56" height="56" />
+        } @else {
+          <span class="cliente__avatar" aria-hidden="true">{{ iniciales() }}</span>
+        }
+        <div class="cliente__texto">
+          <p class="cliente__nombre">{{ usuario.nombres }} {{ usuario.apellidos }}</p>
+          <p class="cliente__correo">{{ usuario.correo }}</p>
+        </div>
+      </div>
+    }
+
+    <nav class="menu-cuenta">
+      @for (enlace of enlaces; track enlace.ruta) {
+        <a class="menu-cuenta__item" [routerLink]="enlace.ruta" routerLinkActive="is-active" ariaCurrentWhenActive="page">
+          <lucide-icon [img]="enlace.icono" [size]="18" [strokeWidth]="1.7" aria-hidden="true"></lucide-icon>
+          {{ enlace.texto }}
+        </a>
+      }
+      <button type="button" class="menu-cuenta__item menu-cuenta__item--salir" (click)="cerrarSesion()">
+        <lucide-icon [img]="SalirIcon" [size]="18" [strokeWidth]="1.7" aria-hidden="true"></lucide-icon>
+        <span class="menu-cuenta__largo">Cerrar sesión</span>
+        <span class="menu-cuenta__corto" aria-hidden="true">Salir</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="cuenta__principal">
+    <header class="cuenta__cabecera">
+      <h1 class="cuenta__titulo">{{ titulo() }}</h1>
+      @if (descripcion()) {
+        <p class="cuenta__descripcion">{{ descripcion() }}</p>
+      }
+      <ng-content select="[acciones]" />
+    </header>
+    <ng-content />
+  </main>
+</div>
